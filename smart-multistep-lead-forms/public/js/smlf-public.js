@@ -54,6 +54,15 @@ jQuery(document).ready(function($) {
 		});
 
 		function verifyBotToken(token) {
+			if (smlf_public_obj.captcha_method === 'none' || smlf_public_obj.captcha_method === 'custom') {
+				$wrapper.find('.smlf-anti-bot-overlay').fadeOut(300, function() {
+					$wrapper.find('.smlf-progress-bar-container').fadeIn();
+					$form.fadeIn();
+					updateProgress();
+				});
+				return;
+			}
+
 			$.post(smlf_public_obj.ajax_url, {
 				action: 'smlf_verify_bot',
 				form_id: formId,
@@ -168,7 +177,6 @@ jQuery(document).ready(function($) {
 			const formData = $form.serializeArray();
 			$.post(smlf_public_obj.ajax_url, {
 				action: 'smlf_save_partial',
-				nonce: smlf_public_obj.nonce,
 				form_id: formId,
 				lead_id: leadId,
 				data: formData
@@ -190,7 +198,6 @@ jQuery(document).ready(function($) {
 
 			$.post(smlf_public_obj.ajax_url, {
 				action: 'smlf_submit_form',
-				nonce: smlf_public_obj.nonce,
 				form_id: formId,
 				lead_id: leadId,
 				data: formData

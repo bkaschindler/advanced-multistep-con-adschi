@@ -1,24 +1,121 @@
-# Copyright (C) 2024 Mohammad Babaei
-# This file is distributed under the GPLv2 or later.
 msgid ""
 msgstr ""
-"Project-Id-Version: Smart MultiStep Lead Forms 1.0.0\n"
+"Project-Id-Version: Smart MultiStep Lead Forms 1.1.0\n"
 "Report-Msgid-Bugs-To: https://adschi.com\n"
 "POT-Creation-Date: 2024-05-30 00:00:00+00:00\n"
 "MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"PO-Revision-Date: 2024-05-30 00:00:00+00:00\n"
-"Last-Translator: Automatically generated\n"
-"Language-Team: none\n"
+"PO-Revision-Date: 2024-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
 "Language: de\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
-"X-Poedit-Country: United States\n"
-"X-Poedit-SourceCharset: UTF-8\n"
-"X-Poedit-KeywordsList: __;_e;_x:1,2c;_ex:1,2c;_n:1,2;_nx:1,2,4c;_n_noop:1,2;"
-"_nx_noop:1,2,3c;esc_attr__;esc_html__;esc_attr_e;esc_html_e;esc_attr_x:1,2c;"
-"esc_html_x:1,2c;\n"
-"X-Poedit-Basepath: ../\n"
-"X-Poedit-SearchPath-0: .\n"
-"X-Poedit-Bookmarks: \n"
-"X-Textdomain-Support: yes\n"
+
+msgid "Smart Forms"
+msgstr "Schlaue Formulare"
+
+msgid "Forms"
+msgstr "Formulare"
+
+msgid "Add New Form"
+msgstr "Neues Formular hinzufügen"
+
+msgid "Leads"
+msgstr "Interessenten"
+
+msgid "Settings"
+msgstr "Einstellungen"
+
+msgid "Email Logs"
+msgstr "E-Mail Protokolle"
+
+msgid "Export to CSV"
+msgstr "Als CSV exportieren"
+
+msgid "All Forms"
+msgstr "Alle Formulare"
+
+msgid "All Statuses"
+msgstr "Alle Status"
+
+msgid "Completed"
+msgstr "Abgeschlossen"
+
+msgid "Partial Lead"
+msgstr "Teilweiser Lead"
+
+msgid "Started"
+msgstr "Gestartet"
+
+msgid "Filter"
+msgstr "Filtern"
+
+msgid "Admin Notification Email"
+msgstr "Admin-Benachrichtigungs-E-Mail"
+
+msgid "Where should lead notifications be sent?"
+msgstr "Wohin sollen Lead-Benachrichtigungen gesendet werden?"
+
+msgid "Enable Partial Lead Saving"
+msgstr "Teilweises Speichern von Leads aktivieren"
+
+msgid "Save leads instantly when email/phone is typed."
+msgstr "Leads sofort speichern, wenn E-Mail/Telefon eingegeben wird."
+
+msgid "Webhook URL"
+msgstr "Webhook-URL"
+
+msgid "Send lead data to Zapier, Make, etc."
+msgstr "Lead-Daten an Zapier, Make usw. senden."
+
+msgid "Anti-bot / Captcha Method"
+msgstr "Anti-Bot / Captcha-Methode"
+
+msgid "None"
+msgstr "Keine"
+
+msgid "Custom Checkbox (Default)"
+msgstr "Benutzerdefinierte Checkbox (Standard)"
+
+msgid "Google reCAPTCHA v2"
+msgstr "Google reCAPTCHA v2"
+
+msgid "Google reCAPTCHA v3"
+msgstr "Google reCAPTCHA v3"
+
+msgid "Cloudflare Turnstile"
+msgstr "Cloudflare Turnstile"
+
+msgid "Captcha Site Key"
+msgstr "Captcha Website-Schlüssel"
+
+msgid "Captcha Secret Key"
+msgstr "Captcha Geheimer Schlüssel"
+
+msgid "Security Check"
+msgstr "Sicherheitsprüfung"
+
+msgid "Please verify you are human."
+msgstr "Bitte bestätigen Sie, dass Sie ein Mensch sind."
+
+msgid "I am not a robot"
+msgstr "Ich bin kein Roboter"
+
+msgid "Verify"
+msgstr "Überprüfen"
+
+msgid "Back"
+msgstr "Zurück"
+
+msgid "Next"
+msgstr "Weiter"
+
+msgid "Submit"
+msgstr "Absenden"
+
+msgid "Thank you!"
+msgstr "Danke!"
+
+msgid "Your submission has been received."
+msgstr "Ihre Einreichung ist eingegangen."

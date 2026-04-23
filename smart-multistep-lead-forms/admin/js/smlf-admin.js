@@ -7,7 +7,8 @@ jQuery(document).ready(function($) {
 		const stepHtml = `
 			<div class="smlf-step" data-step="${stepCounter}">
 				<div class="smlf-step-header">
-					<span>Step ${stepCounter}</span>
+						<span class="step-title-display">Step ${stepCounter}</span>
+						<input type="text" class="smlf-step-title-input" value="Step ${stepCounter}" style="margin-left: 10px; width: 200px;">
 					<button class="button smlf-remove-step">Remove</button>
 				</div>
 					<div class="smlf-step-logic" style="margin-bottom:10px; padding:5px; background:#e9f0f5; border:1px solid #ccd0d4;">
@@ -68,9 +69,59 @@ jQuery(document).ready(function($) {
 		$(this).closest('.smlf-field-item').remove();
 	});
 
-	// Add initial step
-	if ($('#smlf-steps-container').length > 0) {
-		$('#smlf-add-step').trigger('click');
+	// Load existing form or add initial step
+	if (typeof smlf_existing_form_data !== 'undefined' && smlf_existing_form_data.steps && smlf_existing_form_data.steps.length > 0) {
+		smlf_existing_form_data.steps.forEach(function(step) {
+			const stepId = step.step_id || stepCounter;
+			const logicTarget = step.logic_target || '';
+			const logicValue = step.logic_value || '';
+			const stepTitle = step.title || `Step ${stepId}`;
+			const stepHtml = `
+				<div class="smlf-step" data-step="${stepId}">
+					<div class="smlf-step-header">
+						<span class="step-title-display">Step ${stepId}</span>
+						<input type="text" class="smlf-step-title-input" value="${stepTitle}" style="margin-left: 10px; width: 200px;">
+						<button class="button smlf-remove-step">Remove</button>
+					</div>
+					<div class="smlf-step-logic" style="margin-bottom:10px; padding:5px; background:#e9f0f5; border:1px solid #ccd0d4;">
+						<label style="font-size: 12px;">Condition: Go to Step
+							<input type="number" class="smlf-logic-target" style="width:50px" value="${logicTarget}" placeholder="#">
+							if answer equals <input type="text" class="smlf-logic-value" value="${logicValue}" placeholder="Option name">
+						</label>
+					</div>
+					<div class="smlf-fields-dropzone"></div>
+				</div>
+			`;
+			$('#smlf-steps-container').append(stepHtml);
+			const $dropzone = $('#smlf-steps-container .smlf-step').last().find('.smlf-fields-dropzone');
+
+			if (step.fields && step.fields.length > 0) {
+				step.fields.forEach(function(field) {
+					let optionsHtml = '';
+					if (field.type === 'cards' || field.type === 'radio') {
+						optionsHtml = `<label style="display:block;margin-top:5px;">Options (comma separated): <input type="text" class="field-options" value="${field.options || ''}" style="width:100%"></label>`;
+					}
+					const fieldHtml = `
+						<div class="smlf-field-item" data-type="${field.type}" style="background:#fff; border:1px solid #ddd; padding:10px; margin-bottom:5px;">
+							<strong>${field.type}</strong>
+							<button class="button-link smlf-remove-field" style="float:right; color:red;">x</button>
+							<div class="smlf-field-settings" style="margin-top:10px;">
+								<label>Label: <input type="text" class="field-label" value="${field.label}"></label>
+								${optionsHtml}
+							</div>
+						</div>
+					`;
+					$dropzone.append(fieldHtml);
+				});
+			}
+			stepCounter++;
+		});
+		initSortable();
+	} else {
+		// Add initial step
+		if ($('#smlf-steps-container').length > 0) {
+			$('#smlf-add-step').trigger('click');
+		}
 	}
 
 	// Save Form via AJAX
@@ -81,6 +132,7 @@ jQuery(document).ready(function($) {
 
 		$('.smlf-step').each(function() {
 			const stepId = $(this).data('step');
+			const stepTitle = $(this).find('.smlf-step-title-input').val();
 			const logicTarget = $(this).find('.smlf-logic-target').val();
 			const logicValue = $(this).find('.smlf-logic-value').val();
 			const fields = [];
@@ -95,6 +147,7 @@ jQuery(document).ready(function($) {
 			});
 			steps.push({
 				step_id: stepId,
+				title: stepTitle,
 				logic_target: logicTarget,
 				logic_value: logicValue,
 				fields: fields

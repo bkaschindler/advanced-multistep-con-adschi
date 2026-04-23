@@ -27,6 +27,7 @@ class SMLF_Ajax {
 			foreach ( $form_data['steps'] as $step ) {
 				$sanitized_step = array(
 					'step_id'      => isset( $step['step_id'] ) ? intval( $step['step_id'] ) : 0,
+					'title'        => isset( $step['title'] ) ? sanitize_text_field( $step['title'] ) : '',
 					'logic_target' => isset( $step['logic_target'] ) ? sanitize_text_field( $step['logic_target'] ) : '',
 					'logic_value'  => isset( $step['logic_value'] ) ? sanitize_text_field( $step['logic_value'] ) : '',
 					'fields'       => array()
@@ -70,6 +71,10 @@ class SMLF_Ajax {
 		$captcha_method = get_option('smlf_captcha_method', 'custom');
 		$secret_key = get_option('smlf_captcha_secret_key', '');
 		$token = isset($_POST['token']) ? sanitize_text_field($_POST['token']) : '';
+
+		if ($captcha_method === 'none' || $captcha_method === 'custom') {
+			wp_send_json_success();
+		}
 
 		if ($captcha_method === 'recaptcha_v2' || $captcha_method === 'recaptcha_v3') {
 			$response = wp_remote_post("https://www.google.com/recaptcha/api/siteverify", array(

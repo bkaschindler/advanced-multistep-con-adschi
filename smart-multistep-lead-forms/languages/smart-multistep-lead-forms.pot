@@ -2,7 +2,7 @@
 # This file is distributed under the GPLv2 or later.
 msgid ""
 msgstr ""
-"Project-Id-Version: Smart MultiStep Lead Forms 1.0.0\n"
+"Project-Id-Version: Smart MultiStep Lead Forms 1.1.0\n"
 "Report-Msgid-Bugs-To: https://adschi.com\n"
 "POT-Creation-Date: 2024-05-30 00:00:00+00:00\n"
 "MIME-Version: 1.0\n"
@@ -13,10 +13,111 @@ msgstr ""
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "Language: en\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
-"X-Poedit-Country: United States\n"
-"X-Poedit-SourceCharset: UTF-8\n"
-"X-Poedit-KeywordsList: __;_e;_x:1,2c;_ex:1,2c;_n:1,2;_nx:1,2,4c;_n_noop:1,2;_nx_noop:1,2,3c;esc_attr__;esc_html__;esc_attr_e;esc_html_e;esc_attr_x:1,2c;esc_html_x:1,2c;\n"
-"X-Poedit-Basepath: ../\n"
-"X-Poedit-SearchPath-0: .\n"
-"X-Poedit-Bookmarks: \n"
-"X-Textdomain-Support: yes\n"
+
+msgid "Smart Forms"
+msgstr ""
+
+msgid "Forms"
+msgstr ""
+
+msgid "Add New Form"
+msgstr ""
+
+msgid "Leads"
+msgstr ""
+
+msgid "Settings"
+msgstr ""
+
+msgid "Email Logs"
+msgstr ""
+
+msgid "Export to CSV"
+msgstr ""
+
+msgid "All Forms"
+msgstr ""
+
+msgid "All Statuses"
+msgstr ""
+
+msgid "Completed"
+msgstr ""
+
+msgid "Partial Lead"
+msgstr ""
+
+msgid "Started"
+msgstr ""
+
+msgid "Filter"
+msgstr ""
+
+msgid "Admin Notification Email"
+msgstr ""
+
+msgid "Where should lead notifications be sent?"
+msgstr ""
+
+msgid "Enable Partial Lead Saving"
+msgstr ""
+
+msgid "Save leads instantly when email/phone is typed."
+msgstr ""
+
+msgid "Webhook URL"
+msgstr ""
+
+msgid "Send lead data to Zapier, Make, etc."
+msgstr ""
+
+msgid "Anti-bot / Captcha Method"
+msgstr ""
+
+msgid "None"
+msgstr ""
+
+msgid "Custom Checkbox (Default)"
+msgstr ""
+
+msgid "Google reCAPTCHA v2"
+msgstr ""
+
+msgid "Google reCAPTCHA v3"
+msgstr ""
+
+msgid "Cloudflare Turnstile"
+msgstr ""
+
+msgid "Captcha Site Key"
+msgstr ""
+
+msgid "Captcha Secret Key"
+msgstr ""
+
+msgid "Security Check"
+msgstr ""
+
+msgid "Please verify you are human."
+msgstr ""
+
+msgid "I am not a robot"
+msgstr ""
+
+msgid "Verify"
+msgstr ""
+
+msgid "Back"
+msgstr ""
+
+msgid "Next"
+msgstr ""
+
+msgid "Submit"
+msgstr ""
+
+msgid "Thank you!"
+msgstr ""
+
+msgid "Your submission has been received."
+msgstr ""
