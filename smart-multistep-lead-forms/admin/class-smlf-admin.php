@@ -109,6 +109,15 @@ class SMLF_Admin {
 		);
 	}
 
+	public function register_settings() {
+		register_setting( 'smlf_options_group', 'smlf_admin_email' );
+		register_setting( 'smlf_options_group', 'smlf_enable_partial' );
+		register_setting( 'smlf_options_group', 'smlf_webhook_url' );
+		register_setting( 'smlf_options_group', 'smlf_captcha_method' );
+		register_setting( 'smlf_options_group', 'smlf_captcha_site_key' );
+		register_setting( 'smlf_options_group', 'smlf_captcha_secret_key' );
+	}
+
 	public function display_forms_page() {
 		require_once plugin_dir_path( __FILE__ ) . 'views/smlf-forms-list.php';
 		$this->render_footer();

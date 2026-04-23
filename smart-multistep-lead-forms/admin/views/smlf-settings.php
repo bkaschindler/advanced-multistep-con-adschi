@@ -58,13 +58,3 @@
 		<?php submit_button(); ?>
 	</form>
 </div>
-
-<?php
-add_action( 'admin_init', function() {
-	register_setting( 'smlf_options_group', 'smlf_admin_email' );
-	register_setting( 'smlf_options_group', 'smlf_enable_partial' );
-	register_setting( 'smlf_options_group', 'smlf_webhook_url' );
-	register_setting( 'smlf_options_group', 'smlf_captcha_method' );
-	register_setting( 'smlf_options_group', 'smlf_captcha_site_key' );
-	register_setting( 'smlf_options_group', 'smlf_captcha_secret_key' );
-});
