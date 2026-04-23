@@ -39,9 +39,23 @@ class SMLF_Admin {
 	}
 
 	public function add_plugin_admin_menu() {
+		global $wpdb;
+		$last_viewed_lead = intval( get_option( 'smlf_last_viewed_lead_id', 0 ) );
+		$table_name = $wpdb->prefix . 'smlf_leads';
+		$new_leads_count = $wpdb->get_var( $wpdb->prepare( "SELECT COUNT(id) FROM $table_name WHERE id > %d AND status='completed'", $last_viewed_lead ) );
+
+		$menu_title = __( 'Smart Forms', 'smart-multistep-lead-forms' );
+		$leads_title = __( 'Leads', 'smart-multistep-lead-forms' );
+
+		if ( $new_leads_count > 0 ) {
+			$badge = ' <span class="update-plugins count-' . esc_attr($new_leads_count) . '"><span class="plugin-count">' . esc_html($new_leads_count) . '</span></span>';
+			$menu_title .= $badge;
+			$leads_title .= $badge;
+		}
+
 		add_menu_page(
 			__( 'Smart Forms', 'smart-multistep-lead-forms' ),
-			__( 'Smart Forms', 'smart-multistep-lead-forms' ),
+			$menu_title,
 			'manage_options',
 			'smlf-forms',
 			array( $this, 'display_forms_page' ),
@@ -70,7 +84,7 @@ class SMLF_Admin {
 		add_submenu_page(
 			'smlf-forms',
 			__( 'Leads', 'smart-multistep-lead-forms' ),
-			__( 'Leads', 'smart-multistep-lead-forms' ),
+			$leads_title,
 			'manage_options',
 			'smlf-leads',
 			array( $this, 'display_leads_page' )

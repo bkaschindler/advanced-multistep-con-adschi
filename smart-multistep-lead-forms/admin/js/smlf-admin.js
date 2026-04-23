@@ -10,6 +10,12 @@ jQuery(document).ready(function($) {
 					<span>Step ${stepCounter}</span>
 					<button class="button smlf-remove-step">Remove</button>
 				</div>
+					<div class="smlf-step-logic" style="margin-bottom:10px; padding:5px; background:#e9f0f5; border:1px solid #ccd0d4;">
+						<label style="font-size: 12px;">Condition: Go to Step
+							<input type="number" class="smlf-logic-target" style="width:50px" placeholder="#">
+							if answer equals <input type="text" class="smlf-logic-value" placeholder="Option name">
+						</label>
+					</div>
 				<div class="smlf-fields-dropzone"></div>
 			</div>
 		`;
@@ -37,12 +43,17 @@ jQuery(document).ready(function($) {
 			receive: function(event, ui) {
 				const type = ui.helper.data('type');
 				const text = ui.helper.text();
+				let optionsHtml = '';
+				if (type === 'cards' || type === 'radio') {
+					optionsHtml = `<label style="display:block;margin-top:5px;">Options (comma separated): <input type="text" class="field-options" value="Option 1, Option 2" style="width:100%"></label>`;
+				}
 				const fieldHtml = `
 					<div class="smlf-field-item" data-type="${type}" style="background:#fff; border:1px solid #ddd; padding:10px; margin-bottom:5px;">
 						<strong>${text}</strong>
 						<button class="button-link smlf-remove-field" style="float:right; color:red;">x</button>
 						<div class="smlf-field-settings" style="margin-top:10px;">
 							<label>Label: <input type="text" class="field-label" value="${text}"></label>
+							${optionsHtml}
 						</div>
 					</div>
 				`;
@@ -70,14 +81,24 @@ jQuery(document).ready(function($) {
 
 		$('.smlf-step').each(function() {
 			const stepId = $(this).data('step');
+			const logicTarget = $(this).find('.smlf-logic-target').val();
+			const logicValue = $(this).find('.smlf-logic-value').val();
 			const fields = [];
 			$(this).find('.smlf-field-item').each(function() {
+				const type = $(this).data('type');
+				const options = (type === 'cards' || type === 'radio') ? $(this).find('.field-options').val() : '';
 				fields.push({
-					type: $(this).data('type'),
-					label: $(this).find('.field-label').val()
+					type: type,
+					label: $(this).find('.field-label').val(),
+					options: options
 				});
 			});
-			steps.push({ step_id: stepId, fields: fields });
+			steps.push({
+				step_id: stepId,
+				logic_target: logicTarget,
+				logic_value: logicValue,
+				fields: fields
+			});
 		});
 
 		const formData = {

@@ -20,9 +20,25 @@ class SMLF_Public {
 	public function enqueue_scripts() {
 		wp_enqueue_script( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'js/smlf-public.js', array( 'jquery' ), $this->version, true );
 
+		$captcha_method = get_option('smlf_captcha_method', 'custom');
+		$site_key       = get_option('smlf_captcha_site_key', '');
+
+		if ($captcha_method === 'recaptcha_v2' || $captcha_method === 'recaptcha_v3') {
+			$recaptcha_url = 'https://www.google.com/recaptcha/api.js';
+			if ($captcha_method === 'recaptcha_v3') {
+				$recaptcha_url .= '?render=' . esc_attr($site_key);
+			}
+			wp_enqueue_script( 'smlf-recaptcha', $recaptcha_url, array(), null, true );
+		}
+
+		if ($captcha_method === 'turnstile') {
+			wp_enqueue_script( 'smlf-turnstile', 'https://challenges.cloudflare.com/turnstile/v0/api.js', array(), null, true );
+		}
+
 		wp_localize_script( $this->plugin_name, 'smlf_public_obj', array(
-			'ajax_url' => admin_url( 'admin-ajax.php' ),
-			'nonce'    => wp_create_nonce( 'smlf_public_nonce' )
+			'ajax_url'       => admin_url( 'admin-ajax.php' ),
+			'captcha_method' => $captcha_method,
+			'site_key'       => $site_key
 		) );
 	}
 

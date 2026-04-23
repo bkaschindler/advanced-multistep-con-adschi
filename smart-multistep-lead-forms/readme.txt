@@ -3,7 +3,7 @@ Contributors: mohammadbabaei
 Tags: forms, multistep, ajax, leads, drag and drop
 Requires at least: 5.0
 Tested up to: 6.4
-Stable tag: 1.0.0
+Stable tag: 1.1.0
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -37,6 +37,13 @@ Features:
 Yes, the plugin auto-detects language direction and supports RTL.
 
 == Changelog ==
+
+= 1.1.0 =
+* Added Webhook integrations.
+* Added multiple Captcha options (Google reCAPTCHA v2/v3, Cloudflare Turnstile).
+* Added conditional logic for steps.
+* Added CSV Export for leads.
+* Added filters in leads list.
 
 = 1.0.0 =
 * Initial release.
