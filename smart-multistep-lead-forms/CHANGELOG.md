@@ -1,6 +1,10 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [1.2.3] - 2026-04-27
+### Fixed
+- Added server-side initial display states so Divi or deferred JavaScript does not leave only the form shell visible.
+
 ## [1.2.2] - 2026-04-27
 ### Fixed
 - Improved embedded frontend form layout so captcha gates do not collapse or disrupt page content.

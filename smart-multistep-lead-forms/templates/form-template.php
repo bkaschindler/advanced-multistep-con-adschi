@@ -3,10 +3,11 @@
 	<?php
 	$captcha_method          = $settings['captcha_method'];
 	$site_key                = sanitize_text_field( get_option( 'smlf_captcha_site_key', '' ) );
+	$show_initial_gate       = 'none' !== $captcha_method && 'before_form' === $settings['captcha_gate'];
 	?>
 	<!-- Anti-bot Gate -->
 	<?php if ($captcha_method !== 'none') : ?>
-	<div class="smlf-anti-bot-overlay smlf-anti-bot-gate" <?php echo 'before_form' === $settings['captcha_gate'] ? '' : 'style="display:none;"'; ?>>
+	<div class="smlf-anti-bot-overlay smlf-anti-bot-gate" style="<?php echo $show_initial_gate ? 'display:flex;' : 'display:none;'; ?>">
 		<div class="smlf-anti-bot-modal">
 			<h3><?php esc_html_e( 'Security Check', 'smart-multistep-lead-forms' ); ?></h3>
 			<p><?php esc_html_e( 'Please verify you are human.', 'smart-multistep-lead-forms' ); ?></p>
@@ -27,12 +28,12 @@
 	<?php endif; ?>
 
 	<!-- Progress Bar -->
-	<div class="smlf-progress-bar-container" style="display:none;">
+	<div class="smlf-progress-bar-container" style="<?php echo $show_initial_gate ? 'display:none;' : 'display:block;'; ?>">
 		<div class="smlf-progress-bar" style="width: 0%;"></div>
 	</div>
 
 	<!-- Form Steps -->
-	<form class="smlf-form-actual" style="display:none;" enctype="multipart/form-data">
+	<form class="smlf-form-actual" style="<?php echo $show_initial_gate ? 'display:none;' : 'display:block;'; ?>" enctype="multipart/form-data">
 		<?php if ( ! empty( $steps ) ) : ?>
 			<?php foreach ( $steps as $index => $step ) : ?>
 				<div class="smlf-form-step" data-step-id="<?php echo esc_attr( $step['step_id'] ); ?>" data-step-index="<?php echo esc_attr( $index ); ?>" data-terminal="<?php echo esc_attr( isset( $step['terminal'] ) ? $step['terminal'] : '' ); ?>" data-logic-target="<?php echo esc_attr( isset($step['logic_target']) ? $step['logic_target'] : '' ); ?>" data-logic-value="<?php echo esc_attr( isset($step['logic_value']) ? $step['logic_value'] : '' ); ?>" <?php if($index > 0) echo 'style="display:none;"'; ?>>
