@@ -34,12 +34,14 @@ jQuery(document).ready(function($) {
 						verifiedCaptchaToken = response.data && response.data.captcha_token ? response.data.captcha_token : token;
 						customVerified = customState || customVerified;
 						if (pendingSubmitButton) {
-							$wrapper.find('.smlf-anti-bot-overlay').fadeOut(180);
+							$wrapper.find('.smlf-anti-bot-overlay').hide();
 							const $button = pendingSubmitButton;
 							pendingSubmitButton = null;
 							submitForm($button);
 						} else if (pendingStepIndex !== null) {
-							$wrapper.find('.smlf-anti-bot-overlay').fadeOut(180);
+							$wrapper.find('.smlf-anti-bot-overlay').hide();
+							$wrapper.find('.smlf-progress-bar-container').show();
+							$form.show();
 							showStep(pendingStepIndex);
 							pendingStepIndex = null;
 						} else {
@@ -56,12 +58,11 @@ jQuery(document).ready(function($) {
 		});
 
 		function revealForm() {
-			$wrapper.find('.smlf-anti-bot-overlay').fadeOut(300, function() {
-				$wrapper.find('.smlf-progress-bar-container').fadeIn();
-				$form.fadeIn();
-				$wrapper.addClass('smlf-is-ready');
-				updateProgress();
-			});
+			$wrapper.find('.smlf-anti-bot-overlay').hide();
+			$wrapper.find('.smlf-progress-bar-container').fadeIn();
+			$form.fadeIn();
+			$wrapper.addClass('smlf-is-ready');
+			updateProgress();
 		}
 
 		function getCaptchaToken(callback) {
@@ -139,6 +140,8 @@ jQuery(document).ready(function($) {
 
 		function requestCaptchaForStep(index) {
 			pendingStepIndex = index;
+			$form.hide();
+			$wrapper.find('.smlf-progress-bar-container').hide();
 			$wrapper.find('.smlf-anti-bot-overlay').fadeIn(180);
 		}
 
@@ -369,6 +372,8 @@ jQuery(document).ready(function($) {
 			if (captchaMethod !== 'none' && captchaGate === 'before_submit' && !verifiedCaptchaToken) {
 				pendingStepIndex = null;
 				pendingSubmitButton = $btn;
+				$form.hide();
+				$wrapper.find('.smlf-progress-bar-container').hide();
 				$wrapper.find('.smlf-anti-bot-overlay').fadeIn(180);
 				return;
 			}

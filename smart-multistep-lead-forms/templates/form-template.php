@@ -4,9 +4,9 @@
 	$captcha_method          = $settings['captcha_method'];
 	$site_key                = sanitize_text_field( get_option( 'smlf_captcha_site_key', '' ) );
 	?>
-	<!-- Anti-bot Overlay -->
+	<!-- Anti-bot Gate -->
 	<?php if ($captcha_method !== 'none') : ?>
-	<div class="smlf-anti-bot-overlay" <?php echo 'before_form' === $settings['captcha_gate'] ? '' : 'style="display:none;"'; ?>>
+	<div class="smlf-anti-bot-overlay smlf-anti-bot-gate" <?php echo 'before_form' === $settings['captcha_gate'] ? '' : 'style="display:none;"'; ?>>
 		<div class="smlf-anti-bot-modal">
 			<h3><?php esc_html_e( 'Security Check', 'smart-multistep-lead-forms' ); ?></h3>
 			<p><?php esc_html_e( 'Please verify you are human.', 'smart-multistep-lead-forms' ); ?></p>

@@ -1,6 +1,11 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [1.2.2] - 2026-04-27
+### Fixed
+- Improved embedded frontend form layout so captcha gates do not collapse or disrupt page content.
+- Reduced CSS conflicts with WordPress themes and page builders.
+
 ## [1.2.1] - 2026-04-27
 ### Fixed
 - Builder blocks now support both click-to-add and drag-and-drop reliably.

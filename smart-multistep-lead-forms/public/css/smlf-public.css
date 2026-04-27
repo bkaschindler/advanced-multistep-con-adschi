@@ -1,11 +1,12 @@
 .smlf-form-wrapper {
 	box-sizing: border-box;
 	position: relative;
-	width: min(100%, 720px);
+	display: block;
+	width: 100%;
 	max-width: 720px;
-	min-height: 260px;
-	margin: 24px auto;
-	padding: 34px;
+	min-height: 0;
+	margin: 24px 0;
+	padding: 28px;
 	border: 1px solid rgba(17, 24, 39, 0.08);
 	border-radius: 18px;
 	background:
@@ -15,7 +16,7 @@
 	box-shadow: 0 24px 70px rgba(15, 23, 42, 0.14);
 	font-family: inherit;
 	overflow: visible;
-	perspective: 1100px;
+	perspective: none;
 	isolation: isolate;
 	contain: layout style;
 	clear: both;
@@ -40,15 +41,15 @@
 }
 
 .smlf-anti-bot-overlay {
-	position: absolute;
-	inset: 0;
+	position: relative;
 	display: flex;
 	align-items: center;
 	justify-content: center;
-	padding: 24px;
-	background: rgba(248, 250, 252, 0.78);
-	backdrop-filter: blur(10px);
-	z-index: 10;
+	width: 100%;
+	min-height: 220px;
+	padding: 18px;
+	background: rgba(248, 250, 252, 0.72);
+	z-index: 1;
 }
 
 .smlf-anti-bot-overlay label,
@@ -68,16 +69,15 @@
 
 .smlf-anti-bot-modal {
 	width: min(100%, 420px);
-	padding: 28px;
+	padding: 24px;
 	border: 1px solid rgba(15, 23, 42, 0.08);
 	border-radius: 16px;
 	background: rgba(255, 255, 255, 0.94);
 	box-shadow: 0 22px 48px rgba(15, 23, 42, 0.16);
 	text-align: center;
-	transform: rotateX(0deg) translateZ(20px);
 	animation: smlf-pop 420ms ease both;
 	position: relative;
-	z-index: 11;
+	z-index: 2;
 }
 
 .smlf-progress-bar-container {
@@ -344,8 +344,8 @@
 
 @media (max-width: 640px) {
 	.smlf-form-wrapper {
-		margin: 12px auto;
-		padding: 22px;
+		margin: 12px 0;
+		padding: 18px;
 		border-radius: 16px;
 	}
 

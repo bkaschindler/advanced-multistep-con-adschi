@@ -4,7 +4,7 @@ Tags: forms, multistep, ajax, leads, drag and drop
 Requires at least: 5.9
 Requires PHP: 7.4
 Tested up to: 6.9.1
-Stable tag: 1.2.1
+Stable tag: 1.2.2
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -61,6 +61,10 @@ Yes, the plugin loads RTL styles when WordPress is running in RTL mode.
 Yes. CSV export requires `manage_options` and a valid export nonce.
 
 == Changelog ==
+
+= 1.2.2 =
+* Improved embedded form layout and captcha gate rendering on frontend pages.
+* Reduced layout conflicts with WordPress themes and page builders.
 
 = 1.2.1 =
 * Fixed builder block click/drag handling and live preview rendering.
