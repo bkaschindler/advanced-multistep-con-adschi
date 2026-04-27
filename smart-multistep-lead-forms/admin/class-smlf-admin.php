@@ -110,12 +110,27 @@ class SMLF_Admin {
 	}
 
 	public function register_settings() {
-		register_setting( 'smlf_options_group', 'smlf_admin_email' );
-		register_setting( 'smlf_options_group', 'smlf_enable_partial' );
-		register_setting( 'smlf_options_group', 'smlf_webhook_url' );
-		register_setting( 'smlf_options_group', 'smlf_captcha_method' );
-		register_setting( 'smlf_options_group', 'smlf_captcha_site_key' );
-		register_setting( 'smlf_options_group', 'smlf_captcha_secret_key' );
+		register_setting( 'smlf_options_group', 'smlf_admin_email', array( 'sanitize_callback' => array( $this, 'sanitize_email_option' ) ) );
+		register_setting( 'smlf_options_group', 'smlf_enable_partial', array( 'sanitize_callback' => array( $this, 'sanitize_checkbox_option' ) ) );
+		register_setting( 'smlf_options_group', 'smlf_webhook_url', array( 'sanitize_callback' => 'esc_url_raw' ) );
+		register_setting( 'smlf_options_group', 'smlf_captcha_method', array( 'sanitize_callback' => array( $this, 'sanitize_captcha_method' ) ) );
+		register_setting( 'smlf_options_group', 'smlf_captcha_site_key', array( 'sanitize_callback' => 'sanitize_text_field' ) );
+		register_setting( 'smlf_options_group', 'smlf_captcha_secret_key', array( 'sanitize_callback' => 'sanitize_text_field' ) );
+	}
+
+	public function sanitize_email_option( $value ) {
+		$email = sanitize_email( $value );
+		return is_email( $email ) ? $email : get_option( 'admin_email' );
+	}
+
+	public function sanitize_checkbox_option( $value ) {
+		return ! empty( $value ) ? 1 : 0;
+	}
+
+	public function sanitize_captcha_method( $value ) {
+		$value   = sanitize_key( $value );
+		$allowed = array( 'none', 'custom', 'recaptcha_v2', 'recaptcha_v3', 'turnstile' );
+		return in_array( $value, $allowed, true ) ? $value : 'custom';
 	}
 
 	public function display_forms_page() {

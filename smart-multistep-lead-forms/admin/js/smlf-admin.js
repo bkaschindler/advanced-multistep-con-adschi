@@ -1,42 +1,163 @@
 jQuery(document).ready(function($) {
 	let stepCounter = 1;
 
-	// Add step
+	function addStep(stepData) {
+		const data = stepData || {};
+		const stepId = parseInt(data.step_id || stepCounter, 10);
+		const stepTitle = data.title || 'Step ' + stepId;
+
+		const $step = $('<div/>', {
+			'class': 'smlf-step',
+			'data-step': stepId
+		});
+
+		const $header = $('<div/>', { 'class': 'smlf-step-header' });
+		$header.append($('<span/>', { 'class': 'step-title-display', text: 'Step ' + stepId }));
+		$header.append($('<input/>', {
+			type: 'text',
+			'class': 'smlf-step-title-input',
+			value: stepTitle,
+			css: { marginLeft: '10px', width: '200px' }
+		}));
+		$header.append($('<button/>', {
+			'class': 'button smlf-remove-step',
+			text: 'Remove'
+		}));
+
+		const $logic = $('<div/>', {
+			'class': 'smlf-step-logic',
+			css: {
+				marginBottom: '10px',
+				padding: '5px',
+				background: '#e9f0f5',
+				border: '1px solid #ccd0d4'
+			}
+		});
+		const $logicLabel = $('<label/>', { css: { fontSize: '12px' }, text: 'Condition: Go to Step ' });
+		$logicLabel.append($('<input/>', {
+			type: 'number',
+			'class': 'smlf-logic-target',
+			value: data.logic_target || '',
+			placeholder: '#',
+			css: { width: '50px' }
+		}));
+		$logicLabel.append(document.createTextNode(' if answer equals '));
+		$logicLabel.append($('<input/>', {
+			type: 'text',
+			'class': 'smlf-logic-value',
+			value: data.logic_value || '',
+			placeholder: 'Option name'
+		}));
+		$logic.append($logicLabel);
+		const $terminalLabel = $('<label/>', {
+			text: ' End step with reset button',
+			css: { display: 'block', marginTop: '8px', fontSize: '12px' }
+		});
+		$terminalLabel.prepend($('<input/>', {
+			type: 'checkbox',
+			'class': 'smlf-step-terminal',
+			checked: data.terminal === 'reset'
+		}));
+		$logic.append($terminalLabel);
+
+		$step.append($header, $logic, $('<div/>', { 'class': 'smlf-fields-dropzone' }));
+		$('#smlf-steps-container').append($step);
+
+		if (Array.isArray(data.fields)) {
+			data.fields.forEach(function(field) {
+				$step.find('.smlf-fields-dropzone').append(createFieldItem(field));
+			});
+		}
+
+		stepCounter = Math.max(stepCounter, stepId + 1);
+		initSortable();
+	}
+
+	function createFieldItem(fieldData) {
+		const data = fieldData || {};
+		const type = data.type || 'text';
+		const label = data.label || type;
+		const fieldId = data.field_id || '';
+
+		const $item = $('<div/>', {
+			'class': 'smlf-field-item',
+			'data-type': type,
+			'data-field-id': fieldId,
+			css: {
+				background: '#fff',
+				border: '1px solid #ddd',
+				padding: '10px',
+				marginBottom: '5px'
+			}
+		});
+
+		$item.append($('<strong/>', { text: label }));
+		$item.append($('<button/>', {
+			'class': 'button-link smlf-remove-field',
+			text: 'x',
+			css: { float: 'right', color: 'red' }
+		}));
+
+		const $settings = $('<div/>', {
+			'class': 'smlf-field-settings',
+			css: { marginTop: '10px' }
+		});
+		const $label = $('<label/>', { text: 'Label: ' });
+		$label.append($('<input/>', {
+			type: 'text',
+			'class': 'field-label',
+			value: label
+		}));
+		$settings.append($label);
+
+		const $requiredLabel = $('<label/>', {
+			text: ' Required',
+			css: { display: 'block', marginTop: '5px' }
+		});
+		$requiredLabel.prepend($('<input/>', {
+			type: 'checkbox',
+			'class': 'field-required',
+			checked: !!parseInt(data.required || 0, 10)
+		}));
+		$settings.append($requiredLabel);
+
+		if (type === 'cards' || type === 'radio') {
+			const $optionsLabel = $('<label/>', {
+				text: 'Options (comma separated): ',
+				css: { display: 'block', marginTop: '5px' }
+			});
+			$optionsLabel.append($('<input/>', {
+				type: 'text',
+				'class': 'field-options',
+				value: data.options || 'Option 1, Option 2',
+				css: { width: '100%' }
+			}));
+			$settings.append($optionsLabel);
+		}
+
+		if (type === 'message') {
+			$item.find('.field-required').closest('label').hide();
+		}
+
+		$item.append($settings);
+		return $item;
+	}
+
 	$('#smlf-add-step').on('click', function(e) {
 		e.preventDefault();
-		const stepHtml = `
-			<div class="smlf-step" data-step="${stepCounter}">
-				<div class="smlf-step-header">
-						<span class="step-title-display">Step ${stepCounter}</span>
-						<input type="text" class="smlf-step-title-input" value="Step ${stepCounter}" style="margin-left: 10px; width: 200px;">
-					<button class="button smlf-remove-step">Remove</button>
-				</div>
-					<div class="smlf-step-logic" style="margin-bottom:10px; padding:5px; background:#e9f0f5; border:1px solid #ccd0d4;">
-						<label style="font-size: 12px;">Condition: Go to Step
-							<input type="number" class="smlf-logic-target" style="width:50px" placeholder="#">
-							if answer equals <input type="text" class="smlf-logic-value" placeholder="Option name">
-						</label>
-					</div>
-				<div class="smlf-fields-dropzone"></div>
-			</div>
-		`;
-		$('#smlf-steps-container').append(stepHtml);
-		initSortable();
-		stepCounter++;
+		addStep();
 	});
 
-	// Remove step
 	$(document).on('click', '.smlf-remove-step', function(e) {
 		e.preventDefault();
 		$(this).closest('.smlf-step').remove();
 	});
 
-	// Init Draggable & Sortable
 	function initSortable() {
 		$('.smlf-draggable-blocks li').draggable({
-			connectToSortable: ".smlf-fields-dropzone",
-			helper: "clone",
-			revert: "invalid"
+			connectToSortable: '.smlf-fields-dropzone',
+			helper: 'clone',
+			revert: 'invalid'
 		});
 
 		$('.smlf-fields-dropzone').sortable({
@@ -44,22 +165,11 @@ jQuery(document).ready(function($) {
 			receive: function(event, ui) {
 				const type = ui.helper.data('type');
 				const text = ui.helper.text();
-				let optionsHtml = '';
-				if (type === 'cards' || type === 'radio') {
-					optionsHtml = `<label style="display:block;margin-top:5px;">Options (comma separated): <input type="text" class="field-options" value="Option 1, Option 2" style="width:100%"></label>`;
-				}
-				const fieldHtml = `
-					<div class="smlf-field-item" data-type="${type}" style="background:#fff; border:1px solid #ddd; padding:10px; margin-bottom:5px;">
-						<strong>${text}</strong>
-						<button class="button-link smlf-remove-field" style="float:right; color:red;">x</button>
-						<div class="smlf-field-settings" style="margin-top:10px;">
-							<label>Label: <input type="text" class="field-label" value="${text}"></label>
-							${optionsHtml}
-						</div>
-					</div>
-				`;
-				// Replace the cloned helper with the actual field UI
-				ui.helper.replaceWith(fieldHtml);
+				ui.helper.replaceWith(createFieldItem({
+					type: type,
+					label: text,
+					required: type === 'email' ? 1 : 0
+				}));
 			}
 		});
 	}
@@ -69,114 +179,77 @@ jQuery(document).ready(function($) {
 		$(this).closest('.smlf-field-item').remove();
 	});
 
-	// Load existing form or add initial step
-	if (typeof smlf_existing_form_data !== 'undefined' && smlf_existing_form_data.steps && smlf_existing_form_data.steps.length > 0) {
-		smlf_existing_form_data.steps.forEach(function(step) {
-			const stepId = step.step_id || stepCounter;
-			const logicTarget = step.logic_target || '';
-			const logicValue = step.logic_value || '';
-			const stepTitle = step.title || `Step ${stepId}`;
-			const stepHtml = `
-				<div class="smlf-step" data-step="${stepId}">
-					<div class="smlf-step-header">
-						<span class="step-title-display">Step ${stepId}</span>
-						<input type="text" class="smlf-step-title-input" value="${stepTitle}" style="margin-left: 10px; width: 200px;">
-						<button class="button smlf-remove-step">Remove</button>
-					</div>
-					<div class="smlf-step-logic" style="margin-bottom:10px; padding:5px; background:#e9f0f5; border:1px solid #ccd0d4;">
-						<label style="font-size: 12px;">Condition: Go to Step
-							<input type="number" class="smlf-logic-target" style="width:50px" value="${logicTarget}" placeholder="#">
-							if answer equals <input type="text" class="smlf-logic-value" value="${logicValue}" placeholder="Option name">
-						</label>
-					</div>
-					<div class="smlf-fields-dropzone"></div>
-				</div>
-			`;
-			$('#smlf-steps-container').append(stepHtml);
-			const $dropzone = $('#smlf-steps-container .smlf-step').last().find('.smlf-fields-dropzone');
-
-			if (step.fields && step.fields.length > 0) {
-				step.fields.forEach(function(field) {
-					let optionsHtml = '';
-					if (field.type === 'cards' || field.type === 'radio') {
-						optionsHtml = `<label style="display:block;margin-top:5px;">Options (comma separated): <input type="text" class="field-options" value="${field.options || ''}" style="width:100%"></label>`;
-					}
-					const fieldHtml = `
-						<div class="smlf-field-item" data-type="${field.type}" style="background:#fff; border:1px solid #ddd; padding:10px; margin-bottom:5px;">
-							<strong>${field.type}</strong>
-							<button class="button-link smlf-remove-field" style="float:right; color:red;">x</button>
-							<div class="smlf-field-settings" style="margin-top:10px;">
-								<label>Label: <input type="text" class="field-label" value="${field.label}"></label>
-								${optionsHtml}
-							</div>
-						</div>
-					`;
-					$dropzone.append(fieldHtml);
-				});
-			}
-			stepCounter++;
+	if (typeof window.smlf_existing_form_data !== 'undefined' && Array.isArray(window.smlf_existing_form_data.steps) && window.smlf_existing_form_data.steps.length > 0) {
+		$('#smlf-form-title').val(window.smlf_existing_form_data.title || 'New Form');
+		window.smlf_existing_form_data.steps.forEach(function(step) {
+			addStep(step);
 		});
-		initSortable();
-	} else {
-		// Add initial step
-		if ($('#smlf-steps-container').length > 0) {
-			$('#smlf-add-step').trigger('click');
-		}
+	} else if ($('#smlf-steps-container').length > 0) {
+		addStep();
 	}
 
-	// Save Form via AJAX
 	$('#smlf-save-form').on('click', function(e) {
 		e.preventDefault();
+
 		const title = $('#smlf-form-title').val();
 		const steps = [];
 
 		$('.smlf-step').each(function() {
-			const stepId = $(this).data('step');
-			const stepTitle = $(this).find('.smlf-step-title-input').val();
-			const logicTarget = $(this).find('.smlf-logic-target').val();
-			const logicValue = $(this).find('.smlf-logic-value').val();
+			const $step = $(this);
 			const fields = [];
-			$(this).find('.smlf-field-item').each(function() {
-				const type = $(this).data('type');
-				const options = (type === 'cards' || type === 'radio') ? $(this).find('.field-options').val() : '';
+
+			$step.find('.smlf-field-item').each(function(index) {
+				const $field = $(this);
+				const type = $field.data('type');
+				const existingId = $field.data('field-id');
+
 				fields.push({
+					field_id: existingId || 'field_' + $step.data('step') + '_' + (index + 1),
 					type: type,
-					label: $(this).find('.field-label').val(),
-					options: options
+					label: $field.find('.field-label').val(),
+					options: (type === 'cards' || type === 'radio') ? $field.find('.field-options').val() : '',
+					required: $field.find('.field-required').is(':checked') ? 1 : 0
 				});
 			});
+
 			steps.push({
-				step_id: stepId,
-				title: stepTitle,
-				logic_target: logicTarget,
-				logic_value: logicValue,
+				step_id: $step.data('step'),
+				title: $step.find('.smlf-step-title-input').val(),
+				logic_target: $step.find('.smlf-logic-target').val(),
+				logic_value: $step.find('.smlf-logic-value').val(),
+				terminal: $step.find('.smlf-step-terminal').is(':checked') ? 'reset' : '',
 				fields: fields
 			});
 		});
 
-		const formData = {
-			title: title,
-			steps: steps
-		};
-
-		// Parse ID from URL if editing
 		const urlParams = new URLSearchParams(window.location.search);
-		const formId = urlParams.get('id');
+		const formId = urlParams.get('id') || (window.smlf_existing_form_data ? window.smlf_existing_form_data.id : 0);
+		const $button = $(this);
+
+		$button.prop('disabled', true);
 
 		$.post(smlf_admin_obj.ajax_url, {
 			action: 'smlf_save_form_admin',
 			nonce: smlf_admin_obj.nonce,
 			form_id: formId,
-			form_data: JSON.stringify(formData)
-		}, function(response) {
+			form_data: JSON.stringify({
+				title: title,
+				steps: steps
+			})
+		}).done(function(response) {
 			if (response.success) {
 				alert(smlf_admin_obj.i18n.save_success);
 				if (!formId && response.data.form_id) {
 					window.location.href = window.location.href + '&id=' + response.data.form_id;
 				}
-			} else {
-				alert(smlf_admin_obj.i18n.save_error);
+				return;
 			}
+
+			alert((response.data && response.data.message) || smlf_admin_obj.i18n.save_error);
+		}).fail(function() {
+			alert(smlf_admin_obj.i18n.save_error);
+		}).always(function() {
+			$button.prop('disabled', false);
 		});
 	});
 });

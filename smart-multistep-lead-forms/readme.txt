@@ -1,49 +1,81 @@
 === Smart MultiStep Lead Forms ===
 Contributors: mohammadbabaei
 Tags: forms, multistep, ajax, leads, drag and drop
-Requires at least: 5.0
-Tested up to: 6.4
-Stable tag: 1.1.0
+Requires at least: 5.9
+Requires PHP: 7.4
+Tested up to: 6.9.1
+Stable tag: 1.2.0
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
-A modern, fast, visual drag-and-drop multi-step form builder for WordPress with AJAX submission and partial lead auto-saving.
+A visual multi-step lead form builder for WordPress with AJAX submission, partial lead saving, captcha options, webhooks, email notifications, and CSV export.
 
 == Description ==
 
-Smart MultiStep Lead Forms is a premium-quality WordPress plugin designed to boost conversions. Create beautiful, multi-step AJAX forms with a visual drag-and-drop builder.
-It supports auto-saving partial leads, an elegant anti-bot system, and comes with real-time validation.
+Smart MultiStep Lead Forms lets site owners create shortcode-based, multi-step lead forms from the WordPress admin area. Forms can be embedded with `[smlf_form id="123"]`, submitted without a page reload, and saved as partial leads when important fields are entered.
 
 Features:
-* Unlimited forms and steps.
-* Visual drag-and-drop form builder.
-* Partial auto-save of user data (never lose a lead).
-* AJAX submissions without page reload.
-* Beautiful anti-bot verification modal.
-* Admin and User email notifications.
-* Email logging.
-* RTL and Multilingual support.
+* Unlimited shortcode forms and steps.
+* Drag-and-drop form builder with edit support.
+* Text, email, phone, long text, message, card, radio, and drag-and-drop file upload fields.
+* Ready-made localized free consultation form template created on activation.
+* Modern animated frontend theme with lightweight 3D card interactions.
+* Required/email validation in the browser and sanitized server-side processing.
+* Partial lead auto-save when enabled.
+* AJAX final submission with server-side captcha verification.
+* Captcha options: none, custom checkbox, Google reCAPTCHA v2/v3, and Cloudflare Turnstile.
+* Admin and user email notifications with email logs.
+* Webhook delivery for partial and completed leads.
+* CSV export for leads with nonce and capability checks.
+* RTL and translation-file support.
 * Developed by Mohammad Babaei (https://adschi.com)
 
 == Installation ==
 
-1. Upload the plugin files to the `/wp-content/plugins/smart-multistep-lead-forms` directory, or install the plugin through the WordPress plugins screen directly.
-2. Activate the plugin through the 'Plugins' screen in WordPress.
-3. Use the Smart Forms menu to create your first form.
+1. Upload the plugin files to `/wp-content/plugins/smart-multistep-lead-forms`, or install the plugin through the WordPress plugins screen.
+2. Activate the plugin through the Plugins screen in WordPress.
+3. Open Smart Forms, create a form, and copy its shortcode.
+4. Add the shortcode to a page or post, for example: `[smlf_form id="123"]`.
+
+== Settings ==
+
+* Admin Notification Email: address that receives completed lead notifications.
+* Enable Partial Lead Saving: saves started/partial leads before final submit.
+* Webhook URL: receives JSON payloads for `smlf_lead_partial` and `smlf_lead_completed`.
+* Anti-bot / Captcha Method: choose none, custom checkbox, reCAPTCHA v2/v3, or Turnstile.
+* Captcha Site Key and Secret Key: required for third-party captcha providers.
+
+Webhook payload example:
+
+`{"event":"smlf_lead_completed","lead_id":10,"form_id":3,"data":{"smlf_field_email":"person@example.com"}}`
 
 == Frequently Asked Questions ==
 
+= How do I embed a form? =
+Use the shortcode shown in Smart Forms, such as `[smlf_form id="123"]`.
+
 = Does it support RTL? =
-Yes, the plugin auto-detects language direction and supports RTL.
+Yes, the plugin loads RTL styles when WordPress is running in RTL mode.
+
+= Does CSV export require admin access? =
+Yes. CSV export requires `manage_options` and a valid export nonce.
 
 == Changelog ==
 
+= 1.2.0 =
+* Added animated consultation-ready frontend theme.
+* Added default localized free consultation form template.
+* Added textarea, message, and drag-and-drop file upload fields.
+* Added automatic partial save only after valid email input.
+* Added lead detail/file preview in the admin leads list.
+
 = 1.1.0 =
-* Added Webhook integrations.
-* Added multiple Captcha options (Google reCAPTCHA v2/v3, Cloudflare Turnstile).
-* Added conditional logic for steps.
-* Added CSV Export for leads.
-* Added filters in leads list.
+* Hardened AJAX form save, partial lead save, final submit, captcha verification, and CSV export.
+* Fixed editing existing forms in the builder.
+* Added stable field IDs and required-field metadata while preserving existing form data.
+* Added frontend required/email validation and safer AJAX error handling.
+* Added settings sanitization and nonce-protected CSV export.
+* Documented shortcode usage, captcha settings, webhook payloads, and compatibility targets.
 
 = 1.0.0 =
 * Initial release.

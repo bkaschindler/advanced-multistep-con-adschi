@@ -20,15 +20,17 @@ class SMLF_Public {
 	public function enqueue_scripts() {
 		wp_enqueue_script( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'js/smlf-public.js', array( 'jquery' ), $this->version, true );
 
-		$captcha_method = get_option('smlf_captcha_method', 'custom');
-		$site_key       = get_option('smlf_captcha_site_key', '');
+		$allowed_methods = array( 'none', 'custom', 'recaptcha_v2', 'recaptcha_v3', 'turnstile' );
+		$captcha_method  = sanitize_key( get_option( 'smlf_captcha_method', 'custom' ) );
+		$captcha_method  = in_array( $captcha_method, $allowed_methods, true ) ? $captcha_method : 'custom';
+		$site_key        = sanitize_text_field( get_option( 'smlf_captcha_site_key', '' ) );
 
 		if ($captcha_method === 'recaptcha_v2' || $captcha_method === 'recaptcha_v3') {
 			$recaptcha_url = 'https://www.google.com/recaptcha/api.js';
 			if ($captcha_method === 'recaptcha_v3') {
-				$recaptcha_url .= '?render=' . esc_attr($site_key);
+				$recaptcha_url = add_query_arg( 'render', $site_key, $recaptcha_url );
 			}
-			wp_enqueue_script( 'smlf-recaptcha', $recaptcha_url, array(), null, true );
+			wp_enqueue_script( 'smlf-recaptcha', esc_url_raw( $recaptcha_url ), array(), null, true );
 		}
 
 		if ($captcha_method === 'turnstile') {
@@ -38,7 +40,15 @@ class SMLF_Public {
 		wp_localize_script( $this->plugin_name, 'smlf_public_obj', array(
 			'ajax_url'       => admin_url( 'admin-ajax.php' ),
 			'captcha_method' => $captcha_method,
-			'site_key'       => $site_key
+			'site_key'       => $site_key,
+			'i18n'           => array(
+				'please_verify' => __( 'Please verify you are human.', 'smart-multistep-lead-forms' ),
+				'required'      => __( 'Please complete the required fields.', 'smart-multistep-lead-forms' ),
+				'invalid_email' => __( 'Please enter a valid email address.', 'smart-multistep-lead-forms' ),
+				'submitting'    => __( 'Submitting...', 'smart-multistep-lead-forms' ),
+				'submit'        => __( 'Submit', 'smart-multistep-lead-forms' ),
+				'error'         => __( 'Something went wrong. Please try again.', 'smart-multistep-lead-forms' ),
+			),
 		) );
 	}
 
@@ -58,14 +68,15 @@ class SMLF_Public {
 
 		global $wpdb;
 		$table_name = $wpdb->prefix . 'smlf_forms';
-		$form = $wpdb->get_row( $wpdb->prepare( "SELECT * FROM $table_name WHERE id = %d", $form_id ) );
+		$form = $wpdb->get_row( $wpdb->prepare( "SELECT * FROM $table_name WHERE id = %d AND status = %s", $form_id, 'publish' ) );
 
 		if ( ! $form ) {
 			return '<p>' . esc_html__( 'Form not found.', 'smart-multistep-lead-forms' ) . '</p>';
 		}
 
 		$form_data = json_decode( $form->form_data, true );
-		$steps = isset( $form_data['steps'] ) ? $form_data['steps'] : array();
+		$form_data = is_array( $form_data ) ? $form_data : array();
+		$steps     = isset( $form_data['steps'] ) && is_array( $form_data['steps'] ) ? $form_data['steps'] : array();
 
 		ob_start();
 		require plugin_dir_path( dirname( __FILE__ ) ) . 'templates/form-template.php';

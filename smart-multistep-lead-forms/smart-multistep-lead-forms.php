@@ -15,7 +15,7 @@
  * Plugin Name:       Smart MultiStep Lead Forms
  * Plugin URI:        https://adschi.com
  * Description:       A modern, fast, visual drag-and-drop multi-step form builder with AJAX submission and partial lead auto-saving.
- * Version:           1.1.0
+ * Version:           1.2.0
  * Author:            Mohammad Babaei
  * Author URI:        https://adschi.com
  * Text Domain:       smart-multistep-lead-forms
@@ -32,7 +32,7 @@ if ( ! defined( 'WPINC' ) ) {
  * Start at version 1.0.0 and use SemVer - https://semver.org
  * Rename this for your plugin and update it as you release new versions.
  */
-define( 'SMLF_VERSION', '1.1.0' );
+define( 'SMLF_VERSION', '1.2.0' );
 define( 'SMLF_PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
 define( 'SMLF_PLUGIN_URL', plugin_dir_url( __FILE__ ) );
 define( 'SMLF_AUTHOR_NAME', 'Mohammad Babaei' );
@@ -58,6 +58,11 @@ function deactivate_smart_multistep_lead_forms() {
 
 register_activation_hook( __FILE__, 'activate_smart_multistep_lead_forms' );
 register_deactivation_hook( __FILE__, 'deactivate_smart_multistep_lead_forms' );
+
+if ( get_option( 'smlf_version' ) !== SMLF_VERSION ) {
+	require_once plugin_dir_path( __FILE__ ) . 'includes/class-smlf-activator.php';
+	SMLF_Activator::activate();
+}
 
 /**
  * The core plugin class that is used to define internationalization,

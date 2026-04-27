@@ -1,6 +1,6 @@
 <div class="wrap">
 	<h1 class="wp-heading-inline"><?php esc_html_e( 'Leads', 'smart-multistep-lead-forms' ); ?></h1>
-	<a href="<?php echo esc_url( admin_url( 'admin-ajax.php?action=smlf_export_leads_csv' ) ); ?>" class="page-title-action"><?php esc_html_e( 'Export to CSV', 'smart-multistep-lead-forms' ); ?></a>
+	<a href="<?php echo esc_url( wp_nonce_url( admin_url( 'admin-ajax.php?action=smlf_export_leads_csv' ), 'smlf_export_leads_csv' ) ); ?>" class="page-title-action"><?php esc_html_e( 'Export to CSV', 'smart-multistep-lead-forms' ); ?></a>
 	<hr class="wp-header-end">
 
 	<form method="get">
@@ -12,7 +12,7 @@
 					<?php
 					global $wpdb;
 					$forms = $wpdb->get_results( "SELECT id, title FROM {$wpdb->prefix}smlf_forms ORDER BY id DESC" );
-					$selected_form = isset($_GET['form_id']) ? intval($_GET['form_id']) : '';
+					$selected_form = isset( $_GET['form_id'] ) ? absint( wp_unslash( $_GET['form_id'] ) ) : 0;
 					foreach ($forms as $f) {
 						echo '<option value="' . esc_attr($f->id) . '" ' . selected($selected_form, $f->id, false) . '>' . esc_html($f->title) . '</option>';
 					}
@@ -20,9 +20,9 @@
 				</select>
 				<select name="status">
 					<option value=""><?php esc_html_e( 'All Statuses', 'smart-multistep-lead-forms' ); ?></option>
-					<?php $selected_status = isset($_GET['status']) ? sanitize_text_field($_GET['status']) : ''; ?>
+					<?php $selected_status = isset( $_GET['status'] ) ? sanitize_key( wp_unslash( $_GET['status'] ) ) : ''; ?>
 					<option value="completed" <?php selected($selected_status, 'completed'); ?>><?php esc_html_e( 'Completed', 'smart-multistep-lead-forms' ); ?></option>
-					<option value="partial lead" <?php selected($selected_status, 'partial lead'); ?>><?php esc_html_e( 'Partial Lead', 'smart-multistep-lead-forms' ); ?></option>
+					<option value="partial" <?php selected($selected_status, 'partial'); ?>><?php esc_html_e( 'Partial Lead', 'smart-multistep-lead-forms' ); ?></option>
 					<option value="started" <?php selected($selected_status, 'started'); ?>><?php esc_html_e( 'Started', 'smart-multistep-lead-forms' ); ?></option>
 				</select>
 				<input type="submit" class="button" value="<?php esc_attr_e( 'Filter', 'smart-multistep-lead-forms' ); ?>">
@@ -37,6 +37,7 @@
 				<th><?php esc_html_e( 'Form ID', 'smart-multistep-lead-forms' ); ?></th>
 				<th><?php esc_html_e( 'Status', 'smart-multistep-lead-forms' ); ?></th>
 				<th><?php esc_html_e( 'Email / Phone', 'smart-multistep-lead-forms' ); ?></th>
+				<th><?php esc_html_e( 'Details', 'smart-multistep-lead-forms' ); ?></th>
 				<th><?php esc_html_e( 'Date', 'smart-multistep-lead-forms' ); ?></th>
 			</tr>
 		</thead>
@@ -54,7 +55,7 @@
 			if ( !empty($selected_form) ) {
 				$where .= $wpdb->prepare(" AND form_id = %d", $selected_form);
 			}
-			if ( !empty($selected_status) ) {
+			if ( in_array( $selected_status, array( 'started', 'partial', 'completed' ), true ) ) {
 				$where .= $wpdb->prepare(" AND status = %s", $selected_status);
 			}
 
@@ -73,6 +74,27 @@
 							?>
 						</td>
 						<td><?php echo esc_html( $lead->email . ' / ' . $lead->phone ); ?></td>
+						<td>
+							<?php
+							$lead_data = json_decode( $lead->lead_data, true );
+							if ( is_array( $lead_data ) ) {
+								$preview_items = array_slice( $lead_data, 0, 4, true );
+								foreach ( $preview_items as $key => $value ) {
+									if ( 'uploaded_files' === $key && is_array( $value ) ) {
+										echo '<strong>' . esc_html__( 'Files:', 'smart-multistep-lead-forms' ) . '</strong> ';
+										foreach ( $value as $file ) {
+											if ( ! empty( $file['url'] ) ) {
+												echo '<a href="' . esc_url( $file['url'] ) . '" target="_blank" rel="noopener noreferrer">' . esc_html( isset( $file['name'] ) ? $file['name'] : basename( $file['url'] ) ) . '</a> ';
+											}
+										}
+										echo '<br>';
+										continue;
+									}
+									echo '<strong>' . esc_html( $key ) . ':</strong> ' . esc_html( is_scalar( $value ) ? $value : wp_json_encode( $value ) ) . '<br>';
+								}
+							}
+							?>
+						</td>
 						<td><?php echo esc_html( $lead->created_at ); ?></td>
 					</tr>
 					<?php
@@ -80,7 +102,7 @@
 			} else {
 				?>
 				<tr>
-					<td colspan="5"><?php esc_html_e( 'No leads found.', 'smart-multistep-lead-forms' ); ?></td>
+					<td colspan="6"><?php esc_html_e( 'No leads found.', 'smart-multistep-lead-forms' ); ?></td>
 				</tr>
 				<?php
 			}
