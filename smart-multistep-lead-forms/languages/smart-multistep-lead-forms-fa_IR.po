@@ -29,6 +29,9 @@ msgstr "فرم‌های هوشمند"
 msgid "Forms"
 msgstr "فرم‌ها"
 
+msgid "Add New"
+msgstr "افزودن جدید"
+
 msgid "Add New Form"
 msgstr "افزودن فرم جدید"
 
@@ -193,3 +196,30 @@ msgstr "وضعیت"
 
 msgid "No email logs found."
 msgstr "هیچ گزارش ایمیلی پیدا نشد."
+
+msgid "Forms overview"
+msgstr "نمای کلی فرم‌ها"
+
+msgid "Total Forms"
+msgstr "کل فرم‌ها"
+
+msgid "%s published"
+msgstr "%s منتشرشده"
+
+msgid "Total Leads"
+msgstr "کل لیدها"
+
+msgid "All captured records"
+msgstr "همه رکوردهای ثبت‌شده"
+
+msgid "Completed Leads"
+msgstr "لیدهای تکمیل‌شده"
+
+msgid "%s%% completion rate"
+msgstr "نرخ تکمیل %s%%"
+
+msgid "Partial Leads"
+msgstr "لیدهای ناقص"
+
+msgid "Saved before final submit"
+msgstr "ذخیره‌شده قبل از ارسال نهایی"

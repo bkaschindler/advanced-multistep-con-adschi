@@ -18,6 +18,9 @@ msgstr "Schlaue Formulare"
 msgid "Forms"
 msgstr "Formulare"
 
+msgid "Add New"
+msgstr "Neu hinzufügen"
+
 msgid "Add New Form"
 msgstr "Neues Formular hinzufügen"
 
@@ -239,3 +242,30 @@ msgstr "Footer-Text"
 
 msgid "Source page:"
 msgstr "Quellseite:"
+
+msgid "Forms overview"
+msgstr "Formularübersicht"
+
+msgid "Total Forms"
+msgstr "Formulare gesamt"
+
+msgid "%s published"
+msgstr "%s veröffentlicht"
+
+msgid "Total Leads"
+msgstr "Interessenten gesamt"
+
+msgid "All captured records"
+msgstr "Alle erfassten Einträge"
+
+msgid "Completed Leads"
+msgstr "Abgeschlossene Interessenten"
+
+msgid "%s%% completion rate"
+msgstr "%s%% Abschlussrate"
+
+msgid "Partial Leads"
+msgstr "Teilweise Interessenten"
+
+msgid "Saved before final submit"
+msgstr "Vor dem finalen Absenden gespeichert"

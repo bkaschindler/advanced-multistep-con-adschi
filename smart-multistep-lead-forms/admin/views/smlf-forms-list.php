@@ -17,22 +17,22 @@ $conversion_rate = $total_leads > 0 ? round( ( $completed_leads / $total_leads )
 	<hr class="wp-header-end">
 
 	<div class="smlf-admin-stats-grid" aria-label="<?php esc_attr_e( 'Forms overview', 'smart-multistep-lead-forms' ); ?>">
-		<div class="smlf-admin-stat-card">
+		<div class="smlf-admin-stat-card smlf-admin-stat-card-forms">
 			<span><?php esc_html_e( 'Total Forms', 'smart-multistep-lead-forms' ); ?></span>
 			<strong><?php echo esc_html( number_format_i18n( $total_forms ) ); ?></strong>
 			<small><?php echo esc_html( sprintf( __( '%s published', 'smart-multistep-lead-forms' ), number_format_i18n( $published_forms ) ) ); ?></small>
 		</div>
-		<div class="smlf-admin-stat-card">
+		<div class="smlf-admin-stat-card smlf-admin-stat-card-leads">
 			<span><?php esc_html_e( 'Total Leads', 'smart-multistep-lead-forms' ); ?></span>
 			<strong><?php echo esc_html( number_format_i18n( $total_leads ) ); ?></strong>
 			<small><?php esc_html_e( 'All captured records', 'smart-multistep-lead-forms' ); ?></small>
 		</div>
-		<div class="smlf-admin-stat-card">
+		<div class="smlf-admin-stat-card smlf-admin-stat-card-completed">
 			<span><?php esc_html_e( 'Completed Leads', 'smart-multistep-lead-forms' ); ?></span>
 			<strong><?php echo esc_html( number_format_i18n( $completed_leads ) ); ?></strong>
 			<small><?php echo esc_html( sprintf( __( '%s%% completion rate', 'smart-multistep-lead-forms' ), number_format_i18n( $conversion_rate ) ) ); ?></small>
 		</div>
-		<div class="smlf-admin-stat-card">
+		<div class="smlf-admin-stat-card smlf-admin-stat-card-partial">
 			<span><?php esc_html_e( 'Partial Leads', 'smart-multistep-lead-forms' ); ?></span>
 			<strong><?php echo esc_html( number_format_i18n( $partial_leads ) ); ?></strong>
 			<small><?php esc_html_e( 'Saved before final submit', 'smart-multistep-lead-forms' ); ?></small>

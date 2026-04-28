@@ -20,6 +20,9 @@ msgstr ""
 msgid "Forms"
 msgstr ""
 
+msgid "Add New"
+msgstr ""
+
 msgid "Add New Form"
 msgstr ""
 
