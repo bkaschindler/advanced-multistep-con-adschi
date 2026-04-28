@@ -1,11 +1,25 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [1.2.8] - 2026-04-28
+### Added
+- Multi-rule conditional logic controls in the form builder.
+- Template language selector for loading ready-made templates per language.
+- Admin lead pipeline status with inline updates.
+- File upload preview with per-file removal before submit.
+- HVAC 3D success summary after submission.
+
+## [1.2.7] - 2026-04-28
+### Changed
+- Version bump after the multilingual form and HVAC branching refinements.
+
 ## [1.2.6] - 2026-04-28
 ### Changed
 - Improved HVAC 3D select and upload-field contrast on dark backgrounds.
 - File upload formats are now always resolved from global module settings.
 - Replaced manual extension entry with grouped selectable format buttons in Settings.
+- Added per-form language selection for multilingual sites.
+- Updated the HVAC 3D template so each service category opens its own second-step questions.
 
 ## [1.2.5] - 2026-04-28
 ### Added

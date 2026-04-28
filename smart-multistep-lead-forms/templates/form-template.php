@@ -14,6 +14,7 @@ $settings = wp_parse_args(
 		'accent_color'             => '#14b8a6',
 		'background_color'         => '#ffffff',
 		'text_color'               => '#111827',
+		'form_language'            => 'auto',
 	)
 );
 
@@ -28,6 +29,9 @@ $max_file_count          = max( 1, absint( $settings['max_file_count'] ) );
 $max_file_size_mb        = max( 1, absint( $settings['max_file_size_mb'] ) );
 $theme                   = in_array( $settings['theme'], array( 'consult_pro', 'hvac_3d' ), true ) ? $settings['theme'] : 'consult_pro';
 $theme_class             = 'hvac_3d' === $theme ? 'smlf-theme-hvac-3d' : 'smlf-theme-consult-pro';
+$form_language           = in_array( $settings['form_language'], array( 'auto', 'en', 'de', 'fa' ), true ) ? $settings['form_language'] : 'auto';
+$language_attr           = 'auto' === $form_language ? substr( determine_locale(), 0, 2 ) : $form_language;
+$direction_attr          = in_array( $language_attr, array( 'ar', 'fa', 'he', 'ur' ), true ) ? 'rtl' : 'ltr';
 $font_family             = sanitize_text_field( $settings['font_family'] );
 $primary_color           = sanitize_hex_color( $settings['primary_color'] ) ?: '#0ea5e9';
 $accent_color            = sanitize_hex_color( $settings['accent_color'] ) ?: '#14b8a6';
@@ -46,7 +50,7 @@ $show_initial_gate       = 'none' !== $captcha_method && 'before_form' === $capt
 $steps                   = isset( $steps ) && is_array( $steps ) ? $steps : array();
 ?>
 
-<div class="smlf-form-wrapper <?php echo esc_attr( $theme_class ); ?>" id="smlf-form-<?php echo esc_attr( $form_id ); ?>" style="<?php echo esc_attr( $style_vars ); ?>" data-form-id="<?php echo esc_attr( $form_id ); ?>" data-captcha-method="<?php echo esc_attr( $captcha_method ); ?>" data-captcha-gate="<?php echo esc_attr( $captcha_gate ); ?>" data-captcha-step="<?php echo esc_attr( $captcha_step ); ?>" data-allowed-file-extensions="<?php echo esc_attr( implode( ',', $allowed_extensions ) ); ?>" data-max-file-count="<?php echo esc_attr( $max_file_count ); ?>" data-max-file-size-mb="<?php echo esc_attr( $max_file_size_mb ); ?>">
+<div class="smlf-form-wrapper <?php echo esc_attr( $theme_class ); ?>" id="smlf-form-<?php echo esc_attr( $form_id ); ?>" style="<?php echo esc_attr( $style_vars ); ?>" lang="<?php echo esc_attr( $language_attr ); ?>" dir="<?php echo esc_attr( $direction_attr ); ?>" data-form-id="<?php echo esc_attr( $form_id ); ?>" data-captcha-method="<?php echo esc_attr( $captcha_method ); ?>" data-captcha-gate="<?php echo esc_attr( $captcha_gate ); ?>" data-captcha-step="<?php echo esc_attr( $captcha_step ); ?>" data-allowed-file-extensions="<?php echo esc_attr( implode( ',', $allowed_extensions ) ); ?>" data-max-file-count="<?php echo esc_attr( $max_file_count ); ?>" data-max-file-size-mb="<?php echo esc_attr( $max_file_size_mb ); ?>">
 
 	<!-- Anti-bot Gate -->
 	<?php if ( 'none' !== $captcha_method ) : ?>
@@ -83,8 +87,9 @@ $steps                   = isset( $steps ) && is_array( $steps ) ? $steps : arra
 				$step       = is_array( $step ) ? $step : array();
 				$step_id    = isset( $step['step_id'] ) ? absint( $step['step_id'] ) : $index + 1;
 				$step_title = isset( $step['title'] ) ? $step['title'] : '';
+				$logic_rules = isset( $step['logic_rules'] ) && is_array( $step['logic_rules'] ) ? wp_json_encode( $step['logic_rules'] ) : '[]';
 				?>
-				<div class="smlf-form-step" data-step-id="<?php echo esc_attr( $step_id ); ?>" data-step-index="<?php echo esc_attr( $index ); ?>" data-terminal="<?php echo esc_attr( isset( $step['terminal'] ) ? $step['terminal'] : '' ); ?>" data-logic-target="<?php echo esc_attr( isset( $step['logic_target'] ) ? $step['logic_target'] : '' ); ?>" data-logic-value="<?php echo esc_attr( isset( $step['logic_value'] ) ? $step['logic_value'] : '' ); ?>" <?php echo $index > 0 ? 'style="display:none;"' : ''; ?>>
+				<div class="smlf-form-step" data-step-id="<?php echo esc_attr( $step_id ); ?>" data-step-index="<?php echo esc_attr( $index ); ?>" data-terminal="<?php echo esc_attr( isset( $step['terminal'] ) ? $step['terminal'] : '' ); ?>" data-next-step="<?php echo esc_attr( isset( $step['next_step'] ) ? absint( $step['next_step'] ) : 0 ); ?>" data-logic-target="<?php echo esc_attr( isset( $step['logic_target'] ) ? $step['logic_target'] : '' ); ?>" data-logic-value="<?php echo esc_attr( isset( $step['logic_value'] ) ? $step['logic_value'] : '' ); ?>" data-logic-rules="<?php echo esc_attr( $logic_rules ); ?>" <?php echo $index > 0 ? 'style="display:none;"' : ''; ?>>
 					<?php if ( ! empty( $step['title'] ) ) : ?>
 						<h3 class="smlf-step-title"><?php echo esc_html( $step_title ); ?></h3>
 					<?php endif; ?>
@@ -117,7 +122,7 @@ $steps                   = isset( $steps ) && is_array( $steps ) ? $steps : arra
 							$field_style .= '--smlf-field-text:' . esc_attr( $input_text_color ) . ';';
 						}
 						?>
-						<div class="smlf-field-row smlf-field-type-<?php echo esc_attr( $field_type ); ?> smlf-field-width-<?php echo esc_attr( $field_width ); ?>" style="<?php echo esc_attr( $field_style ); ?>">
+						<div class="smlf-field-row smlf-field-type-<?php echo esc_attr( $field_type ); ?> smlf-field-width-<?php echo esc_attr( $field_width ); ?>" style="<?php echo esc_attr( $field_style ); ?>" data-field-label="<?php echo esc_attr( $field_label ); ?>">
 							<?php if ( 'message' !== $field_type ) : ?>
 								<label>
 									<?php echo esc_html( $field_label ); ?>
@@ -271,5 +276,6 @@ $steps                   = isset( $steps ) && is_array( $steps ) ? $steps : arra
 	<div class="smlf-success-message" style="display:none;">
 		<h3><?php esc_html_e( 'Thank you!', 'smart-multistep-lead-forms' ); ?></h3>
 		<p><?php esc_html_e( 'Your submission has been received.', 'smart-multistep-lead-forms' ); ?></p>
+		<div class="smlf-success-summary" aria-live="polite"></div>
 	</div>
 </div>

@@ -38,6 +38,7 @@ class SMLF_Admin {
 				'consultation' => $this->get_consultation_template(),
 				'hvac'         => $this->get_hvac_template(),
 			),
+			'templates_by_language' => $this->get_templates_by_language(),
 		) );
 	}
 
@@ -170,6 +171,7 @@ class SMLF_Admin {
 			'add_step'                => '+ Add Step',
 			'load_template'           => 'Load consultation template',
 			'load_hvac_template'      => __( 'Load HVAC template', 'smart-multistep-lead-forms' ),
+			'template_language'       => __( 'Template language', 'smart-multistep-lead-forms' ),
 			'save_form'               => 'Save Form',
 			'form_title'              => 'Form Title',
 			'captcha_method'          => 'Captcha',
@@ -185,6 +187,11 @@ class SMLF_Admin {
 			'captcha_on_step'         => 'Before a specific step',
 			'captcha_step'            => 'Captcha step number',
 			'appearance'              => __( 'Appearance', 'smart-multistep-lead-forms' ),
+			'form_language'           => __( 'Form language', 'smart-multistep-lead-forms' ),
+			'language_auto'           => __( 'Auto detect', 'smart-multistep-lead-forms' ),
+			'language_english'        => __( 'English', 'smart-multistep-lead-forms' ),
+			'language_german'         => __( 'German', 'smart-multistep-lead-forms' ),
+			'language_persian'        => __( 'Persian', 'smart-multistep-lead-forms' ),
 			'theme'                   => __( 'Theme', 'smart-multistep-lead-forms' ),
 			'theme_consult'           => __( 'Consult Pro', 'smart-multistep-lead-forms' ),
 			'theme_hvac'              => __( 'HVAC 3D', 'smart-multistep-lead-forms' ),
@@ -204,6 +211,11 @@ class SMLF_Admin {
 			'condition_prefix'        => 'Condition: Go to Step',
 			'condition_middle'        => 'if answer equals',
 			'condition_placeholder'   => 'Option name',
+			'conditional_logic'       => __( 'Conditional logic', 'smart-multistep-lead-forms' ),
+			'default_next_step'       => __( 'Default next step', 'smart-multistep-lead-forms' ),
+			'add_logic_rule'          => __( 'Add condition', 'smart-multistep-lead-forms' ),
+			'if_answer_equals'        => __( 'If answer equals', 'smart-multistep-lead-forms' ),
+			'go_to_step'              => __( 'go to step', 'smart-multistep-lead-forms' ),
 			'terminal_reset'          => 'End step with reset button',
 			'label'                   => 'Label',
 			'required'                => 'Required',
@@ -457,10 +469,43 @@ class SMLF_Admin {
 		);
 	}
 
+	private function get_templates_by_language() {
+		$languages = array(
+			'auto' => '',
+			'en'   => 'en_US',
+			'de'   => 'de_DE',
+			'fa'   => 'fa_IR',
+		);
+		$templates = array();
+
+		foreach ( $languages as $language => $locale ) {
+			if ( $locale && function_exists( 'switch_to_locale' ) ) {
+				switch_to_locale( $locale );
+			}
+
+			$templates[ $language ] = array(
+				'consultation' => $this->get_consultation_template(),
+				'hvac'         => $this->get_hvac_template(),
+			);
+
+			if ( $locale && function_exists( 'restore_previous_locale' ) ) {
+				restore_previous_locale();
+			}
+		}
+
+		return $templates;
+	}
+
 	public function get_hvac_template() {
+		$service_new         = __( 'New installation', 'smart-multistep-lead-forms' );
+		$service_repair      = __( 'Repair', 'smart-multistep-lead-forms' );
+		$service_maintenance = __( 'Maintenance', 'smart-multistep-lead-forms' );
+		$service_upgrade     = __( 'Energy upgrade', 'smart-multistep-lead-forms' );
+
 		return array(
 			'title'    => __( 'Template: Heating and Cooling Consultation', 'smart-multistep-lead-forms' ),
 			'settings' => array(
+				'form_language'           => 'auto',
 				'theme'                   => 'hvac_3d',
 				'font_family'             => 'Inter, Arial, sans-serif',
 				'primary_color'           => '#0891b2',
@@ -484,23 +529,51 @@ class SMLF_Admin {
 							'field_id'     => 'hvac_service',
 							'type'         => 'cards',
 							'label'        => __( 'Service request', 'smart-multistep-lead-forms' ),
-							'options'      => __( 'New installation, Repair, Maintenance, Energy upgrade', 'smart-multistep-lead-forms' ),
+							'options'      => implode( ', ', array( $service_new, $service_repair, $service_maintenance, $service_upgrade ) ),
 							'required'     => 1,
 							'field_width'  => 'full',
 							'display_mode' => 'cards',
 						),
 					),
+					'logic_rules' => array(
+						array(
+							'target' => 2,
+							'value'  => $service_new,
+						),
+						array(
+							'target' => 3,
+							'value'  => $service_repair,
+						),
+						array(
+							'target' => 4,
+							'value'  => $service_maintenance,
+						),
+						array(
+							'target' => 5,
+							'value'  => $service_upgrade,
+						),
+					),
 				),
 				array(
-					'step_id' => 2,
-					'title'   => __( 'Property Details', 'smart-multistep-lead-forms' ),
-					'fields'  => array(
+					'step_id'   => 2,
+					'title'     => __( 'New Installation Details', 'smart-multistep-lead-forms' ),
+					'next_step' => 6,
+					'fields'    => array(
 						array(
 							'field_id'     => 'property_type',
 							'type'         => 'radio',
 							'label'        => __( 'Property type', 'smart-multistep-lead-forms' ),
 							'options'      => __( 'Apartment, House, Office, Retail, Industrial', 'smart-multistep-lead-forms' ),
 							'required'     => 1,
+							'field_width'  => 'half',
+							'display_mode' => 'dropdown',
+						),
+						array(
+							'field_id'     => 'installation_type',
+							'type'         => 'radio',
+							'label'        => __( 'Preferred system', 'smart-multistep-lead-forms' ),
+							'options'      => __( 'Heat pump, Air conditioning, Gas heating, Floor heating, Not sure', 'smart-multistep-lead-forms' ),
+							'required'     => 0,
 							'field_width'  => 'half',
 							'display_mode' => 'dropdown',
 						),
@@ -512,10 +585,10 @@ class SMLF_Admin {
 							'field_width' => 'half',
 						),
 						array(
-							'field_id'     => 'system_age',
+							'field_id'     => 'installation_timeline',
 							'type'         => 'radio',
-							'label'        => __( 'Current system age', 'smart-multistep-lead-forms' ),
-							'options'      => __( 'No system, Under 5 years, 5-10 years, Over 10 years', 'smart-multistep-lead-forms' ),
+							'label'        => __( 'Desired installation time', 'smart-multistep-lead-forms' ),
+							'options'      => __( 'As soon as possible, This month, Next 3 months, Planning only', 'smart-multistep-lead-forms' ),
 							'required'     => 0,
 							'field_width'  => 'full',
 							'display_mode' => 'cards',
@@ -523,7 +596,101 @@ class SMLF_Admin {
 					),
 				),
 				array(
-					'step_id' => 3,
+					'step_id'   => 3,
+					'title'     => __( 'Repair Details', 'smart-multistep-lead-forms' ),
+					'next_step' => 6,
+					'fields'  => array(
+						array(
+							'field_id'     => 'repair_issue',
+							'type'         => 'radio',
+							'label'        => __( 'What is the issue?', 'smart-multistep-lead-forms' ),
+							'options'      => __( 'No heating, No cooling, Strange noise, Water leak, Error code, Other', 'smart-multistep-lead-forms' ),
+							'required'     => 1,
+							'field_width'  => 'full',
+							'display_mode' => 'cards',
+						),
+						array(
+							'field_id'    => 'system_model',
+							'type'        => 'text',
+							'label'       => __( 'System model or brand', 'smart-multistep-lead-forms' ),
+							'required'    => 0,
+							'field_width' => 'half',
+						),
+						array(
+							'field_id'     => 'repair_urgency',
+							'type'         => 'radio',
+							'label'        => __( 'Urgency', 'smart-multistep-lead-forms' ),
+							'options'      => __( 'Emergency, This week, Flexible appointment', 'smart-multistep-lead-forms' ),
+							'required'     => 0,
+							'field_width'  => 'half',
+							'display_mode' => 'dropdown',
+						),
+					),
+				),
+				array(
+					'step_id'   => 4,
+					'title'     => __( 'Maintenance Details', 'smart-multistep-lead-forms' ),
+					'next_step' => 6,
+					'fields'    => array(
+						array(
+							'field_id'     => 'maintenance_type',
+							'type'         => 'radio',
+							'label'        => __( 'Maintenance type', 'smart-multistep-lead-forms' ),
+							'options'      => __( 'Annual service, Filter replacement, Performance check, Safety inspection', 'smart-multistep-lead-forms' ),
+							'required'     => 1,
+							'field_width'  => 'full',
+							'display_mode' => 'cards',
+						),
+						array(
+							'field_id'    => 'last_service',
+							'type'        => 'text',
+							'label'       => __( 'Last service date', 'smart-multistep-lead-forms' ),
+							'required'    => 0,
+							'field_width' => 'half',
+						),
+						array(
+							'field_id'    => 'system_count',
+							'type'        => 'text',
+							'label'       => __( 'Number of systems', 'smart-multistep-lead-forms' ),
+							'required'    => 0,
+							'field_width' => 'half',
+						),
+					),
+				),
+				array(
+					'step_id'   => 5,
+					'title'     => __( 'Energy Upgrade Details', 'smart-multistep-lead-forms' ),
+					'next_step' => 6,
+					'fields'    => array(
+						array(
+							'field_id'     => 'upgrade_goal',
+							'type'         => 'radio',
+							'label'        => __( 'Main goal', 'smart-multistep-lead-forms' ),
+							'options'      => __( 'Lower energy costs, Better comfort, Replace old system, More climate control', 'smart-multistep-lead-forms' ),
+							'required'     => 1,
+							'field_width'  => 'full',
+							'display_mode' => 'cards',
+						),
+						array(
+							'field_id'    => 'monthly_energy_cost',
+							'type'        => 'text',
+							'label'       => __( 'Monthly energy cost', 'smart-multistep-lead-forms' ),
+							'required'    => 0,
+							'field_width' => 'half',
+						),
+						array(
+							'field_id'     => 'upgrade_interest',
+							'type'         => 'radio',
+							'label'        => __( 'Interested equipment', 'smart-multistep-lead-forms' ),
+							'options'      => __( 'Heat pump, Smart thermostat, Solar-ready system, Ventilation, Not sure', 'smart-multistep-lead-forms' ),
+							'required'     => 0,
+							'field_width'  => 'half',
+							'display_mode' => 'dropdown',
+						),
+					),
+				),
+				array(
+					'step_id' => 6,
 					'title'   => __( 'Contact and Notes', 'smart-multistep-lead-forms' ),
 					'fields'  => array(
 						array(

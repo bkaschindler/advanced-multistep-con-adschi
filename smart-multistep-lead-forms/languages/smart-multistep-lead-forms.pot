@@ -2,7 +2,7 @@
 # This file is distributed under the GPLv2 or later.
 msgid ""
 msgstr ""
-"Project-Id-Version: Smart MultiStep Lead Forms 1.2.6\n"
+"Project-Id-Version: Smart MultiStep Lead Forms 1.2.8\n"
 "Report-Msgid-Bugs-To: https://adschi.com\n"
 "POT-Creation-Date: 2024-05-30 00:00:00+00:00\n"
 "MIME-Version: 1.0\n"
@@ -131,7 +131,40 @@ msgstr ""
 msgid "Load HVAC template"
 msgstr ""
 
+msgid "Template language"
+msgstr ""
+
 msgid "Appearance"
+msgstr ""
+
+msgid "Form language"
+msgstr ""
+
+msgid "Auto detect"
+msgstr ""
+
+msgid "English"
+msgstr ""
+
+msgid "German"
+msgstr ""
+
+msgid "Persian"
+msgstr ""
+
+msgid "Conditional logic"
+msgstr ""
+
+msgid "Default next step"
+msgstr ""
+
+msgid "Add condition"
+msgstr ""
+
+msgid "If answer equals"
+msgstr ""
+
+msgid "go to step"
 msgstr ""
 
 msgid "Theme"
@@ -299,6 +332,36 @@ msgstr ""
 msgid "This file is larger than %1$dMB: %2$s"
 msgstr ""
 
+msgid "Remove file"
+msgstr ""
+
+msgid "Request summary"
+msgstr ""
+
+msgid "All Lead Statuses"
+msgstr ""
+
+msgid "Lead Status"
+msgstr ""
+
+msgid "New"
+msgstr ""
+
+msgid "Contacted"
+msgstr ""
+
+msgid "Qualified"
+msgstr ""
+
+msgid "Won"
+msgstr ""
+
+msgid "Lost"
+msgstr ""
+
+msgid "Could not update lead status."
+msgstr ""
+
 msgid "%1$s is larger than %2$dMB."
 msgstr ""
 
@@ -320,10 +383,19 @@ msgstr ""
 msgid "Service request"
 msgstr ""
 
-msgid "New installation, Repair, Maintenance, Energy upgrade"
+msgid "New installation"
 msgstr ""
 
-msgid "Property Details"
+msgid "Repair"
+msgstr ""
+
+msgid "Maintenance"
+msgstr ""
+
+msgid "Energy upgrade"
+msgstr ""
+
+msgid "New Installation Details"
 msgstr ""
 
 msgid "Property type"
@@ -335,10 +407,67 @@ msgstr ""
 msgid "Approximate area"
 msgstr ""
 
-msgid "Current system age"
+msgid "Preferred system"
 msgstr ""
 
-msgid "No system, Under 5 years, 5-10 years, Over 10 years"
+msgid "Heat pump, Air conditioning, Gas heating, Floor heating, Not sure"
+msgstr ""
+
+msgid "Desired installation time"
+msgstr ""
+
+msgid "As soon as possible, This month, Next 3 months, Planning only"
+msgstr ""
+
+msgid "Repair Details"
+msgstr ""
+
+msgid "What is the issue?"
+msgstr ""
+
+msgid "No heating, No cooling, Strange noise, Water leak, Error code, Other"
+msgstr ""
+
+msgid "System model or brand"
+msgstr ""
+
+msgid "Urgency"
+msgstr ""
+
+msgid "Emergency, This week, Flexible appointment"
+msgstr ""
+
+msgid "Maintenance Details"
+msgstr ""
+
+msgid "Maintenance type"
+msgstr ""
+
+msgid "Annual service, Filter replacement, Performance check, Safety inspection"
+msgstr ""
+
+msgid "Last service date"
+msgstr ""
+
+msgid "Number of systems"
+msgstr ""
+
+msgid "Energy Upgrade Details"
+msgstr ""
+
+msgid "Main goal"
+msgstr ""
+
+msgid "Lower energy costs, Better comfort, Replace old system, More climate control"
+msgstr ""
+
+msgid "Monthly energy cost"
+msgstr ""
+
+msgid "Interested equipment"
+msgstr ""
+
+msgid "Heat pump, Smart thermostat, Solar-ready system, Ventilation, Not sure"
 msgstr ""
 
 msgid "Contact and Notes"

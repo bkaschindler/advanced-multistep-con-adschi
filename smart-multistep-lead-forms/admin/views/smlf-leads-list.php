@@ -25,6 +25,22 @@
 					<option value="partial" <?php selected($selected_status, 'partial'); ?>><?php esc_html_e( 'Partial Lead', 'smart-multistep-lead-forms' ); ?></option>
 					<option value="started" <?php selected($selected_status, 'started'); ?>><?php esc_html_e( 'Started', 'smart-multistep-lead-forms' ); ?></option>
 				</select>
+				<select name="lead_status">
+					<option value=""><?php esc_html_e( 'All Lead Statuses', 'smart-multistep-lead-forms' ); ?></option>
+					<?php
+					$selected_lead_status = isset( $_GET['lead_status'] ) ? sanitize_key( wp_unslash( $_GET['lead_status'] ) ) : '';
+					$lead_statuses        = array(
+						'new'       => __( 'New', 'smart-multistep-lead-forms' ),
+						'contacted' => __( 'Contacted', 'smart-multistep-lead-forms' ),
+						'qualified' => __( 'Qualified', 'smart-multistep-lead-forms' ),
+						'won'       => __( 'Won', 'smart-multistep-lead-forms' ),
+						'lost'      => __( 'Lost', 'smart-multistep-lead-forms' ),
+					);
+					foreach ( $lead_statuses as $status_key => $status_label ) {
+						echo '<option value="' . esc_attr( $status_key ) . '" ' . selected( $selected_lead_status, $status_key, false ) . '>' . esc_html( $status_label ) . '</option>';
+					}
+					?>
+				</select>
 				<input type="submit" class="button" value="<?php esc_attr_e( 'Filter', 'smart-multistep-lead-forms' ); ?>">
 			</div>
 		</div>
@@ -36,6 +52,7 @@
 				<th><?php esc_html_e( 'ID', 'smart-multistep-lead-forms' ); ?></th>
 				<th><?php esc_html_e( 'Form ID', 'smart-multistep-lead-forms' ); ?></th>
 				<th><?php esc_html_e( 'Status', 'smart-multistep-lead-forms' ); ?></th>
+				<th><?php esc_html_e( 'Lead Status', 'smart-multistep-lead-forms' ); ?></th>
 				<th><?php esc_html_e( 'Email / Phone', 'smart-multistep-lead-forms' ); ?></th>
 				<th><?php esc_html_e( 'Details', 'smart-multistep-lead-forms' ); ?></th>
 				<th><?php esc_html_e( 'Date', 'smart-multistep-lead-forms' ); ?></th>
@@ -58,6 +75,9 @@
 			if ( in_array( $selected_status, array( 'started', 'partial', 'completed' ), true ) ) {
 				$where .= $wpdb->prepare(" AND status = %s", $selected_status);
 			}
+			if ( in_array( $selected_lead_status, array( 'new', 'contacted', 'qualified', 'won', 'lost' ), true ) ) {
+				$where .= $wpdb->prepare(" AND lead_status = %s", $selected_lead_status);
+			}
 
 			$leads = $wpdb->get_results( "SELECT * FROM $table_name $where ORDER BY id DESC LIMIT 50" );
 
@@ -72,6 +92,14 @@
 								$status_class = ( $lead->status === 'completed' ) ? 'updated' : 'error';
 								echo '<span class="smlf-badge ' . esc_attr( $status_class ) . '">' . esc_html( $lead->status ) . '</span>';
 							?>
+						</td>
+						<td>
+							<?php $current_lead_status = isset( $lead->lead_status ) && $lead->lead_status ? $lead->lead_status : 'new'; ?>
+							<select class="smlf-lead-status-select" data-lead-id="<?php echo esc_attr( $lead->id ); ?>" data-previous="<?php echo esc_attr( $current_lead_status ); ?>">
+								<?php foreach ( $lead_statuses as $status_key => $status_label ) : ?>
+									<option value="<?php echo esc_attr( $status_key ); ?>" <?php selected( $current_lead_status, $status_key ); ?>><?php echo esc_html( $status_label ); ?></option>
+								<?php endforeach; ?>
+							</select>
 						</td>
 						<td><?php echo esc_html( $lead->email . ' / ' . $lead->phone ); ?></td>
 						<td>
@@ -102,7 +130,7 @@
 			} else {
 				?>
 				<tr>
-					<td colspan="6"><?php esc_html_e( 'No leads found.', 'smart-multistep-lead-forms' ); ?></td>
+					<td colspan="7"><?php esc_html_e( 'No leads found.', 'smart-multistep-lead-forms' ); ?></td>
 				</tr>
 				<?php
 			}

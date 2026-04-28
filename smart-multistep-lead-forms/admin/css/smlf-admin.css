@@ -273,11 +273,36 @@
 }
 
 .smlf-step-logic {
+	display: grid;
+	gap: 10px;
 	margin-bottom: 12px;
 	padding: 10px 12px;
 	border: 1px solid #dcdcde;
 	border-radius: 6px;
 	background: #f6f7f7;
+}
+
+.smlf-step-next-label,
+.smlf-logic-rule {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: 8px;
+	font-size: 12px;
+	font-weight: 600;
+}
+
+.smlf-step-next-label input,
+.smlf-logic-rule input[type="number"] {
+	width: 76px;
+}
+
+.smlf-logic-rule input[type="text"] {
+	min-width: 180px;
+}
+
+.smlf-legacy-logic {
+	opacity: 0.72;
 }
 
 .smlf-badge {
@@ -288,12 +313,33 @@
 }
 .smlf-badge.updated { background: #46b450; }
 .smlf-badge.error { background: #dc3232; }
+.smlf-badge.neutral { background: #64748b; }
+
+.smlf-lead-status-select {
+	max-width: 140px;
+}
 
 #smlf-load-template {
 	display: block;
 	width: 100%;
 	margin-top: 10px;
 	text-align: center;
+}
+
+.smlf-template-language-control {
+	display: block;
+	margin-top: 12px;
+	font-weight: 700;
+}
+
+.smlf-template-language-control span,
+.smlf-template-language-control select {
+	display: block;
+	width: 100%;
+}
+
+.smlf-template-language-control span {
+	margin-bottom: 5px;
 }
 
 #smlf-load-hvac-template {

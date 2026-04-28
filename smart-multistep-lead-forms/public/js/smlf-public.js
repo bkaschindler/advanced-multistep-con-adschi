@@ -155,34 +155,90 @@ jQuery(document).ready(function($) {
 			const $currentStepEl = $steps.eq(currentStep);
 			const logicTarget = $currentStepEl.data('logic-target');
 			const logicValue = $currentStepEl.data('logic-value');
+			const stepValues = getCurrentStepChoiceValues($currentStepEl);
+			const logicRules = normalizeLogicRules($currentStepEl.data('logic-rules'));
+
+			if (logicRules.length && stepValues.length) {
+				for (let i = 0; i < logicRules.length; i++) {
+					if (stepValues.indexOf(logicRules[i].value) !== -1) {
+						const ruleTargetIndex = findStepIndex(logicRules[i].target);
+						if (ruleTargetIndex !== -1) {
+							return ruleTargetIndex;
+						}
+					}
+				}
+			}
 
 			if (logicTarget && logicValue) {
-				let matched = false;
-				$currentStepEl.find('input[type="radio"]:checked').each(function() {
-					if ($(this).val() === logicValue) {
-						matched = true;
-					}
-				});
-				$currentStepEl.find('select').each(function() {
-					if ($(this).val() === logicValue) {
-						matched = true;
-					}
-				});
-
-				if (matched) {
-					let targetIndex = -1;
-					$steps.each(function(idx) {
-						if ($(this).data('step-id') == logicTarget) {
-							targetIndex = idx;
-						}
-					});
+				if (stepValues.indexOf(logicValue) !== -1) {
+					let targetIndex = findStepIndex(logicTarget);
 					if (targetIndex !== -1) {
 						return targetIndex;
 					}
 				}
 			}
 
+			const nextStep = parseInt($currentStepEl.data('next-step') || '0', 10);
+			if (nextStep) {
+				const nextStepIndex = findStepIndex(nextStep);
+				if (nextStepIndex !== -1) {
+					return nextStepIndex;
+				}
+			}
+
 			return currentStep + 1;
+		}
+
+		function getCurrentStepChoiceValues($step) {
+			const values = [];
+
+			$step.find('input[type="radio"]:checked').each(function() {
+				if ($(this).val()) {
+					values.push($(this).val());
+				}
+			});
+
+			$step.find('select').each(function() {
+				if ($(this).val()) {
+					values.push($(this).val());
+				}
+			});
+
+			return values;
+		}
+
+		function normalizeLogicRules(rules) {
+			if (typeof rules === 'string') {
+				try {
+					rules = JSON.parse(rules);
+				} catch (e) {
+					rules = [];
+				}
+			}
+
+			if (!Array.isArray(rules)) {
+				return [];
+			}
+
+			return rules.map(function(rule) {
+				return {
+					target: parseInt(rule.target || 0, 10),
+					value: String(rule.value || '')
+				};
+			}).filter(function(rule) {
+				return rule.target && rule.value;
+			});
+		}
+
+		function findStepIndex(stepId) {
+			let targetIndex = -1;
+			$steps.each(function(idx) {
+				if ($(this).data('step-id') == stepId) {
+					targetIndex = idx;
+				}
+			});
+
+			return targetIndex;
 		}
 
 		function isTerminalStep(index) {
@@ -352,22 +408,30 @@ jQuery(document).ready(function($) {
 
 		$wrapper.find('.smlf-file-input').on('change', function() {
 			const files = Array.from(this.files || []);
-			const $list = $(this).closest('.smlf-field-row').find('.smlf-file-list');
-			$list.empty();
 
 			const validationError = validateFiles(files);
 			if (validationError) {
 				showFieldError($(this), validationError);
 				$(this).val('');
+				$(this).data('smlf-files', []);
+				renderFileList($(this));
 				return;
 			}
 
-			files.forEach(function(file) {
-				$list.append($('<span/>', {
-					'class': 'smlf-file-pill',
-					text: file.name
-				}));
+			$(this).data('smlf-files', files);
+			renderFileList($(this));
+		});
+
+		$wrapper.on('click', '.smlf-file-remove', function(e) {
+			e.preventDefault();
+			const $input = $(this).closest('.smlf-field-row').find('.smlf-file-input');
+			const index = parseInt($(this).data('file-index'), 10);
+			const files = ($input.data('smlf-files') || []).filter(function(file, fileIndex) {
+				return fileIndex !== index;
 			});
+			$input.data('smlf-files', files);
+			syncFileInput($input, files);
+			renderFileList($input);
 		});
 
 		$wrapper.find('.smlf-file-dropzone').on('dragover', function(e) {
@@ -404,6 +468,7 @@ jQuery(document).ready(function($) {
 			$form[0].reset();
 			leadId = null;
 			stepHistory = [];
+			$wrapper.find('.smlf-file-input').data('smlf-files', []);
 			$wrapper.find('.smlf-file-list').empty();
 			showStep(0);
 		});
@@ -450,6 +515,7 @@ jQuery(document).ready(function($) {
 					contentType: false
 				}).done(function(response) {
 					if (response.success) {
+						renderSuccessSummary();
 						$wrapper.find('.smlf-progress-bar-container').hide();
 						$form.hide();
 						$wrapper.find('.smlf-success-message').fadeIn();
@@ -485,10 +551,97 @@ jQuery(document).ready(function($) {
 
 		function appendFiles(requestData) {
 			$wrapper.find('.smlf-file-input').each(function() {
-				Array.from(this.files || []).forEach(function(file) {
+				const files = $(this).data('smlf-files') || Array.from(this.files || []);
+				files.forEach(function(file) {
 					requestData.append('smlf_files[]', file);
 				});
 			});
+		}
+
+		function renderFileList($input) {
+			const files = $input.data('smlf-files') || [];
+			const $list = $input.closest('.smlf-field-row').find('.smlf-file-list');
+			$list.empty();
+
+			files.forEach(function(file, index) {
+				const sizeKb = Math.max(1, Math.round(file.size / 1024));
+				const $pill = $('<span/>', { 'class': 'smlf-file-pill' });
+				$pill.append($('<span/>', {
+					'class': 'smlf-file-pill-name',
+					text: file.name + ' (' + sizeKb + ' KB)'
+				}));
+				$pill.append($('<button/>', {
+					type: 'button',
+					'class': 'smlf-file-remove',
+					'data-file-index': index,
+					'aria-label': smlf_public_obj.i18n.remove_file,
+					text: 'x'
+				}));
+				$list.append($pill);
+			});
+		}
+
+		function syncFileInput($input, files) {
+			if (typeof DataTransfer === 'undefined') {
+				if (!files.length) {
+					$input.val('');
+				}
+				return;
+			}
+
+			const dataTransfer = new DataTransfer();
+			files.forEach(function(file) {
+				dataTransfer.items.add(file);
+			});
+			$input.get(0).files = dataTransfer.files;
+		}
+
+		function renderSuccessSummary() {
+			const $summary = $wrapper.find('.smlf-success-summary');
+			if (!$summary.length || !$wrapper.hasClass('smlf-theme-hvac-3d')) {
+				return;
+			}
+
+			const items = [];
+			$form.find('.smlf-field-row').each(function() {
+				const $row = $(this);
+				const label = $row.data('field-label');
+				let value = '';
+
+				const $checked = $row.find('input[type="radio"]:checked');
+				if ($checked.length) {
+					value = $checked.val();
+				} else if ($row.find('select').length) {
+					value = $row.find('select').val();
+				} else if ($row.find('textarea').length) {
+					value = $row.find('textarea').val();
+				} else if ($row.find('input[type="file"]').length) {
+					const files = $row.find('input[type="file"]').data('smlf-files') || [];
+					value = files.map(function(file) { return file.name; }).join(', ');
+				} else {
+					value = $row.find('input[type="text"], input[type="email"], input[type="tel"]').val();
+				}
+
+				if (label && value) {
+					items.push({
+						label: label,
+						value: value
+					});
+				}
+			});
+
+			if (!items.length) {
+				$summary.empty();
+				return;
+			}
+
+			const $list = $('<dl/>');
+			items.slice(0, 8).forEach(function(item) {
+				$list.append($('<dt/>', { text: item.label }));
+				$list.append($('<dd/>', { text: item.value }));
+			});
+
+			$summary.empty().append($('<h4/>', { text: smlf_public_obj.i18n.summary_title })).append($list);
 		}
 
 		function validateFiles(files) {

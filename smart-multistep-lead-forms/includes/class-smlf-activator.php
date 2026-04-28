@@ -46,6 +46,7 @@ class SMLF_Activator {
 			form_id bigint(20) NOT NULL,
 			lead_data longtext NOT NULL,
 			status varchar(50) DEFAULT 'started' NOT NULL,
+			lead_status varchar(50) DEFAULT 'new' NOT NULL,
 			email varchar(255),
 			phone varchar(50),
 			ip_address varchar(50),
@@ -60,7 +61,8 @@ class SMLF_Activator {
 			admin_notes text,
 			PRIMARY KEY  (id),
 			KEY form_id (form_id),
-			KEY status (status)
+			KEY status (status),
+			KEY lead_status (lead_status)
 		) $charset_collate;";
 
 		// Email Logs table

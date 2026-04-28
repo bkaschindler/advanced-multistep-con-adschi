@@ -4,7 +4,7 @@ Tags: forms, multistep, ajax, leads, drag and drop
 Requires at least: 5.9
 Requires PHP: 7.4
 Tested up to: 6.9.1
-Stable tag: 1.2.6
+Stable tag: 1.2.8
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -23,7 +23,11 @@ Features:
 * Per-form appearance controls for theme, font family, and key colors.
 * Text, email, phone, long text, message, card, radio, and drag-and-drop file upload fields.
 * Ready-made localized templates that can be loaded manually from the form builder.
+* Template language selector for multilingual sites.
 * HVAC 3D sample template for heating and cooling companies.
+* Multi-rule conditional step logic.
+* Lead pipeline status tracking in the admin area.
+* File upload preview with per-file removal before submit.
 * Modern animated frontend theme with lightweight 3D card interactions.
 * Required/email validation in the browser and sanitized server-side processing.
 * Partial lead auto-save when enabled.
@@ -69,10 +73,22 @@ Yes. CSV export requires `manage_options` and a valid export nonce.
 
 == Changelog ==
 
+= 1.2.8 =
+* Added multi-rule conditional logic controls in the form builder.
+* Added template language selection for ready-made templates.
+* Added admin lead pipeline status with inline updates.
+* Added file upload preview with per-file removal before submit.
+* Added HVAC 3D success summary after submission.
+
+= 1.2.7 =
+* Version bump after the multilingual form and HVAC branching refinements.
+
 = 1.2.6 =
 * Improved HVAC 3D select and upload-field contrast for dark layouts.
 * Upload file formats are now always read from global module settings.
 * Replaced the upload extension text field with grouped selectable format buttons in Settings.
+* Added per-form language selection for multilingual sites.
+* Updated the HVAC 3D template so each service category opens its own second-step questions.
 
 = 1.2.5 =
 * Fixed required-field validation when category cards auto-advance to the next step.

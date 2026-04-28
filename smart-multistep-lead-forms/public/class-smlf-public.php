@@ -48,6 +48,8 @@ class SMLF_Public {
 				'too_many_files' => __( 'You can upload up to %d files.', 'smart-multistep-lead-forms' ),
 				'file_type'     => __( 'This file type is not allowed: %s', 'smart-multistep-lead-forms' ),
 				'file_size'     => __( 'This file is larger than %1$dMB: %2$s', 'smart-multistep-lead-forms' ),
+				'remove_file'   => __( 'Remove file', 'smart-multistep-lead-forms' ),
+				'summary_title' => __( 'Request summary', 'smart-multistep-lead-forms' ),
 				'submitting'    => __( 'Submitting...', 'smart-multistep-lead-forms' ),
 				'submit'        => __( 'Submit', 'smart-multistep-lead-forms' ),
 				'error'         => __( 'Something went wrong. Please try again.', 'smart-multistep-lead-forms' ),
@@ -98,6 +100,7 @@ class SMLF_Public {
 		$extensions    = $this->sanitize_file_extensions( get_option( 'smlf_allowed_file_extensions', 'jpg,jpeg,png,gif,webp,pdf,doc,docx,xls,xlsx,zip' ) );
 		$max_count     = absint( get_option( 'smlf_max_file_count', 5 ) );
 		$max_size      = absint( get_option( 'smlf_max_file_size_mb', 10 ) );
+		$form_language = $this->sanitize_choice( isset( $settings['form_language'] ) ? $settings['form_language'] : 'auto', array( 'auto', 'en', 'de', 'fa' ), 'auto' );
 		$theme         = $this->sanitize_choice( isset( $settings['theme'] ) ? $settings['theme'] : 'consult_pro', array( 'consult_pro', 'hvac_3d' ), 'consult_pro' );
 		$font_family   = isset( $settings['font_family'] ) ? sanitize_text_field( $settings['font_family'] ) : 'inherit';
 
@@ -120,6 +123,7 @@ class SMLF_Public {
 			'allowed_file_extensions' => '' !== $extensions ? $extensions : 'jpg,jpeg,png,gif,webp,pdf,doc,docx,xls,xlsx,zip',
 			'max_file_count'          => max( 1, $max_count ),
 			'max_file_size_mb'        => max( 1, $max_size ),
+			'form_language'           => $form_language,
 			'theme'                   => $theme,
 			'font_family'             => '' !== $font_family ? $font_family : 'inherit',
 			'primary_color'           => isset( $settings['primary_color'] ) ? sanitize_hex_color( $settings['primary_color'] ) : '#0ea5e9',

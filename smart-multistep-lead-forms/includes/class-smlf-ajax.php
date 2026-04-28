@@ -140,10 +140,11 @@ class SMLF_Ajax {
 					'email'      => $email,
 					'phone'      => $phone,
 					'status'     => 'started',
+					'lead_status' => 'new',
 					'ip_address' => $this->get_remote_ip(),
 					'user_agent' => $this->get_user_agent(),
 				),
-				array( '%d', '%s', '%s', '%s', '%s', '%s', '%s' )
+				array( '%d', '%s', '%s', '%s', '%s', '%s', '%s', '%s' )
 			);
 			$lead_id = absint( $wpdb->insert_id );
 		}
@@ -213,11 +214,12 @@ class SMLF_Ajax {
 					'email'        => $email,
 					'phone'        => $phone,
 					'status'       => 'completed',
+					'lead_status'  => 'new',
 					'ip_address'   => $this->get_remote_ip(),
 					'user_agent'   => $this->get_user_agent(),
 					'completed_at' => current_time( 'mysql' ),
 				),
-				array( '%d', '%s', '%s', '%s', '%s', '%s', '%s', '%s' )
+				array( '%d', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s' )
 			);
 			$lead_id = absint( $wpdb->insert_id );
 		}
@@ -230,6 +232,41 @@ class SMLF_Ajax {
 		$this->trigger_webhook( 'completed', $lead_id, $form_id, $structured_data );
 
 		wp_send_json_success( array( 'lead_id' => $lead_id ) );
+	}
+
+	public function update_lead_status() {
+		check_ajax_referer( 'smlf_admin_nonce', 'nonce' );
+
+		if ( ! current_user_can( 'manage_options' ) ) {
+			wp_send_json_error( array( 'message' => __( 'Permission denied.', 'smart-multistep-lead-forms' ) ), 403 );
+		}
+
+		$lead_id = isset( $_POST['lead_id'] ) ? absint( wp_unslash( $_POST['lead_id'] ) ) : 0;
+		$status  = $this->sanitize_choice(
+			isset( $_POST['lead_status'] ) ? wp_unslash( $_POST['lead_status'] ) : 'new',
+			array( 'new', 'contacted', 'qualified', 'won', 'lost' ),
+			'new'
+		);
+
+		if ( ! $lead_id ) {
+			wp_send_json_error( array( 'message' => __( 'Lead not found.', 'smart-multistep-lead-forms' ) ), 404 );
+		}
+
+		global $wpdb;
+		$table_name = $wpdb->prefix . 'smlf_leads';
+		$result     = $wpdb->update(
+			$table_name,
+			array( 'lead_status' => $status ),
+			array( 'id' => $lead_id ),
+			array( '%s' ),
+			array( '%d' )
+		);
+
+		if ( false === $result ) {
+			wp_send_json_error( array( 'message' => __( 'Could not update lead status.', 'smart-multistep-lead-forms' ) ), 500 );
+		}
+
+		wp_send_json_success( array( 'lead_status' => $status ) );
 	}
 
 	public function export_leads_csv() {
@@ -252,7 +289,7 @@ class SMLF_Ajax {
 			wp_die( esc_html__( 'Could not open CSV output.', 'smart-multistep-lead-forms' ) );
 		}
 
-		fputcsv( $output, array( 'ID', 'Form ID', 'Status', 'Email', 'Phone', 'Data', 'Created At' ) );
+		fputcsv( $output, array( 'ID', 'Form ID', 'Status', 'Lead Status', 'Email', 'Phone', 'Data', 'Created At' ) );
 
 		foreach ( $leads as $lead ) {
 			fputcsv(
@@ -261,6 +298,7 @@ class SMLF_Ajax {
 					$lead['id'],
 					$lead['form_id'],
 					$lead['status'],
+					isset( $lead['lead_status'] ) ? $lead['lead_status'] : 'new',
 					$lead['email'],
 					$lead['phone'],
 					$lead['lead_data'],
@@ -297,11 +335,30 @@ class SMLF_Ajax {
 			$sanitized_step = array(
 				'step_id'      => $step_id ? $step_id : absint( $step_index + 1 ),
 				'title'        => isset( $step['title'] ) ? sanitize_text_field( $step['title'] ) : '',
+				'next_step'    => isset( $step['next_step'] ) ? absint( $step['next_step'] ) : 0,
+				'logic_rules'  => array(),
 				'logic_target' => isset( $step['logic_target'] ) ? absint( $step['logic_target'] ) : 0,
 				'logic_value'  => isset( $step['logic_value'] ) ? sanitize_text_field( $step['logic_value'] ) : '',
 				'terminal'     => isset( $step['terminal'] ) && 'reset' === sanitize_key( $step['terminal'] ) ? 'reset' : '',
 				'fields'       => array(),
 			);
+
+			if ( ! empty( $step['logic_rules'] ) && is_array( $step['logic_rules'] ) ) {
+				foreach ( $step['logic_rules'] as $rule ) {
+					if ( ! is_array( $rule ) ) {
+						continue;
+					}
+
+					$target = isset( $rule['target'] ) ? absint( $rule['target'] ) : 0;
+					$value  = isset( $rule['value'] ) ? sanitize_text_field( $rule['value'] ) : '';
+					if ( $target && '' !== $value ) {
+						$sanitized_step['logic_rules'][] = array(
+							'target' => $target,
+							'value'  => $value,
+						);
+					}
+				}
+			}
 
 			if ( empty( $step['fields'] ) || ! is_array( $step['fields'] ) ) {
 				$sanitized['steps'][] = $sanitized_step;
@@ -358,6 +415,7 @@ class SMLF_Ajax {
 		$captcha_method = isset( $settings['captcha_method'] ) ? sanitize_key( $settings['captcha_method'] ) : 'inherit';
 		$captcha_gate   = isset( $settings['captcha_gate'] ) ? sanitize_key( $settings['captcha_gate'] ) : 'before_form';
 		$captcha_step   = isset( $settings['captcha_step'] ) ? absint( $settings['captcha_step'] ) : 1;
+		$form_language  = $this->sanitize_choice( isset( $settings['form_language'] ) ? $settings['form_language'] : 'auto', array( 'auto', 'en', 'de', 'fa' ), 'auto' );
 		$theme          = $this->sanitize_choice( isset( $settings['theme'] ) ? $settings['theme'] : 'consult_pro', array( 'consult_pro', 'hvac_3d' ), 'consult_pro' );
 		$font_family    = isset( $settings['font_family'] ) ? sanitize_text_field( $settings['font_family'] ) : 'inherit';
 
@@ -365,6 +423,7 @@ class SMLF_Ajax {
 			'captcha_method'          => in_array( $captcha_method, $allowed_methods, true ) ? $captcha_method : 'inherit',
 			'captcha_gate'            => in_array( $captcha_gate, $allowed_gates, true ) ? $captcha_gate : 'before_form',
 			'captcha_step'            => max( 1, $captcha_step ),
+			'form_language'           => $form_language,
 			'theme'                   => $theme,
 			'font_family'             => '' !== $font_family ? $font_family : 'inherit',
 			'primary_color'           => isset( $settings['primary_color'] ) ? sanitize_hex_color( $settings['primary_color'] ) : '#0ea5e9',

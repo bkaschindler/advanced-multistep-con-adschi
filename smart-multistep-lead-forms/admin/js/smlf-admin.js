@@ -9,7 +9,9 @@ jQuery(document).ready(function($) {
 
 		const $step = $('<div/>', {
 			'class': 'smlf-step',
-			'data-step': stepId
+			'data-step': stepId,
+			'data-next-step': data.next_step || '',
+			'data-logic-rules': JSON.stringify(data.logic_rules || [])
 		});
 
 		const $header = $('<div/>', { 'class': 'smlf-step-header' });
@@ -27,6 +29,32 @@ jQuery(document).ready(function($) {
 		const $logic = $('<div/>', {
 			'class': 'smlf-step-logic'
 		});
+		$logic.append($('<strong/>', { text: i18n.conditional_logic }));
+
+		const $nextLabel = $('<label/>', {
+			'class': 'smlf-step-next-label',
+			text: i18n.default_next_step + ': '
+		});
+		$nextLabel.append($('<input/>', {
+			type: 'number',
+			'class': 'smlf-next-step',
+			value: data.next_step || '',
+			placeholder: '#',
+			min: 1
+		}));
+		$logic.append($nextLabel);
+
+		const $rules = $('<div/>', { 'class': 'smlf-logic-rules' });
+		normalizeStepLogicRules(data.logic_rules || []).forEach(function(rule) {
+			$rules.append(createLogicRule(rule));
+		});
+		$logic.append($rules);
+		$logic.append($('<button/>', {
+			type: 'button',
+			'class': 'button smlf-add-logic-rule',
+			text: i18n.add_logic_rule
+		}));
+
 		const $logicLabel = $('<label/>', { css: { fontSize: '12px' }, text: i18n.condition_prefix + ' ' });
 		$logicLabel.append($('<input/>', {
 			type: 'number',
@@ -42,6 +70,7 @@ jQuery(document).ready(function($) {
 			value: data.logic_value || '',
 			placeholder: i18n.condition_placeholder
 		}));
+		$logicLabel.addClass('smlf-legacy-logic');
 		$logic.append($logicLabel);
 		const $terminalLabel = $('<label/>', {
 			text: ' ' + i18n.terminal_reset,
@@ -66,6 +95,32 @@ jQuery(document).ready(function($) {
 		stepCounter = Math.max(stepCounter, stepId + 1);
 		initSortable();
 		renderPreview();
+	}
+
+	function createLogicRule(ruleData) {
+		const data = ruleData || {};
+		const $rule = $('<div/>', { 'class': 'smlf-logic-rule' });
+		$rule.append($('<span/>', { text: i18n.if_answer_equals }));
+		$rule.append($('<input/>', {
+			type: 'text',
+			'class': 'smlf-rule-value',
+			value: data.value || '',
+			placeholder: i18n.condition_placeholder
+		}));
+		$rule.append($('<span/>', { text: i18n.go_to_step }));
+		$rule.append($('<input/>', {
+			type: 'number',
+			'class': 'smlf-rule-target',
+			value: data.target || '',
+			placeholder: '#',
+			min: 1
+		}));
+		$rule.append($('<button/>', {
+			type: 'button',
+			'class': 'button-link smlf-remove-logic-rule',
+			text: 'x'
+		}));
+		return $rule;
 	}
 
 	function createFieldItem(fieldData) {
@@ -260,6 +315,18 @@ jQuery(document).ready(function($) {
 		renderPreview();
 	});
 
+	$(document).on('click', '.smlf-add-logic-rule', function(e) {
+		e.preventDefault();
+		$(this).siblings('.smlf-logic-rules').append(createLogicRule());
+		renderPreview();
+	});
+
+	$(document).on('click', '.smlf-remove-logic-rule', function(e) {
+		e.preventDefault();
+		$(this).closest('.smlf-logic-rule').remove();
+		renderPreview();
+	});
+
 	function initSortable() {
 		$('.smlf-draggable-blocks li').draggable({
 			connectToSortable: '.smlf-fields-dropzone',
@@ -310,6 +377,32 @@ jQuery(document).ready(function($) {
 		renderPreview();
 	});
 
+	$(document).on('change', '.smlf-lead-status-select', function() {
+		const $select = $(this);
+		const previous = $select.data('previous') || 'new';
+
+		$select.prop('disabled', true);
+		$.post(smlf_admin_obj.ajax_url, {
+			action: 'smlf_update_lead_status',
+			nonce: smlf_admin_obj.nonce,
+			lead_id: $select.data('lead-id'),
+			lead_status: $select.val()
+		}).done(function(response) {
+			if (response.success) {
+				$select.data('previous', $select.val());
+				return;
+			}
+
+			$select.val(previous);
+			alert((response.data && response.data.message) || i18n.save_error);
+		}).fail(function() {
+			$select.val(previous);
+			alert(i18n.save_error);
+		}).always(function() {
+			$select.prop('disabled', false);
+		});
+	});
+
 	if (typeof window.smlf_existing_form_data !== 'undefined' && Array.isArray(window.smlf_existing_form_data.steps) && window.smlf_existing_form_data.steps.length > 0) {
 		$('#smlf-form-title').val(window.smlf_existing_form_data.title || 'New Form');
 		loadSettings(window.smlf_existing_form_data.settings || {});
@@ -321,16 +414,16 @@ jQuery(document).ready(function($) {
 		addStep();
 	}
 
-	$(document).on('input change', '#smlf-form-title, #smlf-theme, #smlf-font-family, #smlf-primary-color, #smlf-accent-color, #smlf-background-color, #smlf-text-color, #smlf-captcha-method, #smlf-captcha-gate, #smlf-captcha-step, .smlf-step input, .smlf-step select, .smlf-field-item input, .smlf-field-item select, .smlf-field-item textarea', renderPreview);
+	$(document).on('input change', '#smlf-form-title, #smlf-form-language, #smlf-theme, #smlf-font-family, #smlf-primary-color, #smlf-accent-color, #smlf-background-color, #smlf-text-color, #smlf-captcha-method, #smlf-captcha-gate, #smlf-captcha-step, .smlf-step input, .smlf-step select, .smlf-field-item input, .smlf-field-item select, .smlf-field-item textarea', renderPreview);
 
 	$('#smlf-load-template').on('click', function(e) {
 		e.preventDefault();
-		loadTemplate((smlf_admin_obj.templates && smlf_admin_obj.templates.consultation) || smlf_admin_obj.template);
+		loadTemplate(getTemplate('consultation'));
 	});
 
 	$('#smlf-load-hvac-template').on('click', function(e) {
 		e.preventDefault();
-		loadTemplate(smlf_admin_obj.templates ? smlf_admin_obj.templates.hvac : null);
+		loadTemplate(getTemplate('hvac'));
 	});
 
 	$('#smlf-save-form').on('click', function(e) {
@@ -407,6 +500,8 @@ jQuery(document).ready(function($) {
 			steps.push({
 				step_id: $step.data('step'),
 				title: $step.find('.smlf-step-title-input').val(),
+				next_step: parseInt($step.find('.smlf-next-step').val() || '0', 10),
+				logic_rules: collectLogicRules($step),
 				logic_target: $step.find('.smlf-logic-target').val(),
 				logic_value: $step.find('.smlf-logic-value').val(),
 				terminal: $step.find('.smlf-step-terminal').is(':checked') ? 'reset' : '',
@@ -430,6 +525,13 @@ jQuery(document).ready(function($) {
 			addStep(step);
 		});
 		renderPreview();
+	}
+
+	function getTemplate(type) {
+		const language = $('#smlf-template-language').val() || $('#smlf-form-language').val() || 'auto';
+		const grouped = smlf_admin_obj.templates_by_language || {};
+		const languageTemplates = grouped[language] || grouped.auto || smlf_admin_obj.templates || {};
+		return languageTemplates[type] || (smlf_admin_obj.templates ? smlf_admin_obj.templates[type] : null) || smlf_admin_obj.template;
 	}
 
 	function renderPreview() {
@@ -549,6 +651,7 @@ jQuery(document).ready(function($) {
 			captcha_method: $('#smlf-captcha-method').val() || 'inherit',
 			captcha_gate: $('#smlf-captcha-gate').val() || 'before_form',
 			captcha_step: parseInt($('#smlf-captcha-step').val() || '1', 10),
+			form_language: $('#smlf-form-language').val() || 'auto',
 			theme: $('#smlf-theme').val() || 'consult_pro',
 			font_family: $('#smlf-font-family').val() || 'inherit',
 			primary_color: $('#smlf-primary-color').val() || '#0ea5e9',
@@ -559,6 +662,7 @@ jQuery(document).ready(function($) {
 	}
 
 	function loadSettings(settings) {
+		$('#smlf-form-language').val(settings.form_language || 'auto');
 		$('#smlf-theme').val(settings.theme || 'consult_pro');
 		$('#smlf-font-family').val(settings.font_family || 'inherit');
 		$('#smlf-primary-color').val(settings.primary_color || '#0ea5e9');
@@ -567,11 +671,50 @@ jQuery(document).ready(function($) {
 		$('#smlf-text-color').val(settings.text_color || '#111827');
 		$('#smlf-captcha-method').val(settings.captcha_method || 'inherit');
 		$('#smlf-captcha-gate').val(settings.captcha_gate || 'before_form');
-		$('#smlf-captcha-step').val(settings.captcha_step || 1);
+	$('#smlf-captcha-step').val(settings.captcha_step || 1);
+	}
+
+	function collectLogicRules($step) {
+		const rules = [];
+		$step.find('.smlf-logic-rule').each(function() {
+			const target = parseInt($(this).find('.smlf-rule-target').val() || '0', 10);
+			const value = String($(this).find('.smlf-rule-value').val() || '').trim();
+			if (target && value) {
+				rules.push({
+					target: target,
+					value: value
+				});
+			}
+		});
+
+		return rules;
 	}
 
 	function getOptionalColor($field, key) {
 		return $field.find('.field-' + key + '-enabled').is(':checked') ? $field.find('.field-' + key).val() : '';
+	}
+
+	function normalizeStepLogicRules(rules) {
+		if (typeof rules === 'string') {
+			try {
+				rules = JSON.parse(rules);
+			} catch (e) {
+				rules = [];
+			}
+		}
+
+		if (!Array.isArray(rules)) {
+			return [];
+		}
+
+		return rules.map(function(rule) {
+			return {
+				target: parseInt(rule.target || 0, 10),
+				value: String(rule.value || '')
+			};
+		}).filter(function(rule) {
+			return rule.target && rule.value;
+		});
 	}
 
 	setTimeout(renderPreview, 0);

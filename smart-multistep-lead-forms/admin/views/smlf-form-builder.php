@@ -14,6 +14,7 @@ $existing_form_data = array(
 		'max_file_count'           => 5,
 		'max_file_size_mb'         => 10,
 		'theme'                    => 'consult_pro',
+		'form_language'            => 'auto',
 		'font_family'              => 'inherit',
 		'primary_color'            => '#0ea5e9',
 		'accent_color'             => '#14b8a6',
@@ -59,6 +60,15 @@ if ( $form_id ) {
 				<li data-type="radio"><?php echo esc_html( $builder_i18n['radio_buttons'] ); ?></li>
 			</ul>
 			<button class="button button-primary" id="smlf-add-step"><?php echo esc_html( $builder_i18n['add_step'] ); ?></button>
+			<label class="smlf-template-language-control">
+				<span><?php echo esc_html( $builder_i18n['template_language'] ); ?></span>
+				<select id="smlf-template-language">
+					<option value="auto"><?php echo esc_html( $builder_i18n['language_auto'] ); ?></option>
+					<option value="en"><?php echo esc_html( $builder_i18n['language_english'] ); ?></option>
+					<option value="de"><?php echo esc_html( $builder_i18n['language_german'] ); ?></option>
+					<option value="fa"><?php echo esc_html( $builder_i18n['language_persian'] ); ?></option>
+				</select>
+			</label>
 			<button class="button" id="smlf-load-template" type="button"><?php echo esc_html( $builder_i18n['load_template'] ); ?></button>
 			<button class="button" id="smlf-load-hvac-template" type="button"><?php echo esc_html( $builder_i18n['load_hvac_template'] ); ?></button>
 		</div>
@@ -72,6 +82,15 @@ if ( $form_id ) {
 				<div class="smlf-builder-settings-section">
 					<strong><?php echo esc_html( $builder_i18n['appearance'] ); ?></strong>
 				</div>
+				<label>
+					<span><?php echo esc_html( $builder_i18n['form_language'] ); ?></span>
+					<select id="smlf-form-language">
+						<option value="auto"><?php echo esc_html( $builder_i18n['language_auto'] ); ?></option>
+						<option value="en"><?php echo esc_html( $builder_i18n['language_english'] ); ?></option>
+						<option value="de"><?php echo esc_html( $builder_i18n['language_german'] ); ?></option>
+						<option value="fa"><?php echo esc_html( $builder_i18n['language_persian'] ); ?></option>
+					</select>
+				</label>
 				<label>
 					<span><?php echo esc_html( $builder_i18n['theme'] ); ?></span>
 					<select id="smlf-theme">
