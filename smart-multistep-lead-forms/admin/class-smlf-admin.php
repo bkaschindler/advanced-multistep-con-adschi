@@ -258,6 +258,7 @@ class SMLF_Admin {
 			'reset'                   => 'Start again',
 			'save_success'            => 'Saved successfully!',
 			'save_error'              => 'Error saving.',
+			'confirm_delete_form'     => __( 'Delete this form? Existing leads will be kept.', 'smart-multistep-lead-forms' ),
 		);
 
 		if ( 0 === strpos( $locale, 'de_' ) ) {

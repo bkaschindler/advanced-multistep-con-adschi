@@ -2,7 +2,7 @@
 # This file is distributed under the GPLv2 or later.
 msgid ""
 msgstr ""
-"Project-Id-Version: Smart MultiStep Lead Forms 1.2.9\n"
+"Project-Id-Version: Smart MultiStep Lead Forms 1.3.1\n"
 "Report-Msgid-Bugs-To: https://adschi.com\n"
 "POT-Creation-Date: 2024-05-30 00:00:00+00:00\n"
 "MIME-Version: 1.0\n"
@@ -53,6 +53,18 @@ msgstr ""
 msgid "Filter"
 msgstr ""
 
+msgid "Actions"
+msgstr ""
+
+msgid "Delete"
+msgstr ""
+
+msgid "Delete this form? Existing leads will be kept."
+msgstr ""
+
+msgid "Could not delete form."
+msgstr ""
+
 msgid "Admin Notification Email"
 msgstr ""
 
@@ -74,22 +86,40 @@ msgstr ""
 msgid "Footer text"
 msgstr ""
 
-msgid "Available placeholders: {site_name}, {form_title}, {lead_id}, {page_url}, {summary}"
+msgid "Available placeholders: {site_name}, {form_title}, {lead_id}, {page_url}, {customer_name}, {summary}"
 msgstr ""
 
-msgid "New lead from {form_title}"
+msgid "New lead #{lead_id} from {form_title}"
 msgstr ""
 
-msgid "A new completed request has been submitted."
+msgid ""
+"A new completed request has been submitted from {form_title}.\n"
+"\n"
+"Lead ID: {lead_id}\n"
+"Source page: {page_url}\n"
+"\n"
+"Customer details and all submitted answers are listed below.\n"
+"\n"
+"Quick summary:\n"
+"{summary}"
 msgstr ""
 
-msgid "We received your request"
+msgid "We received your request, {customer_name}"
 msgstr ""
 
-msgid "Thank you. We received your request and will contact you soon."
+msgid ""
+"Hello {customer_name},\n"
+"\n"
+"Thank you for your request. We received your information and will contact you soon.\n"
+"\n"
+"Here is a copy of the details you submitted:\n"
+"{summary}"
 msgstr ""
 
-msgid "This email was sent automatically after a form submission."
+msgid "This email was sent automatically by {site_name}. Please keep it for your records."
+msgstr ""
+
+msgid "there"
 msgstr ""
 
 msgid "Where should lead notifications be sent?"

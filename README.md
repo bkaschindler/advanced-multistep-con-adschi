@@ -4,7 +4,7 @@ Tags: forms, multistep, ajax, leads, drag and drop
 Requires at least: 5.9
 Requires PHP: 7.4
 Tested up to: 6.9.1
-Stable tag: 1.2.9
+Stable tag: 1.3.1
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -74,6 +74,13 @@ Yes, the plugin loads RTL styles when WordPress is running in RTL mode.
 Yes. CSV export requires `manage_options` and a valid export nonce.
 
 == Changelog ==
+
+= 1.3.1 =
+* Expanded default admin email content to include lead metadata and submitted form details.
+* Added customer name placeholder support for customer notification emails.
+
+= 1.3.0 =
+* Added a delete action for forms on the Forms admin page while keeping existing leads.
 
 = 1.2.9 =
 * Added configurable admin and customer email templates.

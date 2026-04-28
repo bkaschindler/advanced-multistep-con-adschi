@@ -403,6 +403,35 @@ jQuery(document).ready(function($) {
 		});
 	});
 
+	$(document).on('click', '.smlf-delete-form', function(e) {
+		e.preventDefault();
+		if (!window.confirm(i18n.confirm_delete_form || 'Delete this form?')) {
+			return;
+		}
+
+		const $button = $(this);
+		$button.prop('disabled', true);
+
+		$.post(smlf_admin_obj.ajax_url, {
+			action: 'smlf_delete_form_admin',
+			nonce: smlf_admin_obj.nonce,
+			form_id: $button.data('form-id')
+		}).done(function(response) {
+			if (response.success) {
+				$button.closest('tr').fadeOut(160, function() {
+					$(this).remove();
+				});
+				return;
+			}
+
+			alert((response.data && response.data.message) || i18n.save_error);
+		}).fail(function() {
+			alert(i18n.save_error);
+		}).always(function() {
+			$button.prop('disabled', false);
+		});
+	});
+
 	if (typeof window.smlf_existing_form_data !== 'undefined' && Array.isArray(window.smlf_existing_form_data.steps) && window.smlf_existing_form_data.steps.length > 0) {
 		$('#smlf-form-title').val(window.smlf_existing_form_data.title || 'New Form');
 		loadSettings(window.smlf_existing_form_data.settings || {});

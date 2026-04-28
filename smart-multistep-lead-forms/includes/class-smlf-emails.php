@@ -11,6 +11,7 @@ class SMLF_Emails {
 		$switched     = $this->switch_to_form_locale( $form_context['language'] );
 		$admin_email  = sanitize_email( get_option( 'smlf_admin_email', get_option( 'admin_email' ) ) );
 		$user_email   = $this->extract_user_email( $data );
+		$user_name    = $this->extract_user_name( $data );
 
 		$context = array(
 			'lead_id'    => absint( $lead_id ),
@@ -18,18 +19,19 @@ class SMLF_Emails {
 			'form_title' => $form_context['title'],
 			'page_url'   => $this->get_lead_referrer( $lead_id ),
 			'site_name'  => wp_specialchars_decode( get_bloginfo( 'name' ), ENT_QUOTES ),
+			'customer_name' => $user_name,
 			'logo_url'   => $this->get_logo_url(),
 			'labels'     => $form_context['labels'],
 		);
 
 		if ( is_email( $admin_email ) ) {
 			$admin_subject = $this->replace_placeholders(
-				get_option( 'smlf_email_admin_subject', __( 'New lead from {form_title}', 'smart-multistep-lead-forms' ) ),
+				get_option( 'smlf_email_admin_subject', $this->get_default_email_text( 'admin_subject' ) ),
 				$data,
 				$context
 			);
 			$admin_intro   = $this->replace_placeholders(
-				get_option( 'smlf_email_admin_intro', __( 'A new completed request has been submitted.', 'smart-multistep-lead-forms' ) ),
+				get_option( 'smlf_email_admin_intro', $this->get_default_email_text( 'admin_intro' ) ),
 				$data,
 				$context
 			);
@@ -39,12 +41,12 @@ class SMLF_Emails {
 
 		if ( ! empty( $user_email ) ) {
 			$user_subject = $this->replace_placeholders(
-				get_option( 'smlf_email_user_subject', __( 'We received your request', 'smart-multistep-lead-forms' ) ),
+				get_option( 'smlf_email_user_subject', $this->get_default_email_text( 'user_subject' ) ),
 				$data,
 				$context
 			);
 			$user_intro   = $this->replace_placeholders(
-				get_option( 'smlf_email_user_intro', __( 'Thank you. We received your request and will contact you soon.', 'smart-multistep-lead-forms' ) ),
+				get_option( 'smlf_email_user_intro', $this->get_default_email_text( 'user_intro' ) ),
 				$data,
 				$context
 			);
@@ -59,7 +61,7 @@ class SMLF_Emails {
 
 	private function get_email_template( $intro, $data, $context, $audience ) {
 		$footer = $this->replace_placeholders(
-			get_option( 'smlf_email_footer_text', __( 'This email was sent automatically after a form submission.', 'smart-multistep-lead-forms' ) ),
+			get_option( 'smlf_email_footer_text', $this->get_default_email_text( 'footer' ) ),
 			$data,
 			$context
 		);
@@ -137,6 +139,7 @@ class SMLF_Emails {
 			'{form_title}' => $context['form_title'],
 			'{lead_id}'    => $context['lead_id'],
 			'{page_url}'   => $context['page_url'],
+			'{customer_name}' => $context['customer_name'],
 			'{summary}'    => wp_strip_all_tags( $this->build_text_summary( $data, $context['labels'] ) ),
 		);
 
@@ -225,6 +228,29 @@ class SMLF_Emails {
 		}
 
 		return '';
+	}
+
+	private function extract_user_name( $data ) {
+		foreach ( $data as $key => $value ) {
+			$key = strtolower( (string) $key );
+			if ( is_scalar( $value ) && '' !== trim( (string) $value ) && ( false !== strpos( $key, 'name' ) || false !== strpos( $key, 'fullname' ) ) ) {
+				return sanitize_text_field( $value );
+			}
+		}
+
+		return __( 'there', 'smart-multistep-lead-forms' );
+	}
+
+	private function get_default_email_text( $key ) {
+		$defaults = array(
+			'admin_subject' => __( 'New lead #{lead_id} from {form_title}', 'smart-multistep-lead-forms' ),
+			'admin_intro'   => __( "A new completed request has been submitted from {form_title}.\n\nLead ID: {lead_id}\nSource page: {page_url}\n\nCustomer details and all submitted answers are listed below.\n\nQuick summary:\n{summary}", 'smart-multistep-lead-forms' ),
+			'user_subject'  => __( 'We received your request, {customer_name}', 'smart-multistep-lead-forms' ),
+			'user_intro'    => __( "Hello {customer_name},\n\nThank you for your request. We received your information and will contact you soon.\n\nHere is a copy of the details you submitted:\n{summary}", 'smart-multistep-lead-forms' ),
+			'footer'        => __( 'This email was sent automatically by {site_name}. Please keep it for your records.', 'smart-multistep-lead-forms' ),
+		);
+
+		return isset( $defaults[ $key ] ) ? $defaults[ $key ] : '';
 	}
 
 	private function get_field_label( $key, $labels ) {

@@ -67,6 +67,37 @@ class SMLF_Ajax {
 		wp_send_json_success( array( 'form_id' => absint( $wpdb->insert_id ) ) );
 	}
 
+	public function delete_form_admin() {
+		check_ajax_referer( 'smlf_admin_nonce', 'nonce' );
+
+		if ( ! current_user_can( 'manage_options' ) ) {
+			wp_send_json_error( array( 'message' => __( 'Permission denied.', 'smart-multistep-lead-forms' ) ), 403 );
+		}
+
+		$form_id = isset( $_POST['form_id'] ) ? absint( wp_unslash( $_POST['form_id'] ) ) : 0;
+		if ( ! $form_id ) {
+			wp_send_json_error( array( 'message' => __( 'Form not found.', 'smart-multistep-lead-forms' ) ), 404 );
+		}
+
+		$existing = $this->get_form( $form_id, false );
+		if ( ! $existing ) {
+			wp_send_json_error( array( 'message' => __( 'Form not found.', 'smart-multistep-lead-forms' ) ), 404 );
+		}
+
+		global $wpdb;
+		$result = $wpdb->delete(
+			$wpdb->prefix . 'smlf_forms',
+			array( 'id' => $form_id ),
+			array( '%d' )
+		);
+
+		if ( false === $result ) {
+			wp_send_json_error( array( 'message' => __( 'Could not delete form.', 'smart-multistep-lead-forms' ) ), 500 );
+		}
+
+		wp_send_json_success( array( 'form_id' => $form_id ) );
+	}
+
 	public function verify_bot() {
 		$form_id         = isset( $_POST['form_id'] ) ? absint( wp_unslash( $_POST['form_id'] ) ) : 0;
 		$form            = $this->get_form( $form_id );

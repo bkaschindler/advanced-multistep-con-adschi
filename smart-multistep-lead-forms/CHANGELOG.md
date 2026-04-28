@@ -1,6 +1,15 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [1.3.1] - 2026-04-28
+### Changed
+- Expanded default admin email content to include lead metadata and submitted form details.
+- Added customer name placeholder support for customer notification emails.
+
+## [1.3.0] - 2026-04-28
+### Added
+- Delete action for forms on the Forms admin page while keeping existing leads.
+
 ## [1.2.9] - 2026-04-28
 ### Added
 - Configurable admin and customer email subjects, intro text, and footer text.

@@ -46,6 +46,7 @@ $conversion_rate = $total_leads > 0 ? round( ( $completed_leads / $total_leads )
 				<th><?php esc_html_e( 'Title', 'smart-multistep-lead-forms' ); ?></th>
 				<th><?php esc_html_e( 'Shortcode', 'smart-multistep-lead-forms' ); ?></th>
 				<th><?php esc_html_e( 'Date', 'smart-multistep-lead-forms' ); ?></th>
+				<th><?php esc_html_e( 'Actions', 'smart-multistep-lead-forms' ); ?></th>
 			</tr>
 		</thead>
 		<tbody>
@@ -63,13 +64,18 @@ $conversion_rate = $total_leads > 0 ? round( ( $completed_leads / $total_leads )
 						</td>
 						<td><code>[smlf_form id="<?php echo esc_attr( $form->id ); ?>"]</code></td>
 						<td><?php echo esc_html( $form->created_at ); ?></td>
+						<td>
+							<button type="button" class="button button-link-delete smlf-delete-form" data-form-id="<?php echo esc_attr( $form->id ); ?>">
+								<?php esc_html_e( 'Delete', 'smart-multistep-lead-forms' ); ?>
+							</button>
+						</td>
 					</tr>
 					<?php
 				}
 			} else {
 				?>
 				<tr>
-					<td colspan="4"><?php esc_html_e( 'No forms found.', 'smart-multistep-lead-forms' ); ?></td>
+					<td colspan="5"><?php esc_html_e( 'No forms found.', 'smart-multistep-lead-forms' ); ?></td>
 				</tr>
 				<?php
 			}
