@@ -119,6 +119,9 @@ class SMLF_Admin {
 		register_setting( 'smlf_options_group', 'smlf_captcha_method', array( 'sanitize_callback' => array( $this, 'sanitize_captcha_method' ) ) );
 		register_setting( 'smlf_options_group', 'smlf_captcha_site_key', array( 'sanitize_callback' => 'sanitize_text_field' ) );
 		register_setting( 'smlf_options_group', 'smlf_captcha_secret_key', array( 'sanitize_callback' => 'sanitize_text_field' ) );
+		register_setting( 'smlf_options_group', 'smlf_allowed_file_extensions', array( 'sanitize_callback' => array( $this, 'sanitize_file_extensions_option' ) ) );
+		register_setting( 'smlf_options_group', 'smlf_max_file_count', array( 'sanitize_callback' => 'absint' ) );
+		register_setting( 'smlf_options_group', 'smlf_max_file_size_mb', array( 'sanitize_callback' => 'absint' ) );
 		register_setting( 'smlf_options_group', 'smlf_uninstall_data_action', array( 'sanitize_callback' => array( $this, 'sanitize_uninstall_data_action' ) ) );
 	}
 
@@ -141,6 +144,12 @@ class SMLF_Admin {
 		$value   = sanitize_key( $value );
 		$allowed = array( 'keep', 'delete' );
 		return in_array( $value, $allowed, true ) ? $value : 'keep';
+	}
+
+	public function sanitize_file_extensions_option( $value ) {
+		$raw        = is_array( $value ) ? $value : explode( ',', (string) $value );
+		$extensions = array_unique( array_filter( array_map( 'sanitize_key', array_map( 'trim', $raw ) ) ) );
+		return ! empty( $extensions ) ? implode( ',', $extensions ) : 'jpg,jpeg,png,gif,webp,pdf,doc,docx,xls,xlsx,zip';
 	}
 
 	public function get_builder_i18n() {
@@ -458,9 +467,6 @@ class SMLF_Admin {
 				'accent_color'            => '#f97316',
 				'background_color'        => '#08111f',
 				'text_color'              => '#e5f7ff',
-				'allowed_file_extensions'  => 'jpg,jpeg,png,pdf,doc,docx',
-				'max_file_count'           => 4,
-				'max_file_size_mb'         => 12,
 			),
 			'steps'    => array(
 				array(

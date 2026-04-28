@@ -84,8 +84,8 @@
 
 .smlf-form-advanced-settings {
 	display: grid;
-	grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
-	gap: 12px;
+	grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+	gap: 14px;
 	margin-bottom: 22px;
 	padding: 16px;
 	border: 1px solid #dcdcde;
@@ -95,8 +95,14 @@
 
 .smlf-builder-settings-section {
 	grid-column: 1 / -1;
-	padding-top: 4px;
+	padding: 12px 0 2px;
+	border-top: 1px solid #e5e7eb;
 	color: #1d2327;
+}
+
+.smlf-builder-settings-section:first-child {
+	padding-top: 0;
+	border-top: 0;
 }
 
 .smlf-form-advanced-settings label {
@@ -169,18 +175,64 @@
 
 .smlf-field-item {
 	margin-bottom: 8px;
-	padding: 12px;
 	border: 1px solid #dcdcde;
 	border-radius: 6px;
 	background: #fff;
 	box-shadow: 0 5px 14px rgba(15, 23, 42, 0.04);
 }
 
+.smlf-field-item[open] {
+	border-color: #72aee6;
+	box-shadow: 0 10px 24px rgba(34, 113, 177, 0.09);
+}
+
+.smlf-field-item-summary {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+	min-height: 50px;
+	padding: 12px;
+	cursor: pointer;
+	list-style: none;
+}
+
+.smlf-field-item-summary::-webkit-details-marker {
+	display: none;
+}
+
+.smlf-field-item-summary::before {
+	content: "+";
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	width: 22px;
+	height: 22px;
+	border-radius: 999px;
+	background: #f0f6fc;
+	color: #2271b1;
+	font-weight: 800;
+}
+
+.smlf-field-item[open] > .smlf-field-item-summary::before {
+	content: "-";
+}
+
+.smlf-field-item-type {
+	margin-inline-start: auto;
+	padding: 3px 8px;
+	border-radius: 999px;
+	background: #f6f7f7;
+	color: #646970;
+	font-size: 11px;
+	font-weight: 700;
+}
+
 .smlf-field-settings {
 	display: grid;
 	grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
 	gap: 10px;
-	padding-top: 8px;
+	padding: 0 12px 12px;
+	border-top: 1px solid #f0f0f1;
 }
 
 .smlf-field-settings input[type="text"],
@@ -515,4 +567,84 @@
 	background: linear-gradient(135deg, #0ea5e9, #14b8a6);
 	color: #fff;
 	font-weight: 800;
+}
+
+.smlf-settings-inline-fields {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 14px;
+	align-items: flex-end;
+}
+
+.smlf-extension-picker {
+	flex: 1 1 100%;
+}
+
+.smlf-extension-picker > span {
+	display: block;
+	margin-bottom: 10px;
+	font-weight: 700;
+}
+
+.smlf-extension-groups {
+	display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+	gap: 12px;
+	max-width: 900px;
+}
+
+.smlf-extension-group {
+	padding: 12px;
+	border: 1px solid #dcdcde;
+	border-radius: 8px;
+	background: #fff;
+}
+
+.smlf-extension-group strong {
+	display: block;
+	margin-bottom: 8px;
+}
+
+.smlf-extension-buttons {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 7px;
+}
+
+.smlf-extension-button input {
+	position: absolute;
+	opacity: 0;
+	pointer-events: none;
+}
+
+.smlf-extension-button span {
+	display: inline-flex;
+	align-items: center;
+	min-height: 30px;
+	padding: 6px 10px;
+	border: 1px solid #c3c4c7;
+	border-radius: 999px;
+	background: #f6f7f7;
+	color: #1d2327;
+	font-size: 12px;
+	font-weight: 800;
+	cursor: pointer;
+}
+
+.smlf-extension-button input:checked + span {
+	border-color: #2271b1;
+	background: #f0f6fc;
+	color: #0a4b78;
+	box-shadow: inset 0 0 0 1px #2271b1;
+}
+
+.smlf-settings-inline-fields label {
+	display: flex;
+	flex-direction: column;
+	gap: 6px;
+	font-weight: 600;
+}
+
+.smlf-settings-inline-fields .description {
+	flex: 0 0 100%;
 }

@@ -119,7 +119,12 @@ $steps                   = isset( $steps ) && is_array( $steps ) ? $steps : arra
 						?>
 						<div class="smlf-field-row smlf-field-type-<?php echo esc_attr( $field_type ); ?> smlf-field-width-<?php echo esc_attr( $field_width ); ?>" style="<?php echo esc_attr( $field_style ); ?>">
 							<?php if ( 'message' !== $field_type ) : ?>
-								<label><?php echo esc_html( $field_label ); ?></label>
+								<label>
+									<?php echo esc_html( $field_label ); ?>
+									<?php if ( $required ) : ?>
+										<span class="smlf-required-star" aria-hidden="true">*</span>
+									<?php endif; ?>
+								</label>
 							<?php endif; ?>
 
 							<?php if ( $field_type === 'message' ) : ?>

@@ -2,7 +2,7 @@
 # This file is distributed under the GPLv2 or later.
 msgid ""
 msgstr ""
-"Project-Id-Version: Smart MultiStep Lead Forms 1.2.5\n"
+"Project-Id-Version: Smart MultiStep Lead Forms 1.2.6\n"
 "Report-Msgid-Bugs-To: https://adschi.com\n"
 "POT-Creation-Date: 2024-05-30 00:00:00+00:00\n"
 "MIME-Version: 1.0\n"
@@ -167,7 +167,25 @@ msgstr ""
 msgid "Maximum file size (MB)"
 msgstr ""
 
+msgid "These limits apply to all file upload fields unless an older saved form already has its own limits."
+msgstr ""
+
 msgid "Upload limits"
+msgstr ""
+
+msgid "Upload Limits"
+msgstr ""
+
+msgid "Images"
+msgstr ""
+
+msgid "Documents"
+msgstr ""
+
+msgid "Spreadsheets"
+msgstr ""
+
+msgid "Archives"
 msgstr ""
 
 msgid "Field width"

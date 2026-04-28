@@ -358,19 +358,13 @@ class SMLF_Ajax {
 		$captcha_method = isset( $settings['captcha_method'] ) ? sanitize_key( $settings['captcha_method'] ) : 'inherit';
 		$captcha_gate   = isset( $settings['captcha_gate'] ) ? sanitize_key( $settings['captcha_gate'] ) : 'before_form';
 		$captcha_step   = isset( $settings['captcha_step'] ) ? absint( $settings['captcha_step'] ) : 1;
-		$extensions     = isset( $settings['allowed_file_extensions'] ) ? $this->sanitize_file_extensions( $settings['allowed_file_extensions'] ) : 'jpg,jpeg,png,gif,webp,pdf,doc,docx,xls,xlsx,zip';
-		$max_count      = isset( $settings['max_file_count'] ) ? absint( $settings['max_file_count'] ) : 5;
-		$max_size       = isset( $settings['max_file_size_mb'] ) ? absint( $settings['max_file_size_mb'] ) : 10;
 		$theme          = $this->sanitize_choice( isset( $settings['theme'] ) ? $settings['theme'] : 'consult_pro', array( 'consult_pro', 'hvac_3d' ), 'consult_pro' );
 		$font_family    = isset( $settings['font_family'] ) ? sanitize_text_field( $settings['font_family'] ) : 'inherit';
 
-		return array(
+		$sanitized = array(
 			'captcha_method'          => in_array( $captcha_method, $allowed_methods, true ) ? $captcha_method : 'inherit',
 			'captcha_gate'            => in_array( $captcha_gate, $allowed_gates, true ) ? $captcha_gate : 'before_form',
 			'captcha_step'            => max( 1, $captcha_step ),
-			'allowed_file_extensions' => '' !== $extensions ? $extensions : 'jpg,jpeg,png,gif,webp,pdf,doc,docx,xls,xlsx,zip',
-			'max_file_count'          => max( 1, $max_count ),
-			'max_file_size_mb'        => max( 1, $max_size ),
 			'theme'                   => $theme,
 			'font_family'             => '' !== $font_family ? $font_family : 'inherit',
 			'primary_color'           => isset( $settings['primary_color'] ) ? sanitize_hex_color( $settings['primary_color'] ) : '#0ea5e9',
@@ -378,6 +372,8 @@ class SMLF_Ajax {
 			'background_color'        => isset( $settings['background_color'] ) ? sanitize_hex_color( $settings['background_color'] ) : '#ffffff',
 			'text_color'              => isset( $settings['text_color'] ) ? sanitize_hex_color( $settings['text_color'] ) : '#111827',
 		);
+
+		return $sanitized;
 	}
 
 	private function sanitize_choice( $value, $allowed, $fallback ) {
@@ -498,22 +494,10 @@ class SMLF_Ajax {
 
 	private function get_upload_settings( $form = null ) {
 		$settings = array(
-			'allowed_file_extensions' => array( 'jpg', 'jpeg', 'png', 'gif', 'webp', 'pdf', 'doc', 'docx', 'xls', 'xlsx', 'zip' ),
-			'max_file_count'          => 5,
-			'max_file_size_mb'        => 10,
+			'allowed_file_extensions' => array_filter( array_map( 'sanitize_key', array_map( 'trim', explode( ',', get_option( 'smlf_allowed_file_extensions', 'jpg,jpeg,png,gif,webp,pdf,doc,docx,xls,xlsx,zip' ) ) ) ) ),
+			'max_file_count'          => max( 1, absint( get_option( 'smlf_max_file_count', 5 ) ) ),
+			'max_file_size_mb'        => max( 1, absint( get_option( 'smlf_max_file_size_mb', 10 ) ) ),
 		);
-
-		if ( $form && ! empty( $form->form_data ) ) {
-			$form_data = json_decode( $form->form_data, true );
-			if ( is_array( $form_data ) && ! empty( $form_data['settings'] ) && is_array( $form_data['settings'] ) ) {
-				$form_settings = $this->sanitize_form_settings( $form_data['settings'] );
-				$settings      = array(
-					'allowed_file_extensions' => array_filter( array_map( 'sanitize_key', array_map( 'trim', explode( ',', $form_settings['allowed_file_extensions'] ) ) ) ),
-					'max_file_count'          => max( 1, absint( $form_settings['max_file_count'] ) ),
-					'max_file_size_mb'        => max( 1, absint( $form_settings['max_file_size_mb'] ) ),
-				);
-			}
-		}
 
 		if ( empty( $settings['allowed_file_extensions'] ) ) {
 			$settings['allowed_file_extensions'] = array( 'jpg', 'jpeg', 'png', 'gif', 'webp', 'pdf', 'doc', 'docx', 'xls', 'xlsx', 'zip' );

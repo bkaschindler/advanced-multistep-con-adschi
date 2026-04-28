@@ -4,7 +4,7 @@ Tags: forms, multistep, ajax, leads, drag and drop
 Requires at least: 5.9
 Requires PHP: 7.4
 Tested up to: 6.9.1
-Stable tag: 1.2.5
+Stable tag: 1.2.6
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -49,6 +49,7 @@ Features:
 * Webhook URL: receives JSON payloads for `smlf_lead_partial` and `smlf_lead_completed`.
 * Anti-bot / Captcha Method: choose none, custom checkbox, reCAPTCHA v2/v3, or Turnstile.
 * Captcha Site Key and Secret Key: required for third-party captcha providers.
+* Upload Limits: configure allowed file extensions, maximum file count, and maximum file size globally.
 * Data on Uninstall: choose whether plugin tables and options should remain or be fully deleted when the plugin is uninstalled.
 
 Webhook payload example:
@@ -68,6 +69,11 @@ Yes. CSV export requires `manage_options` and a valid export nonce.
 
 == Changelog ==
 
+= 1.2.6 =
+* Improved HVAC 3D select and upload-field contrast for dark layouts.
+* Upload file formats are now always read from global module settings.
+* Replaced the upload extension text field with grouped selectable format buttons in Settings.
+
 = 1.2.5 =
 * Fixed required-field validation when category cards auto-advance to the next step.
 * Improved frontend input styling and equalized clickable card heights.
@@ -79,6 +85,10 @@ Yes. CSV export requires `manage_options` and a valid export nonce.
 * Added consent checkbox block with linked text, default state, new-tab links, WordPress page popups, and custom popup text.
 * Added an uninstall data policy setting to keep or delete all plugin data when uninstalling.
 * Changed templates so they are no longer installed automatically; users load the templates they want from the builder.
+* Moved upload limits into global plugin settings.
+* Reworked validation to show animated inline field errors instead of browser alerts.
+* Added required stars beside required field labels.
+* Reduced builder clutter with collapsible field setting panels.
 
 = 1.2.4 =
 * Fixed frontend template safety for older/cached form schemas.

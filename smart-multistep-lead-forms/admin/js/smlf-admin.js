@@ -76,18 +76,21 @@ jQuery(document).ready(function($) {
 		const fieldWidth = data.field_width || 'full';
 		const displayMode = data.display_mode || (type === 'cards' ? 'cards' : 'default');
 
-		const $item = $('<div/>', {
+		const $item = $('<details/>', {
 			'class': 'smlf-field-item',
 			'data-type': type,
 			'data-field-id': fieldId
 		});
 
-		$item.append($('<strong/>', { text: label }));
-		$item.append($('<button/>', {
+		const $summary = $('<summary/>', { 'class': 'smlf-field-item-summary' });
+		$summary.append($('<strong/>', { text: label }));
+		$summary.append($('<span/>', { 'class': 'smlf-field-item-type', text: getDefaultLabel(type) }));
+		$summary.append($('<button/>', {
 			'class': 'button-link smlf-remove-field',
 			text: 'x',
 			css: { float: 'right', color: 'red' }
 		}));
+		$item.append($summary);
 
 		const $settings = $('<div/>', {
 			'class': 'smlf-field-settings',
@@ -302,6 +305,7 @@ jQuery(document).ready(function($) {
 
 	$(document).on('click', '.smlf-remove-field', function(e) {
 		e.preventDefault();
+		e.stopPropagation();
 		$(this).closest('.smlf-field-item').remove();
 		renderPreview();
 	});
@@ -317,7 +321,7 @@ jQuery(document).ready(function($) {
 		addStep();
 	}
 
-	$(document).on('input change', '#smlf-form-title, #smlf-theme, #smlf-font-family, #smlf-primary-color, #smlf-accent-color, #smlf-background-color, #smlf-text-color, #smlf-captcha-method, #smlf-captcha-gate, #smlf-captcha-step, #smlf-allowed-file-extensions, #smlf-max-file-count, #smlf-max-file-size-mb, .smlf-step input, .smlf-step select, .smlf-field-item input, .smlf-field-item select', renderPreview);
+	$(document).on('input change', '#smlf-form-title, #smlf-theme, #smlf-font-family, #smlf-primary-color, #smlf-accent-color, #smlf-background-color, #smlf-text-color, #smlf-captcha-method, #smlf-captcha-gate, #smlf-captcha-step, .smlf-step input, .smlf-step select, .smlf-field-item input, .smlf-field-item select, .smlf-field-item textarea', renderPreview);
 
 	$('#smlf-load-template').on('click', function(e) {
 		e.preventDefault();
@@ -455,11 +459,6 @@ jQuery(document).ready(function($) {
 				text: i18n.captcha_method + ': ' + $('#smlf-captcha-method option:selected').text() + ' / ' + $('#smlf-captcha-gate option:selected').text()
 			}));
 		}
-		$shell.append($('<div/>', {
-			'class': 'smlf-preview-upload-note',
-			text: i18n.upload_limits + ': ' + settings.allowed_file_extensions + ' / ' + settings.max_file_count + ' / ' + settings.max_file_size_mb + 'MB'
-		}));
-
 		if (!steps.length) {
 			$shell.append($('<div/>', {
 				'class': 'smlf-preview-message',
@@ -550,9 +549,6 @@ jQuery(document).ready(function($) {
 			captcha_method: $('#smlf-captcha-method').val() || 'inherit',
 			captcha_gate: $('#smlf-captcha-gate').val() || 'before_form',
 			captcha_step: parseInt($('#smlf-captcha-step').val() || '1', 10),
-			allowed_file_extensions: $('#smlf-allowed-file-extensions').val() || 'jpg,jpeg,png,gif,webp,pdf,doc,docx,xls,xlsx,zip',
-			max_file_count: parseInt($('#smlf-max-file-count').val() || '5', 10),
-			max_file_size_mb: parseInt($('#smlf-max-file-size-mb').val() || '10', 10),
 			theme: $('#smlf-theme').val() || 'consult_pro',
 			font_family: $('#smlf-font-family').val() || 'inherit',
 			primary_color: $('#smlf-primary-color').val() || '#0ea5e9',
@@ -572,9 +568,6 @@ jQuery(document).ready(function($) {
 		$('#smlf-captcha-method').val(settings.captcha_method || 'inherit');
 		$('#smlf-captcha-gate').val(settings.captcha_gate || 'before_form');
 		$('#smlf-captcha-step').val(settings.captcha_step || 1);
-		$('#smlf-allowed-file-extensions').val(settings.allowed_file_extensions || 'jpg,jpeg,png,gif,webp,pdf,doc,docx,xls,xlsx,zip');
-		$('#smlf-max-file-count').val(settings.max_file_count || 5);
-		$('#smlf-max-file-size-mb').val(settings.max_file_size_mb || 10);
 	}
 
 	function getOptionalColor($field, key) {

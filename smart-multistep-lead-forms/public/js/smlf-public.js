@@ -204,8 +204,10 @@ jQuery(document).ready(function($) {
 			return hasContact;
 		}
 
-		function validateStep($step) {
+		function validateStep($step, options) {
+			options = options || {};
 			let valid = true;
+			clearStepErrors($step);
 
 			$step.find('[required]').each(function() {
 				const $field = $(this);
@@ -214,24 +216,35 @@ jQuery(document).ready(function($) {
 
 				if ((type === 'radio' || type === 'checkbox') && name) {
 					if ($step.find('[name="' + name + '"]:checked').length === 0) {
+						if (!options.silent) {
+							showFieldError($field, smlf_public_obj.i18n.required);
+						}
 						valid = false;
 					}
 					return;
 				}
 
 				if (!$field.val()) {
+					if (!options.silent) {
+						showFieldError($field, smlf_public_obj.i18n.required);
+					}
 					valid = false;
 					return;
 				}
 
 				if (type === 'email' && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test($field.val())) {
-					alert(smlf_public_obj.i18n.invalid_email);
+					if (!options.silent) {
+						showFieldError($field, smlf_public_obj.i18n.invalid_email);
+					}
 					valid = false;
 				}
 			});
 
-			if (!valid) {
-				alert(smlf_public_obj.i18n.required);
+			if (!valid && !options.silent) {
+				const $firstInvalid = $step.find('.smlf-field-invalid').first();
+				if ($firstInvalid.length) {
+					$firstInvalid.get(0).scrollIntoView({ behavior: 'smooth', block: 'center' });
+				}
 			}
 
 			return valid;
@@ -264,7 +277,7 @@ jQuery(document).ready(function($) {
 			if ($(this).is(':checked')) {
 				if (currentStep < totalSteps - 1) {
 					setTimeout(function() {
-						if (!validateStep($steps.eq(currentStep))) {
+						if (!validateStep($steps.eq(currentStep), { silent: true })) {
 							return;
 						}
 
@@ -344,7 +357,7 @@ jQuery(document).ready(function($) {
 
 			const validationError = validateFiles(files);
 			if (validationError) {
-				alert(validationError);
+				showFieldError($(this), validationError);
 				$(this).val('');
 				return;
 			}
@@ -446,14 +459,21 @@ jQuery(document).ready(function($) {
 					showError(response);
 					$btn.prop('disabled', false).text(smlf_public_obj.i18n.submit);
 				}).fail(function() {
-					alert(smlf_public_obj.i18n.error);
+					showFormError(smlf_public_obj.i18n.error);
 					$btn.prop('disabled', false).text(smlf_public_obj.i18n.submit);
 				});
 			});
 		}
 
+		$form.on('input change', 'input, textarea, select', function() {
+			const $row = $(this).closest('.smlf-field-row');
+			$row.removeClass('smlf-field-invalid');
+			$row.find('.smlf-field-error').remove();
+			$form.find('.smlf-form-error').remove();
+		});
+
 		function showError(response) {
-			alert((response && response.data && response.data.message) || smlf_public_obj.i18n.error);
+			showFormError((response && response.data && response.data.message) || smlf_public_obj.i18n.error);
 		}
 
 		function appendSerializedData(requestData) {
@@ -505,6 +525,32 @@ jQuery(document).ready(function($) {
 				formatted = formatted.replace('%s', value);
 			});
 			return formatted;
+		}
+
+		function clearStepErrors($step) {
+			$step.find('.smlf-field-invalid').removeClass('smlf-field-invalid');
+			$step.find('.smlf-field-error').remove();
+			$step.find('.smlf-form-error').remove();
+		}
+
+		function showFieldError($field, message) {
+			const $row = $field.closest('.smlf-field-row');
+			if (!$row.length || $row.find('.smlf-field-error').length) {
+				return;
+			}
+			$row.addClass('smlf-field-invalid');
+			$row.append($('<div/>', {
+				'class': 'smlf-field-error',
+				text: message
+			}));
+		}
+
+		function showFormError(message) {
+			$wrapper.find('.smlf-form-error').remove();
+			$form.prepend($('<div/>', {
+				'class': 'smlf-form-error',
+				text: message
+			}));
 		}
 	});
 });

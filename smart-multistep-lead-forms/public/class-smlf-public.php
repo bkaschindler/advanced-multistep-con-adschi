@@ -95,9 +95,9 @@ class SMLF_Public {
 		$method        = isset( $settings['captcha_method'] ) ? sanitize_key( $settings['captcha_method'] ) : 'inherit';
 		$gate          = isset( $settings['captcha_gate'] ) ? sanitize_key( $settings['captcha_gate'] ) : 'before_form';
 		$step          = isset( $settings['captcha_step'] ) ? absint( $settings['captcha_step'] ) : 1;
-		$extensions    = isset( $settings['allowed_file_extensions'] ) ? $this->sanitize_file_extensions( $settings['allowed_file_extensions'] ) : 'jpg,jpeg,png,gif,webp,pdf,doc,docx,xls,xlsx,zip';
-		$max_count     = isset( $settings['max_file_count'] ) ? absint( $settings['max_file_count'] ) : 5;
-		$max_size      = isset( $settings['max_file_size_mb'] ) ? absint( $settings['max_file_size_mb'] ) : 10;
+		$extensions    = $this->sanitize_file_extensions( get_option( 'smlf_allowed_file_extensions', 'jpg,jpeg,png,gif,webp,pdf,doc,docx,xls,xlsx,zip' ) );
+		$max_count     = absint( get_option( 'smlf_max_file_count', 5 ) );
+		$max_size      = absint( get_option( 'smlf_max_file_size_mb', 10 ) );
 		$theme         = $this->sanitize_choice( isset( $settings['theme'] ) ? $settings['theme'] : 'consult_pro', array( 'consult_pro', 'hvac_3d' ), 'consult_pro' );
 		$font_family   = isset( $settings['font_family'] ) ? sanitize_text_field( $settings['font_family'] ) : 'inherit';
 

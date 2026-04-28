@@ -1,6 +1,12 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [1.2.6] - 2026-04-28
+### Changed
+- Improved HVAC 3D select and upload-field contrast on dark backgrounds.
+- File upload formats are now always resolved from global module settings.
+- Replaced manual extension entry with grouped selectable format buttons in Settings.
+
 ## [1.2.5] - 2026-04-28
 ### Added
 - Configurable per-form upload limits for allowed extensions, maximum file count, and maximum file size.
@@ -11,17 +17,22 @@ All notable changes to this project will be documented in this file.
 - HVAC 3D sample template for heating and cooling service requests.
 - Consent checkbox block with configurable linked text, default checked state, new-tab links, WordPress page popups, and custom text popups.
 - Setting to keep or fully delete plugin data when the plugin is uninstalled.
+- Global upload limit settings for file extensions, file count, and file size.
 
 ### Changed
 - Refined the form builder admin interface with cleaner panels, spacing, and responsive layout.
 - Improved frontend input styling and equalized clickable card heights.
 - Added a modern animated HVAC 3D frontend theme with layered motion, depth, and glass panels.
 - Templates are no longer installed automatically on activation; users load only the templates they want from the form builder.
+- Moved upload limits out of the form builder into global module settings.
+- Reduced form builder clutter with collapsible field settings.
 
 ### Fixed
 - Clickable category cards now respect required fields before auto-advancing to the next step.
 - File uploads are now validated against form upload settings on both client and server.
 - Per-form captcha step timing now uses the saved `on_step` value consistently.
+- Validation errors now render inline under fields instead of using browser alert dialogs.
+- Required fields now show a visible required star beside their labels.
 
 ## [1.2.3] - 2026-04-27
 ### Fixed

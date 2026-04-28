@@ -125,21 +125,6 @@ if ( $form_id ) {
 					<span><?php echo esc_html( $builder_i18n['captcha_step'] ); ?></span>
 					<input type="number" id="smlf-captcha-step" min="1" value="1">
 				</label>
-				<div class="smlf-builder-settings-section">
-					<strong><?php echo esc_html( $builder_i18n['upload_limits'] ); ?></strong>
-				</div>
-				<label>
-					<span><?php echo esc_html( $builder_i18n['allowed_file_extensions'] ); ?></span>
-					<input type="text" id="smlf-allowed-file-extensions" placeholder="jpg,png,pdf,zip">
-				</label>
-				<label>
-					<span><?php echo esc_html( $builder_i18n['max_file_count'] ); ?></span>
-					<input type="number" id="smlf-max-file-count" min="1" value="5">
-				</label>
-				<label>
-					<span><?php echo esc_html( $builder_i18n['max_file_size_mb'] ); ?></span>
-					<input type="number" id="smlf-max-file-size-mb" min="1" value="10">
-				</label>
 			</div>
 
 			<div id="smlf-steps-container">

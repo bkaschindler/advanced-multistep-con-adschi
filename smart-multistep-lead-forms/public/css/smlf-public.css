@@ -142,6 +142,12 @@
 	font-weight: 700;
 }
 
+.smlf-required-star {
+	color: #f43f5e;
+	font-weight: 900;
+	margin-inline-start: 4px;
+}
+
 .smlf-form-wrapper .smlf-input {
 	appearance: none;
 	box-sizing: border-box;
@@ -158,6 +164,35 @@
 	line-height: 1.45;
 	outline: none;
 	transition: border-color 160ms ease, box-shadow 160ms ease, background 160ms ease;
+}
+
+.smlf-field-invalid .smlf-input,
+.smlf-field-invalid .smlf-card-content,
+.smlf-field-invalid .smlf-radio-option,
+.smlf-field-invalid .smlf-file-dropzone,
+.smlf-field-invalid .smlf-consent-option {
+	border-color: rgba(244, 63, 94, 0.82);
+	box-shadow: 0 0 0 4px rgba(244, 63, 94, 0.13), 0 12px 26px rgba(244, 63, 94, 0.12);
+	animation: smlf-field-shake 260ms ease both;
+}
+
+.smlf-field-error,
+.smlf-form-error {
+	margin-top: 8px;
+	padding: 9px 11px;
+	border: 1px solid rgba(244, 63, 94, 0.28);
+	border-radius: 10px;
+	background: rgba(255, 241, 242, 0.96);
+	color: #be123c;
+	font-size: 13px;
+	font-weight: 800;
+	line-height: 1.5;
+	animation: smlf-error-in 180ms ease both;
+}
+
+.smlf-form-error {
+	width: 100%;
+	margin: 0 0 16px;
 }
 
 .smlf-form-wrapper .smlf-input:hover {
@@ -536,6 +571,40 @@
 	backdrop-filter: blur(16px);
 }
 
+.smlf-theme-hvac-3d .smlf-select {
+	background-color: rgba(8, 17, 31, 0.96);
+	color: #f0fbff;
+	border-color: rgba(125, 211, 252, 0.72);
+}
+
+.smlf-theme-hvac-3d .smlf-select option {
+	background: #07111f;
+	color: #f0fbff;
+}
+
+.smlf-theme-hvac-3d .smlf-select option:checked,
+.smlf-theme-hvac-3d .smlf-select option:hover {
+	background: #0e7490;
+	color: #ffffff;
+}
+
+.smlf-theme-hvac-3d .smlf-file-dropzone {
+	background:
+		linear-gradient(135deg, rgba(8, 17, 31, 0.88), rgba(15, 23, 42, 0.82)),
+		radial-gradient(circle at top right, rgba(249, 115, 22, 0.16), transparent 32%);
+	color: #e5f7ff;
+}
+
+.smlf-theme-hvac-3d .smlf-file-dropzone-title {
+	color: #f8fdff;
+	text-shadow: 0 8px 20px rgba(14, 165, 233, 0.2);
+}
+
+.smlf-theme-hvac-3d .smlf-file-dropzone-note {
+	color: #bdefff;
+	font-weight: 800;
+}
+
 .smlf-theme-hvac-3d .smlf-card-content {
 	min-height: 96px;
 	transform: translateZ(0);
@@ -607,6 +676,29 @@
 	to {
 		opacity: 1;
 		transform: translateY(0) scale(1);
+	}
+}
+
+@keyframes smlf-error-in {
+	from {
+		opacity: 0;
+		transform: translateY(-4px);
+	}
+	to {
+		opacity: 1;
+		transform: translateY(0);
+	}
+}
+
+@keyframes smlf-field-shake {
+	0%, 100% {
+		transform: translateX(0);
+	}
+	35% {
+		transform: translateX(-3px);
+	}
+	70% {
+		transform: translateX(3px);
 	}
 }
 

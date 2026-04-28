@@ -55,6 +55,47 @@
 				</td>
 			</tr>
 			<tr valign="top">
+				<th scope="row"><?php esc_html_e( 'Upload Limits', 'smart-multistep-lead-forms' ); ?></th>
+				<td class="smlf-settings-inline-fields">
+					<div class="smlf-extension-picker">
+						<span><?php esc_html_e( 'Allowed file extensions', 'smart-multistep-lead-forms' ); ?></span>
+						<?php
+						$selected_extensions = array_filter( array_map( 'sanitize_key', array_map( 'trim', explode( ',', get_option( 'smlf_allowed_file_extensions', 'jpg,jpeg,png,gif,webp,pdf,doc,docx,xls,xlsx,zip' ) ) ) ) );
+						$extension_groups    = array(
+							'images'    => array( 'label' => __( 'Images', 'smart-multistep-lead-forms' ), 'items' => array( 'jpg', 'jpeg', 'png', 'gif', 'webp' ) ),
+							'documents' => array( 'label' => __( 'Documents', 'smart-multistep-lead-forms' ), 'items' => array( 'pdf', 'doc', 'docx' ) ),
+							'sheets'    => array( 'label' => __( 'Spreadsheets', 'smart-multistep-lead-forms' ), 'items' => array( 'xls', 'xlsx' ) ),
+							'archives'  => array( 'label' => __( 'Archives', 'smart-multistep-lead-forms' ), 'items' => array( 'zip' ) ),
+						);
+						?>
+						<div class="smlf-extension-groups">
+							<?php foreach ( $extension_groups as $group ) : ?>
+								<div class="smlf-extension-group">
+									<strong><?php echo esc_html( $group['label'] ); ?></strong>
+									<div class="smlf-extension-buttons">
+										<?php foreach ( $group['items'] as $extension ) : ?>
+											<label class="smlf-extension-button">
+												<input type="checkbox" name="smlf_allowed_file_extensions[]" value="<?php echo esc_attr( $extension ); ?>" <?php checked( in_array( $extension, $selected_extensions, true ) ); ?>>
+												<span><?php echo esc_html( strtoupper( $extension ) ); ?></span>
+											</label>
+										<?php endforeach; ?>
+									</div>
+								</div>
+							<?php endforeach; ?>
+						</div>
+					</div>
+					<label>
+						<span><?php esc_html_e( 'Maximum file count', 'smart-multistep-lead-forms' ); ?></span>
+						<input type="number" name="smlf_max_file_count" min="1" value="<?php echo esc_attr( get_option( 'smlf_max_file_count', 5 ) ); ?>" class="small-text" />
+					</label>
+					<label>
+						<span><?php esc_html_e( 'Maximum file size (MB)', 'smart-multistep-lead-forms' ); ?></span>
+						<input type="number" name="smlf_max_file_size_mb" min="1" value="<?php echo esc_attr( get_option( 'smlf_max_file_size_mb', 10 ) ); ?>" class="small-text" />
+					</label>
+					<p class="description"><?php esc_html_e( 'These limits apply to all file upload fields unless an older saved form already has its own limits.', 'smart-multistep-lead-forms' ); ?></p>
+				</td>
+			</tr>
+			<tr valign="top">
 				<th scope="row"><?php esc_html_e( 'Data on Uninstall', 'smart-multistep-lead-forms' ); ?></th>
 				<td>
 					<?php $uninstall_action = get_option( 'smlf_uninstall_data_action', 'keep' ); ?>
