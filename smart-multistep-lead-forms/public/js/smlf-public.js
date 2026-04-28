@@ -21,6 +21,7 @@ jQuery(document).ready(function($) {
 		let verifiedCaptchaToken = '';
 		let pendingStepIndex = null;
 		let pendingSubmitButton = null;
+		const startedAt = Date.now();
 
 		if (captchaMethod === 'none' || captchaGate !== 'before_form') {
 			revealForm();
@@ -506,6 +507,7 @@ jQuery(document).ready(function($) {
 				requestData.append('captcha_token', token || verifiedCaptchaToken);
 				requestData.append('custom_verified', customState || customVerified);
 				requestData.append('page_url', window.location.href);
+				requestData.append('smlf_elapsed', Math.max(0, Math.round((Date.now() - startedAt) / 1000)));
 				appendSerializedData(requestData);
 				appendFiles(requestData);
 

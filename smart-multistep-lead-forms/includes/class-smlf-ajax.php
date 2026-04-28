@@ -200,6 +200,11 @@ class SMLF_Ajax {
 			wp_send_json_error( array( 'message' => __( 'Form not found.', 'smart-multistep-lead-forms' ) ), 404 );
 		}
 
+		$anti_spam_result = $this->verify_simple_anti_spam();
+		if ( is_wp_error( $anti_spam_result ) ) {
+			wp_send_json_error( array( 'message' => $anti_spam_result->get_error_message() ), 400 );
+		}
+
 		$captcha_result = $this->verify_captcha_token( $this->get_post_text( 'captcha_token' ), $this->get_post_text( 'custom_verified' ), false, $form );
 		if ( is_wp_error( $captcha_result ) ) {
 			wp_send_json_error( array( 'message' => $captcha_result->get_error_message() ), 400 );
@@ -279,10 +284,11 @@ class SMLF_Ajax {
 		}
 
 		$lead_id = isset( $_POST['lead_id'] ) ? absint( wp_unslash( $_POST['lead_id'] ) ) : 0;
+		$allowed_statuses = array_keys( $this->get_lead_statuses() );
 		$status  = $this->sanitize_choice(
 			isset( $_POST['lead_status'] ) ? wp_unslash( $_POST['lead_status'] ) : 'new',
-			array( 'new', 'contacted', 'qualified', 'won', 'lost' ),
-			'new'
+			! empty( $allowed_statuses ) ? $allowed_statuses : array( 'new' ),
+			! empty( $allowed_statuses ) ? $allowed_statuses[0] : 'new'
 		);
 
 		if ( ! $lead_id ) {
@@ -306,6 +312,36 @@ class SMLF_Ajax {
 		wp_send_json_success( array( 'lead_status' => $status ) );
 	}
 
+	public function update_lead_notes() {
+		check_ajax_referer( 'smlf_admin_nonce', 'nonce' );
+
+		if ( ! current_user_can( 'manage_options' ) ) {
+			wp_send_json_error( array( 'message' => __( 'Permission denied.', 'smart-multistep-lead-forms' ) ), 403 );
+		}
+
+		$lead_id = isset( $_POST['lead_id'] ) ? absint( wp_unslash( $_POST['lead_id'] ) ) : 0;
+		$notes   = isset( $_POST['notes'] ) ? sanitize_textarea_field( wp_unslash( $_POST['notes'] ) ) : '';
+
+		if ( ! $lead_id ) {
+			wp_send_json_error( array( 'message' => __( 'Lead not found.', 'smart-multistep-lead-forms' ) ), 404 );
+		}
+
+		global $wpdb;
+		$result = $wpdb->update(
+			$wpdb->prefix . 'smlf_leads',
+			array( 'admin_notes' => $notes ),
+			array( 'id' => $lead_id ),
+			array( '%s' ),
+			array( '%d' )
+		);
+
+		if ( false === $result ) {
+			wp_send_json_error( array( 'message' => __( 'Could not save notes.', 'smart-multistep-lead-forms' ) ), 500 );
+		}
+
+		wp_send_json_success();
+	}
+
 	public function export_leads_csv() {
 		if ( ! current_user_can( 'manage_options' ) ) {
 			wp_die( esc_html__( 'Permission denied.', 'smart-multistep-lead-forms' ) );
@@ -314,8 +350,75 @@ class SMLF_Ajax {
 		check_admin_referer( 'smlf_export_leads_csv' );
 
 		global $wpdb;
-		$table_name = $wpdb->prefix . 'smlf_leads';
-		$leads      = $wpdb->get_results( "SELECT * FROM {$table_name} ORDER BY id DESC", ARRAY_A );
+		$leads_table = $wpdb->prefix . 'smlf_leads';
+		$forms_table = $wpdb->prefix . 'smlf_forms';
+		$where       = array( '1=1' );
+		$params      = array();
+
+		$form_id     = isset( $_GET['form_id'] ) ? absint( wp_unslash( $_GET['form_id'] ) ) : 0;
+		$status      = isset( $_GET['status'] ) ? sanitize_key( wp_unslash( $_GET['status'] ) ) : '';
+		$lead_status = isset( $_GET['lead_status'] ) ? sanitize_key( wp_unslash( $_GET['lead_status'] ) ) : '';
+		$search      = isset( $_GET['s'] ) ? sanitize_text_field( wp_unslash( $_GET['s'] ) ) : '';
+		$date_from   = isset( $_GET['date_from'] ) ? sanitize_text_field( wp_unslash( $_GET['date_from'] ) ) : '';
+		$date_to     = isset( $_GET['date_to'] ) ? sanitize_text_field( wp_unslash( $_GET['date_to'] ) ) : '';
+
+		if ( $form_id ) {
+			$where[]  = 'l.form_id = %d';
+			$params[] = $form_id;
+		}
+
+		if ( in_array( $status, array( 'started', 'partial', 'completed' ), true ) ) {
+			$where[]  = 'l.status = %s';
+			$params[] = $status;
+		}
+
+		if ( in_array( $lead_status, array_keys( $this->get_lead_statuses() ), true ) ) {
+			$where[]  = 'l.lead_status = %s';
+			$params[] = $lead_status;
+		}
+
+		if ( '' !== $search ) {
+			$like     = '%' . $wpdb->esc_like( $search ) . '%';
+			$where[]  = '(l.email LIKE %s OR l.phone LIKE %s OR l.lead_data LIKE %s OR l.referrer LIKE %s OR f.title LIKE %s)';
+			$params[] = $like;
+			$params[] = $like;
+			$params[] = $like;
+			$params[] = $like;
+			$params[] = $like;
+		}
+
+		if ( preg_match( '/^\d{4}-\d{2}-\d{2}$/', $date_from ) ) {
+			$where[]  = 'l.created_at >= %s';
+			$params[] = $date_from . ' 00:00:00';
+		}
+
+		if ( preg_match( '/^\d{4}-\d{2}-\d{2}$/', $date_to ) ) {
+			$where[]  = 'l.created_at <= %s';
+			$params[] = $date_to . ' 23:59:59';
+		}
+
+		$sql = "SELECT l.*, f.title AS form_title FROM {$leads_table} l LEFT JOIN {$forms_table} f ON f.id = l.form_id WHERE " . implode( ' AND ', $where ) . ' ORDER BY l.id DESC';
+		if ( $params ) {
+			$sql = $wpdb->prepare( $sql, $params );
+		}
+		$leads = $wpdb->get_results( $sql, ARRAY_A );
+
+		$allowed_columns = array(
+			'id'          => 'ID',
+			'form'        => 'Form',
+			'status'      => 'Status',
+			'lead_status' => 'Lead Status',
+			'contact'     => 'Contact',
+			'source'      => 'Source Page',
+			'data'        => 'Data',
+			'notes'       => 'Internal Notes',
+			'date'        => 'Created At',
+		);
+		$selected_columns = isset( $_GET['columns'] ) && is_array( $_GET['columns'] ) ? array_map( 'sanitize_key', wp_unslash( $_GET['columns'] ) ) : array_keys( $allowed_columns );
+		$selected_columns = array_values( array_intersect( $selected_columns, array_keys( $allowed_columns ) ) );
+		if ( empty( $selected_columns ) ) {
+			$selected_columns = array_keys( $allowed_columns );
+		}
 
 		nocache_headers();
 		header( 'Content-Type: text/csv; charset=utf-8' );
@@ -326,22 +429,44 @@ class SMLF_Ajax {
 			wp_die( esc_html__( 'Could not open CSV output.', 'smart-multistep-lead-forms' ) );
 		}
 
-		fputcsv( $output, array( 'ID', 'Form ID', 'Status', 'Lead Status', 'Email', 'Phone', 'Data', 'Created At' ) );
+		fputcsv( $output, array_map( static function( $column ) use ( $allowed_columns ) {
+			return $allowed_columns[ $column ];
+		}, $selected_columns ) );
 
 		foreach ( $leads as $lead ) {
-			fputcsv(
-				$output,
-				array(
-					$lead['id'],
-					$lead['form_id'],
-					$lead['status'],
-					isset( $lead['lead_status'] ) ? $lead['lead_status'] : 'new',
-					$lead['email'],
-					$lead['phone'],
-					$lead['lead_data'],
-					$lead['created_at'],
-				)
-			);
+			$row = array();
+			foreach ( $selected_columns as $column ) {
+				switch ( $column ) {
+					case 'id':
+						$row[] = $lead['id'];
+						break;
+					case 'form':
+						$row[] = $lead['form_title'] ? $lead['form_title'] : 'Form #' . $lead['form_id'];
+						break;
+					case 'status':
+						$row[] = $lead['status'];
+						break;
+					case 'lead_status':
+						$row[] = isset( $lead['lead_status'] ) ? $lead['lead_status'] : 'new';
+						break;
+					case 'contact':
+						$row[] = trim( $lead['email'] . ' / ' . $lead['phone'], ' /' );
+						break;
+					case 'source':
+						$row[] = $lead['referrer'];
+						break;
+					case 'data':
+						$row[] = $lead['lead_data'];
+						break;
+					case 'notes':
+						$row[] = isset( $lead['admin_notes'] ) ? $lead['admin_notes'] : '';
+						break;
+					case 'date':
+						$row[] = $lead['created_at'];
+						break;
+				}
+			}
+			fputcsv( $output, $row );
 		}
 
 		fclose( $output );
@@ -491,6 +616,10 @@ class SMLF_Ajax {
 
 			$name = sanitize_key( $field['name'] );
 			if ( '' === $name ) {
+				continue;
+			}
+
+			if ( in_array( $name, array( 'smlf_website', 'smlf_elapsed' ), true ) ) {
 				continue;
 			}
 
@@ -744,6 +873,42 @@ class SMLF_Ajax {
 		}
 
 		return in_array( $method, $this->allowed_captcha_methods, true ) ? $method : 'custom';
+	}
+
+	private function get_lead_statuses() {
+		$raw      = get_option( 'smlf_lead_statuses', "new:New\ncontacted:Contacted\nqualified:Qualified\nwon:Won\nlost:Lost" );
+		$lines    = preg_split( '/\r\n|\r|\n/', (string) $raw );
+		$statuses = array();
+
+		foreach ( $lines as $line ) {
+			$line = trim( $line );
+			if ( '' === $line ) {
+				continue;
+			}
+
+			$parts = array_map( 'trim', explode( ':', $line, 2 ) );
+			$key   = sanitize_key( $parts[0] );
+			$label = isset( $parts[1] ) && '' !== $parts[1] ? sanitize_text_field( $parts[1] ) : sanitize_text_field( $parts[0] );
+			if ( '' !== $key && '' !== $label ) {
+				$statuses[ $key ] = $label;
+			}
+		}
+
+		return ! empty( $statuses ) ? $statuses : array( 'new' => 'New' );
+	}
+
+	private function verify_simple_anti_spam() {
+		$honeypot = isset( $_POST['smlf_website'] ) ? trim( sanitize_text_field( wp_unslash( $_POST['smlf_website'] ) ) ) : '';
+		if ( '' !== $honeypot ) {
+			return new WP_Error( 'smlf_spam_detected', __( 'Your submission could not be accepted.', 'smart-multistep-lead-forms' ) );
+		}
+
+		$elapsed = isset( $_POST['smlf_elapsed'] ) ? absint( wp_unslash( $_POST['smlf_elapsed'] ) ) : 0;
+		if ( $elapsed < 3 || $elapsed > DAY_IN_SECONDS ) {
+			return new WP_Error( 'smlf_spam_timing', __( 'Please take a moment before submitting the form.', 'smart-multistep-lead-forms' ) );
+		}
+
+		return true;
 	}
 
 	private function get_post_text( $key ) {

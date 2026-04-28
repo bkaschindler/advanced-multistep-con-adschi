@@ -64,6 +64,13 @@ $default_footer_text   = __( 'This email was sent automatically by {site_name}. 
 				</td>
 			</tr>
 			<tr valign="top">
+				<th scope="row"><?php esc_html_e( 'Lead Statuses', 'smart-multistep-lead-forms' ); ?></th>
+				<td>
+					<textarea name="smlf_lead_statuses" rows="6" class="large-text code"><?php echo esc_textarea( get_option( 'smlf_lead_statuses', "new:New\ncontacted:Contacted\nqualified:Qualified\nwon:Won\nlost:Lost" ) ); ?></textarea>
+					<p class="description"><?php esc_html_e( 'Enter one status per line in key:Label format. Example: contacted:Contacted', 'smart-multistep-lead-forms' ); ?></p>
+				</td>
+			</tr>
+			<tr valign="top">
 				<th scope="row"><?php esc_html_e( 'Webhook URL', 'smart-multistep-lead-forms' ); ?></th>
 				<td>
 					<input type="url" name="smlf_webhook_url" value="<?php echo esc_attr( get_option('smlf_webhook_url', '') ); ?>" class="regular-text" />

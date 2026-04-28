@@ -128,6 +128,7 @@ class SMLF_Admin {
 		register_setting( 'smlf_options_group', 'smlf_allowed_file_extensions', array( 'sanitize_callback' => array( $this, 'sanitize_file_extensions_option' ) ) );
 		register_setting( 'smlf_options_group', 'smlf_max_file_count', array( 'sanitize_callback' => 'absint' ) );
 		register_setting( 'smlf_options_group', 'smlf_max_file_size_mb', array( 'sanitize_callback' => 'absint' ) );
+		register_setting( 'smlf_options_group', 'smlf_lead_statuses', array( 'sanitize_callback' => array( $this, 'sanitize_lead_statuses_option' ) ) );
 		register_setting( 'smlf_options_group', 'smlf_uninstall_data_action', array( 'sanitize_callback' => array( $this, 'sanitize_uninstall_data_action' ) ) );
 	}
 
@@ -156,6 +157,37 @@ class SMLF_Admin {
 		$raw        = is_array( $value ) ? $value : explode( ',', (string) $value );
 		$extensions = array_unique( array_filter( array_map( 'sanitize_key', array_map( 'trim', $raw ) ) ) );
 		return ! empty( $extensions ) ? implode( ',', $extensions ) : 'jpg,jpeg,png,gif,webp,pdf,doc,docx,xls,xlsx,zip';
+	}
+
+	public function sanitize_lead_statuses_option( $value ) {
+		$lines    = preg_split( '/\r\n|\r|\n/', (string) $value );
+		$statuses = array();
+
+		foreach ( $lines as $line ) {
+			$line = trim( $line );
+			if ( '' === $line ) {
+				continue;
+			}
+
+			$parts = array_map( 'trim', explode( ':', $line, 2 ) );
+			$key   = sanitize_key( $parts[0] );
+			$label = isset( $parts[1] ) && '' !== $parts[1] ? sanitize_text_field( $parts[1] ) : sanitize_text_field( $parts[0] );
+
+			if ( '' !== $key && '' !== $label ) {
+				$statuses[ $key ] = $label;
+			}
+		}
+
+		if ( empty( $statuses ) ) {
+			return "new:New\ncontacted:Contacted\nqualified:Qualified\nwon:Won\nlost:Lost";
+		}
+
+		$output = array();
+		foreach ( $statuses as $key => $label ) {
+			$output[] = $key . ':' . $label;
+		}
+
+		return implode( "\n", $output );
 	}
 
 	public function get_builder_i18n() {
@@ -255,6 +287,7 @@ class SMLF_Admin {
 			'submit'                  => __( 'Submit', 'smart-multistep-lead-forms' ),
 			'reset'                   => __( 'Start again', 'smart-multistep-lead-forms' ),
 			'save_success'            => __( 'Saved successfully!', 'smart-multistep-lead-forms' ),
+			'save_notes'              => __( 'Save Notes', 'smart-multistep-lead-forms' ),
 			'save_error'              => __( 'Error saving.', 'smart-multistep-lead-forms' ),
 			'confirm_delete_form'     => __( 'Delete this form? Existing leads will be kept.', 'smart-multistep-lead-forms' ),
 		);

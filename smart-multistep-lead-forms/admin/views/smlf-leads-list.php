@@ -12,14 +12,41 @@ $search               = isset( $_GET['s'] ) ? sanitize_text_field( wp_unslash( $
 $orderby              = isset( $_GET['orderby'] ) ? sanitize_key( wp_unslash( $_GET['orderby'] ) ) : 'id';
 $order                = isset( $_GET['order'] ) ? strtoupper( sanitize_key( wp_unslash( $_GET['order'] ) ) ) : 'DESC';
 $order                = in_array( $order, array( 'ASC', 'DESC' ), true ) ? $order : 'DESC';
+$selected_lead_id     = isset( $_GET['lead_id'] ) ? absint( wp_unslash( $_GET['lead_id'] ) ) : 0;
+$date_from            = isset( $_GET['date_from'] ) ? sanitize_text_field( wp_unslash( $_GET['date_from'] ) ) : '';
+$date_to              = isset( $_GET['date_to'] ) ? sanitize_text_field( wp_unslash( $_GET['date_to'] ) ) : '';
 
-$lead_statuses = array(
-	'new'       => __( 'New', 'smart-multistep-lead-forms' ),
-	'contacted' => __( 'Contacted', 'smart-multistep-lead-forms' ),
-	'qualified' => __( 'Qualified', 'smart-multistep-lead-forms' ),
-	'won'       => __( 'Won', 'smart-multistep-lead-forms' ),
-	'lost'      => __( 'Lost', 'smart-multistep-lead-forms' ),
-);
+if ( ! function_exists( 'smlf_get_lead_statuses' ) ) {
+	function smlf_get_lead_statuses() {
+		$raw      = get_option( 'smlf_lead_statuses', "new:New\ncontacted:Contacted\nqualified:Qualified\nwon:Won\nlost:Lost" );
+		$lines    = preg_split( '/\r\n|\r|\n/', (string) $raw );
+		$statuses = array();
+
+		foreach ( $lines as $line ) {
+			$line = trim( $line );
+			if ( '' === $line ) {
+				continue;
+			}
+
+			$parts = array_map( 'trim', explode( ':', $line, 2 ) );
+			$key   = sanitize_key( $parts[0] );
+			$label = isset( $parts[1] ) && '' !== $parts[1] ? sanitize_text_field( $parts[1] ) : sanitize_text_field( $parts[0] );
+			if ( '' !== $key && '' !== $label ) {
+				$statuses[ $key ] = $label;
+			}
+		}
+
+		return ! empty( $statuses ) ? $statuses : array(
+			'new'       => __( 'New', 'smart-multistep-lead-forms' ),
+			'contacted' => __( 'Contacted', 'smart-multistep-lead-forms' ),
+			'qualified' => __( 'Qualified', 'smart-multistep-lead-forms' ),
+			'won'       => __( 'Won', 'smart-multistep-lead-forms' ),
+			'lost'      => __( 'Lost', 'smart-multistep-lead-forms' ),
+		);
+	}
+}
+
+$lead_statuses = smlf_get_lead_statuses();
 
 $order_columns = array(
 	'id'          => 'l.id',
@@ -59,6 +86,16 @@ if ( '' !== $search ) {
 	$params[] = $like;
 }
 
+if ( preg_match( '/^\d{4}-\d{2}-\d{2}$/', $date_from ) ) {
+	$where[]  = 'l.created_at >= %s';
+	$params[] = $date_from . ' 00:00:00';
+}
+
+if ( preg_match( '/^\d{4}-\d{2}-\d{2}$/', $date_to ) ) {
+	$where[]  = 'l.created_at <= %s';
+	$params[] = $date_to . ' 23:59:59';
+}
+
 $sql = "SELECT l.*, f.title AS form_title FROM {$leads_table} l LEFT JOIN {$forms_table} f ON f.id = l.form_id WHERE " . implode( ' AND ', $where ) . " ORDER BY {$order_sql} {$order} LIMIT 100";
 if ( ! empty( $params ) ) {
 	$sql = $wpdb->prepare( $sql, $params );
@@ -87,11 +124,122 @@ if ( ! function_exists( 'smlf_render_lead_value' ) ) {
 		return esc_html( is_scalar( $value ) ? $value : wp_json_encode( $value ) );
 	}
 }
+
+$detail_lead       = null;
+$detail_email_logs = array();
+if ( $selected_lead_id ) {
+	$detail_lead = $wpdb->get_row( $wpdb->prepare(
+		"SELECT l.*, f.title AS form_title FROM {$leads_table} l LEFT JOIN {$forms_table} f ON f.id = l.form_id WHERE l.id = %d",
+		$selected_lead_id
+	) );
+
+	if ( $detail_lead ) {
+		$email_logs_table   = $wpdb->prefix . 'smlf_email_logs';
+		$detail_email_logs = $wpdb->get_results( $wpdb->prepare( "SELECT * FROM {$email_logs_table} WHERE lead_id = %d ORDER BY sent_at DESC", $selected_lead_id ) );
+	}
+}
 ?>
 <div class="wrap">
 	<h1 class="wp-heading-inline"><?php esc_html_e( 'Prospects', 'smart-multistep-lead-forms' ); ?></h1>
-	<a href="<?php echo esc_url( wp_nonce_url( admin_url( 'admin-ajax.php?action=smlf_export_leads_csv' ), 'smlf_export_leads_csv' ) ); ?>" class="page-title-action"><?php esc_html_e( 'Export to CSV', 'smart-multistep-lead-forms' ); ?></a>
 	<hr class="wp-header-end">
+
+	<?php if ( $selected_lead_id ) : ?>
+		<?php if ( $detail_lead ) : ?>
+			<?php
+			$detail_data           = json_decode( $detail_lead->lead_data, true );
+			$detail_data           = is_array( $detail_data ) ? $detail_data : array();
+			$detail_current_status = isset( $detail_lead->lead_status ) && $detail_lead->lead_status ? $detail_lead->lead_status : 'new';
+			?>
+			<div class="smlf-lead-detail-page">
+				<div class="smlf-lead-detail-header">
+					<div>
+						<a href="<?php echo esc_url( admin_url( 'admin.php?page=smlf-leads' ) ); ?>" class="button">&larr; <?php esc_html_e( 'Back to Prospects', 'smart-multistep-lead-forms' ); ?></a>
+						<h2><?php echo esc_html( sprintf( __( 'Prospect #%d', 'smart-multistep-lead-forms' ), $detail_lead->id ) ); ?></h2>
+						<p><?php echo esc_html( $detail_lead->form_title ? $detail_lead->form_title : sprintf( __( 'Form #%d', 'smart-multistep-lead-forms' ), $detail_lead->form_id ) ); ?></p>
+					</div>
+					<div>
+						<select class="smlf-lead-status-select" data-lead-id="<?php echo esc_attr( $detail_lead->id ); ?>" data-previous="<?php echo esc_attr( $detail_current_status ); ?>">
+							<?php foreach ( $lead_statuses as $status_key => $status_label ) : ?>
+								<option value="<?php echo esc_attr( $status_key ); ?>" <?php selected( $detail_current_status, $status_key ); ?>><?php echo esc_html( $status_label ); ?></option>
+							<?php endforeach; ?>
+						</select>
+					</div>
+				</div>
+
+				<div class="smlf-lead-detail-grid">
+					<section class="smlf-lead-detail-card">
+						<h3><?php esc_html_e( 'Request Details', 'smart-multistep-lead-forms' ); ?></h3>
+						<dl class="smlf-lead-detail-list">
+							<?php foreach ( $detail_data as $key => $value ) : ?>
+								<dt><?php echo esc_html( $key ); ?></dt>
+								<dd><?php echo wp_kses_post( smlf_render_lead_value( $key, $value ) ); ?></dd>
+							<?php endforeach; ?>
+						</dl>
+					</section>
+
+					<section class="smlf-lead-detail-card">
+						<h3><?php esc_html_e( 'Source and Contact', 'smart-multistep-lead-forms' ); ?></h3>
+						<dl class="smlf-lead-detail-list">
+							<dt><?php esc_html_e( 'Email', 'smart-multistep-lead-forms' ); ?></dt>
+							<dd><?php echo esc_html( $detail_lead->email ? $detail_lead->email : '-' ); ?></dd>
+							<dt><?php esc_html_e( 'Phone', 'smart-multistep-lead-forms' ); ?></dt>
+							<dd><?php echo esc_html( $detail_lead->phone ? $detail_lead->phone : '-' ); ?></dd>
+							<dt><?php esc_html_e( 'Source page', 'smart-multistep-lead-forms' ); ?></dt>
+							<dd>
+								<?php if ( $detail_lead->referrer ) : ?>
+									<a href="<?php echo esc_url( $detail_lead->referrer ); ?>" target="_blank" rel="noopener noreferrer"><?php echo esc_html( $detail_lead->referrer ); ?></a>
+								<?php else : ?>
+									<?php esc_html_e( 'Unknown source', 'smart-multistep-lead-forms' ); ?>
+								<?php endif; ?>
+							</dd>
+							<dt><?php esc_html_e( 'IP address', 'smart-multistep-lead-forms' ); ?></dt>
+							<dd><?php echo esc_html( $detail_lead->ip_address ? $detail_lead->ip_address : '-' ); ?></dd>
+							<dt><?php esc_html_e( 'Created at', 'smart-multistep-lead-forms' ); ?></dt>
+							<dd><?php echo esc_html( $detail_lead->created_at ); ?></dd>
+							<dt><?php esc_html_e( 'Completed at', 'smart-multistep-lead-forms' ); ?></dt>
+							<dd><?php echo esc_html( $detail_lead->completed_at ? $detail_lead->completed_at : '-' ); ?></dd>
+						</dl>
+					</section>
+
+					<section class="smlf-lead-detail-card">
+						<h3><?php esc_html_e( 'Internal Notes', 'smart-multistep-lead-forms' ); ?></h3>
+						<textarea class="large-text smlf-lead-notes" rows="8" data-lead-id="<?php echo esc_attr( $detail_lead->id ); ?>"><?php echo esc_textarea( $detail_lead->admin_notes ); ?></textarea>
+						<p><button type="button" class="button button-primary smlf-save-lead-notes"><?php esc_html_e( 'Save Notes', 'smart-multistep-lead-forms' ); ?></button></p>
+					</section>
+
+					<section class="smlf-lead-detail-card">
+						<h3><?php esc_html_e( 'Email Logs', 'smart-multistep-lead-forms' ); ?></h3>
+						<?php if ( $detail_email_logs ) : ?>
+							<table class="widefat striped">
+								<thead>
+									<tr>
+										<th><?php esc_html_e( 'Recipient', 'smart-multistep-lead-forms' ); ?></th>
+										<th><?php esc_html_e( 'Subject', 'smart-multistep-lead-forms' ); ?></th>
+										<th><?php esc_html_e( 'Status', 'smart-multistep-lead-forms' ); ?></th>
+										<th><?php esc_html_e( 'Date', 'smart-multistep-lead-forms' ); ?></th>
+									</tr>
+								</thead>
+								<tbody>
+									<?php foreach ( $detail_email_logs as $log ) : ?>
+										<tr>
+											<td><?php echo esc_html( $log->recipient_email ); ?></td>
+											<td><?php echo esc_html( $log->subject ); ?></td>
+											<td><?php echo esc_html( $log->status ); ?></td>
+											<td><?php echo esc_html( $log->sent_at ); ?></td>
+										</tr>
+									<?php endforeach; ?>
+								</tbody>
+							</table>
+						<?php else : ?>
+							<p><?php esc_html_e( 'No email logs found.', 'smart-multistep-lead-forms' ); ?></p>
+						<?php endif; ?>
+					</section>
+				</div>
+			</div>
+		<?php else : ?>
+			<div class="notice notice-error"><p><?php esc_html_e( 'Lead not found.', 'smart-multistep-lead-forms' ); ?></p></div>
+		<?php endif; ?>
+	<?php endif; ?>
 
 	<form method="get" class="smlf-leads-toolbar">
 		<input type="hidden" name="page" value="smlf-leads" />
@@ -124,7 +272,41 @@ if ( ! function_exists( 'smlf_render_lead_value' ) ) {
 			<option value="DESC" <?php selected( $order, 'DESC' ); ?>><?php esc_html_e( 'Descending', 'smart-multistep-lead-forms' ); ?></option>
 			<option value="ASC" <?php selected( $order, 'ASC' ); ?>><?php esc_html_e( 'Ascending', 'smart-multistep-lead-forms' ); ?></option>
 		</select>
+		<input type="date" name="date_from" value="<?php echo esc_attr( $date_from ); ?>" aria-label="<?php esc_attr_e( 'Date from', 'smart-multistep-lead-forms' ); ?>">
+		<input type="date" name="date_to" value="<?php echo esc_attr( $date_to ); ?>" aria-label="<?php esc_attr_e( 'Date to', 'smart-multistep-lead-forms' ); ?>">
 		<input type="submit" class="button" value="<?php esc_attr_e( 'Filter', 'smart-multistep-lead-forms' ); ?>">
+	</form>
+
+	<form method="get" action="<?php echo esc_url( admin_url( 'admin-ajax.php' ) ); ?>" class="smlf-export-panel">
+		<input type="hidden" name="action" value="smlf_export_leads_csv">
+		<?php wp_nonce_field( 'smlf_export_leads_csv' ); ?>
+		<input type="hidden" name="form_id" value="<?php echo esc_attr( $selected_form ); ?>">
+		<input type="hidden" name="status" value="<?php echo esc_attr( $selected_status ); ?>">
+		<input type="hidden" name="lead_status" value="<?php echo esc_attr( $selected_lead_status ); ?>">
+		<input type="hidden" name="s" value="<?php echo esc_attr( $search ); ?>">
+		<input type="hidden" name="date_from" value="<?php echo esc_attr( $date_from ); ?>">
+		<input type="hidden" name="date_to" value="<?php echo esc_attr( $date_to ); ?>">
+		<strong><?php esc_html_e( 'Export columns', 'smart-multistep-lead-forms' ); ?></strong>
+		<?php
+		$export_columns = array(
+			'id'          => __( 'ID', 'smart-multistep-lead-forms' ),
+			'form'        => __( 'Form', 'smart-multistep-lead-forms' ),
+			'status'      => __( 'Submission', 'smart-multistep-lead-forms' ),
+			'lead_status' => __( 'Lead Status', 'smart-multistep-lead-forms' ),
+			'contact'     => __( 'Contact', 'smart-multistep-lead-forms' ),
+			'source'      => __( 'Source page', 'smart-multistep-lead-forms' ),
+			'data'        => __( 'Request', 'smart-multistep-lead-forms' ),
+			'notes'       => __( 'Internal Notes', 'smart-multistep-lead-forms' ),
+			'date'        => __( 'Date', 'smart-multistep-lead-forms' ),
+		);
+		?>
+		<?php foreach ( $export_columns as $column_key => $column_label ) : ?>
+			<label>
+				<input type="checkbox" name="columns[]" value="<?php echo esc_attr( $column_key ); ?>" checked>
+				<?php echo esc_html( $column_label ); ?>
+			</label>
+		<?php endforeach; ?>
+		<button type="submit" class="button"><?php esc_html_e( 'Export filtered CSV', 'smart-multistep-lead-forms' ); ?></button>
 	</form>
 
 	<table class="wp-list-table widefat fixed striped">
@@ -137,6 +319,7 @@ if ( ! function_exists( 'smlf_render_lead_value' ) ) {
 				<th><?php esc_html_e( 'Contact', 'smart-multistep-lead-forms' ); ?></th>
 				<th><?php esc_html_e( 'Request', 'smart-multistep-lead-forms' ); ?></th>
 				<th><?php esc_html_e( 'Date', 'smart-multistep-lead-forms' ); ?></th>
+				<th><?php esc_html_e( 'Actions', 'smart-multistep-lead-forms' ); ?></th>
 			</tr>
 		</thead>
 		<tbody>
@@ -185,11 +368,14 @@ if ( ! function_exists( 'smlf_render_lead_value' ) ) {
 							</details>
 						</td>
 						<td><?php echo esc_html( $lead->created_at ); ?></td>
+						<td>
+							<a class="button button-small" href="<?php echo esc_url( admin_url( 'admin.php?page=smlf-leads&lead_id=' . absint( $lead->id ) ) ); ?>"><?php esc_html_e( 'View Details', 'smart-multistep-lead-forms' ); ?></a>
+						</td>
 					</tr>
 				<?php endforeach; ?>
 			<?php else : ?>
 				<tr>
-					<td colspan="7"><?php esc_html_e( 'No leads found.', 'smart-multistep-lead-forms' ); ?></td>
+					<td colspan="8"><?php esc_html_e( 'No leads found.', 'smart-multistep-lead-forms' ); ?></td>
 				</tr>
 			<?php endif; ?>
 		</tbody>

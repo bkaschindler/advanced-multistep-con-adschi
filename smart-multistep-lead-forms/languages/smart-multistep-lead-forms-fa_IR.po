@@ -223,3 +223,72 @@ msgstr "لیدهای ناقص"
 
 msgid "Saved before final submit"
 msgstr "ذخیره‌شده قبل از ارسال نهایی"
+
+msgid "Lead Statuses"
+msgstr "وضعیت‌های لید"
+
+msgid "Enter one status per line in key:Label format. Example: contacted:Contacted"
+msgstr "هر وضعیت را در یک خط با فرمت key:Label وارد کنید. مثال: contacted:تماس گرفته شد"
+
+msgid "Back to Prospects"
+msgstr "بازگشت به متقاضیان"
+
+msgid "Prospect #%d"
+msgstr "متقاضی #%d"
+
+msgid "Request Details"
+msgstr "جزئیات درخواست"
+
+msgid "Source and Contact"
+msgstr "منبع و اطلاعات تماس"
+
+msgid "Email"
+msgstr "ایمیل"
+
+msgid "Phone"
+msgstr "تلفن"
+
+msgid "Source page"
+msgstr "صفحه منبع"
+
+msgid "IP address"
+msgstr "آدرس IP"
+
+msgid "Created at"
+msgstr "تاریخ ایجاد"
+
+msgid "Completed at"
+msgstr "تاریخ تکمیل"
+
+msgid "Internal Notes"
+msgstr "یادداشت‌های داخلی"
+
+msgid "Save Notes"
+msgstr "ذخیره یادداشت‌ها"
+
+msgid "Could not save notes."
+msgstr "امکان ذخیره یادداشت‌ها وجود نداشت."
+
+msgid "Date from"
+msgstr "از تاریخ"
+
+msgid "Date to"
+msgstr "تا تاریخ"
+
+msgid "Export columns"
+msgstr "ستون‌های خروجی"
+
+msgid "Form"
+msgstr "فرم"
+
+msgid "Export filtered CSV"
+msgstr "خروجی CSV فیلترشده"
+
+msgid "View Details"
+msgstr "مشاهده جزئیات"
+
+msgid "Your submission could not be accepted."
+msgstr "ارسال شما قابل پذیرش نبود."
+
+msgid "Please take a moment before submitting the form."
+msgstr "لطفاً قبل از ارسال فرم چند لحظه صبر کنید."

@@ -81,6 +81,7 @@ $steps                   = isset( $steps ) && is_array( $steps ) ? $steps : arra
 
 	<!-- Form Steps -->
 	<form class="smlf-form-actual" style="<?php echo $show_initial_gate ? 'display:none;' : 'display:block;'; ?>" enctype="multipart/form-data">
+		<input type="text" name="smlf_website" value="" class="smlf-honeypot-field" tabindex="-1" autocomplete="off" aria-hidden="true">
 		<?php if ( ! empty( $steps ) ) : ?>
 			<?php foreach ( $steps as $index => $step ) : ?>
 				<?php

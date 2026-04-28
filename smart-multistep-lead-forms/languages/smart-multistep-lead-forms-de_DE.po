@@ -269,3 +269,72 @@ msgstr "Teilweise Interessenten"
 
 msgid "Saved before final submit"
 msgstr "Vor dem finalen Absenden gespeichert"
+
+msgid "Lead Statuses"
+msgstr "Interessenten-Status"
+
+msgid "Enter one status per line in key:Label format. Example: contacted:Contacted"
+msgstr "Geben Sie einen Status pro Zeile im Format key:Label ein. Beispiel: contacted:Kontaktiert"
+
+msgid "Back to Prospects"
+msgstr "Zurück zu Interessenten"
+
+msgid "Prospect #%d"
+msgstr "Interessent #%d"
+
+msgid "Request Details"
+msgstr "Anfragedetails"
+
+msgid "Source and Contact"
+msgstr "Quelle und Kontakt"
+
+msgid "Email"
+msgstr "E-Mail"
+
+msgid "Phone"
+msgstr "Telefon"
+
+msgid "Source page"
+msgstr "Quellseite"
+
+msgid "IP address"
+msgstr "IP-Adresse"
+
+msgid "Created at"
+msgstr "Erstellt am"
+
+msgid "Completed at"
+msgstr "Abgeschlossen am"
+
+msgid "Internal Notes"
+msgstr "Interne Notizen"
+
+msgid "Save Notes"
+msgstr "Notizen speichern"
+
+msgid "Could not save notes."
+msgstr "Notizen konnten nicht gespeichert werden."
+
+msgid "Date from"
+msgstr "Datum von"
+
+msgid "Date to"
+msgstr "Datum bis"
+
+msgid "Export columns"
+msgstr "Exportspalten"
+
+msgid "Form"
+msgstr "Formular"
+
+msgid "Export filtered CSV"
+msgstr "Gefilterte CSV exportieren"
+
+msgid "View Details"
+msgstr "Details anzeigen"
+
+msgid "Your submission could not be accepted."
+msgstr "Ihre Übermittlung konnte nicht angenommen werden."
+
+msgid "Please take a moment before submitting the form."
+msgstr "Bitte warten Sie einen Moment, bevor Sie das Formular absenden."

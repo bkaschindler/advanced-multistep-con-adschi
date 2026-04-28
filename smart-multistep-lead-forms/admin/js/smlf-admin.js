@@ -403,6 +403,34 @@ jQuery(document).ready(function($) {
 		});
 	});
 
+	$(document).on('click', '.smlf-save-lead-notes', function(e) {
+		e.preventDefault();
+		const $button = $(this);
+		const $notes = $('.smlf-lead-notes');
+
+		$button.prop('disabled', true);
+		$.post(smlf_admin_obj.ajax_url, {
+			action: 'smlf_update_lead_notes',
+			nonce: smlf_admin_obj.nonce,
+			lead_id: $notes.data('lead-id'),
+			notes: $notes.val()
+		}).done(function(response) {
+			if (response.success) {
+				$button.text(i18n.save_success);
+				setTimeout(function() {
+					$button.text(i18n.save_notes || 'Save Notes');
+				}, 1400);
+				return;
+			}
+
+			alert((response.data && response.data.message) || i18n.save_error);
+		}).fail(function() {
+			alert(i18n.save_error);
+		}).always(function() {
+			$button.prop('disabled', false);
+		});
+	});
+
 	$(document).on('click', '.smlf-delete-form', function(e) {
 		e.preventDefault();
 		if (!window.confirm(i18n.confirm_delete_form || 'Delete this form?')) {

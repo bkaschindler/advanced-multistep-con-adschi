@@ -563,6 +563,75 @@ msgstr ""
 msgid "Saved before final submit"
 msgstr ""
 
+msgid "Lead Statuses"
+msgstr ""
+
+msgid "Enter one status per line in key:Label format. Example: contacted:Contacted"
+msgstr ""
+
+msgid "Back to Prospects"
+msgstr ""
+
+msgid "Prospect #%d"
+msgstr ""
+
+msgid "Request Details"
+msgstr ""
+
+msgid "Source and Contact"
+msgstr ""
+
+msgid "Email"
+msgstr ""
+
+msgid "Phone"
+msgstr ""
+
+msgid "Source page"
+msgstr ""
+
+msgid "IP address"
+msgstr ""
+
+msgid "Created at"
+msgstr ""
+
+msgid "Completed at"
+msgstr ""
+
+msgid "Internal Notes"
+msgstr ""
+
+msgid "Save Notes"
+msgstr ""
+
+msgid "Could not save notes."
+msgstr ""
+
+msgid "Date from"
+msgstr ""
+
+msgid "Date to"
+msgstr ""
+
+msgid "Export columns"
+msgstr ""
+
+msgid "Form"
+msgstr ""
+
+msgid "Export filtered CSV"
+msgstr ""
+
+msgid "View Details"
+msgstr ""
+
+msgid "Your submission could not be accepted."
+msgstr ""
+
+msgid "Please take a moment before submitting the form."
+msgstr ""
+
 msgid "Allowed: %1$s. Up to %2$d files, %3$dMB each."
 msgstr ""
 

@@ -78,6 +78,7 @@ class Smart_Multistep_Lead_Forms {
 		$this->loader->add_action( 'wp_ajax_smlf_delete_form_admin', $plugin_ajax, 'delete_form_admin' );
 		$this->loader->add_action( 'wp_ajax_smlf_export_leads_csv', $plugin_ajax, 'export_leads_csv' );
 		$this->loader->add_action( 'wp_ajax_smlf_update_lead_status', $plugin_ajax, 'update_lead_status' );
+		$this->loader->add_action( 'wp_ajax_smlf_update_lead_notes', $plugin_ajax, 'update_lead_notes' );
 	}
 
 	public function run() {
