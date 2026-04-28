@@ -7,9 +7,18 @@ $existing_form_data = array(
 	'id'    => 0,
 	'title' => __( 'New Form', 'smart-multistep-lead-forms' ),
 	'settings' => array(
-		'captcha_method' => 'inherit',
-		'captcha_gate'   => 'before_form',
-		'captcha_step'   => 1,
+		'captcha_method'           => 'inherit',
+		'captcha_gate'             => 'before_form',
+		'captcha_step'             => 1,
+		'allowed_file_extensions'  => 'jpg,jpeg,png,gif,webp,pdf,doc,docx,xls,xlsx,zip',
+		'max_file_count'           => 5,
+		'max_file_size_mb'         => 10,
+		'theme'                    => 'consult_pro',
+		'font_family'              => 'inherit',
+		'primary_color'            => '#0ea5e9',
+		'accent_color'             => '#14b8a6',
+		'background_color'         => '#ffffff',
+		'text_color'               => '#111827',
 	),
 	'steps' => array(),
 );
@@ -45,11 +54,13 @@ if ( $form_id ) {
 				<li data-type="textarea"><?php echo esc_html( $builder_i18n['long_text'] ); ?></li>
 				<li data-type="file"><?php echo esc_html( $builder_i18n['file_upload'] ); ?></li>
 				<li data-type="message"><?php echo esc_html( $builder_i18n['message_text'] ); ?></li>
+				<li data-type="consent"><?php echo esc_html( $builder_i18n['consent_checkbox'] ); ?></li>
 				<li data-type="cards"><?php echo esc_html( $builder_i18n['clickable_cards'] ); ?></li>
 				<li data-type="radio"><?php echo esc_html( $builder_i18n['radio_buttons'] ); ?></li>
 			</ul>
 			<button class="button button-primary" id="smlf-add-step"><?php echo esc_html( $builder_i18n['add_step'] ); ?></button>
 			<button class="button" id="smlf-load-template" type="button"><?php echo esc_html( $builder_i18n['load_template'] ); ?></button>
+			<button class="button" id="smlf-load-hvac-template" type="button"><?php echo esc_html( $builder_i18n['load_hvac_template'] ); ?></button>
 		</div>
 
 		<div class="smlf-builder-canvas">
@@ -58,6 +69,39 @@ if ( $form_id ) {
 				<button class="button button-primary" id="smlf-save-form"><?php echo esc_html( $builder_i18n['save_form'] ); ?></button>
 			</div>
 			<div class="smlf-form-advanced-settings">
+				<div class="smlf-builder-settings-section">
+					<strong><?php echo esc_html( $builder_i18n['appearance'] ); ?></strong>
+				</div>
+				<label>
+					<span><?php echo esc_html( $builder_i18n['theme'] ); ?></span>
+					<select id="smlf-theme">
+						<option value="consult_pro"><?php echo esc_html( $builder_i18n['theme_consult'] ); ?></option>
+						<option value="hvac_3d"><?php echo esc_html( $builder_i18n['theme_hvac'] ); ?></option>
+					</select>
+				</label>
+				<label>
+					<span><?php echo esc_html( $builder_i18n['font_family'] ); ?></span>
+					<input type="text" id="smlf-font-family" placeholder="Inter, Arial, sans-serif">
+				</label>
+				<label>
+					<span><?php echo esc_html( $builder_i18n['primary_color'] ); ?></span>
+					<input type="color" id="smlf-primary-color" value="#0ea5e9">
+				</label>
+				<label>
+					<span><?php echo esc_html( $builder_i18n['accent_color'] ); ?></span>
+					<input type="color" id="smlf-accent-color" value="#14b8a6">
+				</label>
+				<label>
+					<span><?php echo esc_html( $builder_i18n['background_color'] ); ?></span>
+					<input type="color" id="smlf-background-color" value="#ffffff">
+				</label>
+				<label>
+					<span><?php echo esc_html( $builder_i18n['text_color'] ); ?></span>
+					<input type="color" id="smlf-text-color" value="#111827">
+				</label>
+				<div class="smlf-builder-settings-section">
+					<strong><?php echo esc_html( $builder_i18n['captcha_method'] ); ?></strong>
+				</div>
 				<label>
 					<span><?php echo esc_html( $builder_i18n['captcha_method'] ); ?></span>
 					<select id="smlf-captcha-method">
@@ -80,6 +124,21 @@ if ( $form_id ) {
 				<label>
 					<span><?php echo esc_html( $builder_i18n['captcha_step'] ); ?></span>
 					<input type="number" id="smlf-captcha-step" min="1" value="1">
+				</label>
+				<div class="smlf-builder-settings-section">
+					<strong><?php echo esc_html( $builder_i18n['upload_limits'] ); ?></strong>
+				</div>
+				<label>
+					<span><?php echo esc_html( $builder_i18n['allowed_file_extensions'] ); ?></span>
+					<input type="text" id="smlf-allowed-file-extensions" placeholder="jpg,png,pdf,zip">
+				</label>
+				<label>
+					<span><?php echo esc_html( $builder_i18n['max_file_count'] ); ?></span>
+					<input type="number" id="smlf-max-file-count" min="1" value="5">
+				</label>
+				<label>
+					<span><?php echo esc_html( $builder_i18n['max_file_size_mb'] ); ?></span>
+					<input type="number" id="smlf-max-file-size-mb" min="1" value="10">
 				</label>
 			</div>
 

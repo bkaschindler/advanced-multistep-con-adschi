@@ -13,9 +13,10 @@
 	background:
 		radial-gradient(circle at top left, rgba(20, 184, 166, 0.18), transparent 34%),
 		radial-gradient(circle at bottom right, rgba(244, 63, 94, 0.14), transparent 32%),
-		linear-gradient(145deg, #ffffff 0%, #f8fbff 100%);
+		linear-gradient(145deg, var(--smlf-bg, #ffffff) 0%, #f8fbff 100%);
 	box-shadow: 0 24px 70px rgba(15, 23, 42, 0.14);
 	font-family: inherit;
+	color: var(--smlf-text, #111827);
 	overflow: visible;
 	perspective: none;
 	isolation: auto;
@@ -98,18 +99,22 @@
 .smlf-progress-bar {
 	height: 100%;
 	border-radius: inherit;
-	background: linear-gradient(90deg, #0ea5e9, #14b8a6 48%, #f59e0b);
+	background: linear-gradient(90deg, var(--smlf-primary, #0ea5e9), var(--smlf-accent, #14b8a6) 58%, #f59e0b);
 	transition: width 240ms ease;
 }
 
 .smlf-form-step {
 	transform-origin: center top;
 	animation: smlf-step-in 260ms ease both;
+	display: flex;
+	flex-wrap: wrap;
+	column-gap: 16px;
 }
 
 .smlf-step-title {
+	width: 100%;
 	margin: 0 0 22px;
-	color: #111827;
+	color: var(--smlf-text, #111827);
 	font-size: clamp(22px, 4vw, 32px);
 	line-height: 1.25;
 	font-weight: 800;
@@ -117,34 +122,57 @@
 }
 
 .smlf-field-row {
+	flex: 0 0 100%;
+	min-width: 0;
 	margin-bottom: 20px;
+}
+
+.smlf-field-width-half {
+	flex-basis: calc(50% - 8px);
+}
+
+.smlf-field-width-third {
+	flex-basis: calc(33.333% - 11px);
 }
 
 .smlf-field-row > label {
 	display: block;
 	margin-bottom: 9px;
-	color: #1f2937;
+	color: var(--smlf-field-label, var(--smlf-text, #1f2937));
 	font-weight: 700;
 }
 
-.smlf-input {
+.smlf-form-wrapper .smlf-input {
+	appearance: none;
 	box-sizing: border-box;
+	display: block;
 	width: 100%;
-	padding: 14px 16px;
-	border: 1px solid rgba(15, 23, 42, 0.12);
+	min-height: 52px;
+	padding: 13px 16px;
+	border: 1.5px solid rgba(15, 23, 42, 0.18);
 	border-radius: 12px;
-	background: rgba(255, 255, 255, 0.86);
-	box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.8);
-	color: #111827;
+	background: var(--smlf-field-bg, rgba(255, 255, 255, 0.86));
+	box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.85), 0 8px 18px rgba(15, 23, 42, 0.05);
+	color: var(--smlf-field-text, #111827);
 	font-size: 16px;
+	line-height: 1.45;
 	outline: none;
-	transition: border-color 160ms ease, box-shadow 160ms ease, transform 160ms ease;
+	transition: border-color 160ms ease, box-shadow 160ms ease, background 160ms ease;
 }
 
-.smlf-input:focus {
-	border-color: #0ea5e9;
-	box-shadow: 0 0 0 4px rgba(14, 165, 233, 0.16);
-	transform: translateY(-1px);
+.smlf-form-wrapper .smlf-input:hover {
+	border-color: rgba(15, 23, 42, 0.3);
+	background: #fff;
+}
+
+.smlf-form-wrapper .smlf-input:focus {
+	border-color: var(--smlf-primary, #0ea5e9);
+	background: #fff;
+	box-shadow: 0 0 0 4px rgba(14, 165, 233, 0.16), 0 12px 24px rgba(14, 165, 233, 0.1);
+}
+
+.smlf-form-wrapper .smlf-input:invalid:not(:placeholder-shown) {
+	border-color: rgba(244, 63, 94, 0.72);
 }
 
 .smlf-textarea {
@@ -157,7 +185,7 @@
 	border: 1px solid rgba(20, 184, 166, 0.2);
 	border-radius: 16px;
 	background: linear-gradient(135deg, rgba(236, 253, 245, 0.94), rgba(240, 249, 255, 0.94));
-	color: #0f172a;
+	color: var(--smlf-field-text, #0f172a);
 	font-size: 18px;
 	font-weight: 800;
 	line-height: 1.8;
@@ -167,11 +195,14 @@
 .smlf-cards-container {
 	display: grid;
 	grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+	grid-auto-rows: 1fr;
 	gap: 14px;
 }
 
 .smlf-card {
 	position: relative;
+	display: flex;
+	min-height: 84px;
 	cursor: pointer;
 	transform-style: preserve-3d;
 }
@@ -186,7 +217,9 @@
 	display: flex;
 	align-items: center;
 	justify-content: center;
-	min-height: 76px;
+	width: 100%;
+	min-height: 84px;
+	height: 100%;
 	padding: 16px;
 	border: 1px solid rgba(15, 23, 42, 0.1);
 	border-radius: 16px;
@@ -206,9 +239,110 @@
 }
 
 .smlf-card input:checked + .smlf-card-content {
-	border-color: rgba(20, 184, 166, 0.8);
+	border-color: var(--smlf-accent, rgba(20, 184, 166, 0.8));
 	background: linear-gradient(135deg, #ecfeff, #fefce8);
 	box-shadow: 0 20px 46px rgba(20, 184, 166, 0.2);
+}
+
+.smlf-radio-container {
+	display: grid;
+	gap: 10px;
+}
+
+.smlf-radio-option {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+	min-height: 46px;
+	padding: 10px 12px;
+	border: 1px solid rgba(15, 23, 42, 0.12);
+	border-radius: 12px;
+	background: var(--smlf-field-bg, rgba(255, 255, 255, 0.86));
+	color: var(--smlf-field-text, #111827);
+	font-weight: 700;
+	cursor: pointer;
+}
+
+.smlf-radio-option input {
+	accent-color: var(--smlf-primary, #0ea5e9);
+}
+
+.smlf-consent-option {
+	display: flex;
+	align-items: flex-start;
+	gap: 10px;
+	padding: 12px 0;
+	color: var(--smlf-field-text, var(--smlf-text, #111827));
+	font-size: 15px;
+	line-height: 1.65;
+}
+
+.smlf-consent-option input {
+	flex: 0 0 auto;
+	width: 18px;
+	height: 18px;
+	margin-top: 4px;
+	accent-color: var(--smlf-primary, #0ea5e9);
+}
+
+.smlf-consent-option a {
+	color: var(--smlf-primary, #0ea5e9);
+	font-weight: 800;
+	text-decoration: underline;
+	text-underline-offset: 3px;
+}
+
+.smlf-consent-modal {
+	position: fixed;
+	inset: 0;
+	display: none;
+	align-items: center;
+	justify-content: center;
+	padding: 22px;
+	z-index: 999999;
+}
+
+.smlf-consent-modal-open {
+	display: flex;
+}
+
+.smlf-consent-modal-backdrop {
+	position: absolute;
+	inset: 0;
+	background: rgba(2, 6, 23, 0.62);
+	backdrop-filter: blur(6px);
+}
+
+.smlf-consent-modal-dialog {
+	position: relative;
+	width: min(100%, 720px);
+	max-height: min(82vh, 780px);
+	overflow: auto;
+	padding: 28px;
+	border: 1px solid rgba(15, 23, 42, 0.12);
+	border-radius: 18px;
+	background: #fff;
+	box-shadow: 0 34px 90px rgba(2, 6, 23, 0.32);
+	color: #111827;
+	animation: smlf-pop 240ms ease both;
+}
+
+.smlf-consent-modal-close {
+	float: right;
+	min-height: 34px;
+	padding: 7px 12px;
+	border: 0;
+	border-radius: 999px;
+	background: var(--smlf-primary, #0ea5e9);
+	color: #fff;
+	cursor: pointer;
+	font-weight: 800;
+}
+
+.smlf-consent-modal-content {
+	clear: both;
+	padding-top: 12px;
+	line-height: 1.7;
 }
 
 .smlf-file-dropzone {
@@ -287,6 +421,7 @@
 	border: 0;
 	border-radius: 999px;
 	background: linear-gradient(135deg, #0ea5e9, #14b8a6);
+	background: linear-gradient(135deg, var(--smlf-primary, #0ea5e9), var(--smlf-accent, #14b8a6));
 	box-shadow: 0 14px 28px rgba(14, 165, 233, 0.24);
 	color: #fff;
 	cursor: pointer;
@@ -316,9 +451,135 @@
 }
 
 .smlf-success-message {
+	width: 100%;
 	padding: 42px 20px;
 	text-align: center;
 	animation: smlf-pop 360ms ease both;
+}
+
+.smlf-step-navigation {
+	width: 100%;
+}
+
+.smlf-theme-hvac-3d {
+	max-width: 780px;
+	padding: 34px;
+	border: 1px solid rgba(125, 211, 252, 0.24);
+	border-radius: 24px;
+	background:
+		radial-gradient(circle at 18% 18%, color-mix(in srgb, var(--smlf-primary, #0891b2) 34%, transparent), transparent 27%),
+		radial-gradient(circle at 84% 78%, color-mix(in srgb, var(--smlf-accent, #f97316) 28%, transparent), transparent 29%),
+		linear-gradient(145deg, color-mix(in srgb, var(--smlf-bg, #08111f) 92%, #ffffff), #030712 100%);
+	box-shadow: 0 34px 90px rgba(2, 6, 23, 0.34), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+	overflow: hidden;
+	perspective: 1400px;
+}
+
+.smlf-theme-hvac-3d::before,
+.smlf-theme-hvac-3d::after {
+	content: "";
+	position: absolute;
+	pointer-events: none;
+	z-index: 0;
+}
+
+.smlf-theme-hvac-3d::before {
+	inset: -40%;
+	background:
+		linear-gradient(115deg, transparent 42%, rgba(125, 211, 252, 0.16) 43%, transparent 45%),
+		linear-gradient(25deg, transparent 48%, rgba(251, 146, 60, 0.14) 49%, transparent 51%);
+	animation: smlf-hvac-scan 9s linear infinite;
+}
+
+.smlf-theme-hvac-3d::after {
+	width: 220px;
+	height: 220px;
+	right: -72px;
+	top: -72px;
+	border: 1px solid rgba(125, 211, 252, 0.28);
+	border-radius: 999px;
+	background: conic-gradient(from 90deg, rgba(125, 211, 252, 0.2), rgba(251, 146, 60, 0.16), rgba(125, 211, 252, 0.2));
+	filter: blur(0.2px);
+	animation: smlf-hvac-rotate 12s linear infinite;
+}
+
+.smlf-theme-hvac-3d > * {
+	position: relative;
+	z-index: 1;
+}
+
+.smlf-theme-hvac-3d .smlf-step-title {
+	color: var(--smlf-text, #e5f7ff);
+	text-shadow: 0 12px 30px rgba(14, 165, 233, 0.18);
+}
+
+.smlf-theme-hvac-3d .smlf-progress-bar-container {
+	height: 10px;
+	background: rgba(226, 232, 240, 0.12);
+	box-shadow: inset 0 0 18px rgba(125, 211, 252, 0.1);
+}
+
+.smlf-theme-hvac-3d .smlf-form-step {
+	transform-style: preserve-3d;
+	animation: smlf-hvac-step 520ms cubic-bezier(.2,.8,.2,1) both;
+}
+
+.smlf-theme-hvac-3d .smlf-input,
+.smlf-theme-hvac-3d .smlf-radio-option,
+.smlf-theme-hvac-3d .smlf-card-content,
+.smlf-theme-hvac-3d .smlf-file-dropzone,
+.smlf-theme-hvac-3d .smlf-message-block {
+	border-color: rgba(125, 211, 252, 0.22);
+	background: var(--smlf-field-bg, rgba(8, 17, 31, 0.72));
+	box-shadow: 0 20px 44px rgba(2, 6, 23, 0.24), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+	color: var(--smlf-field-text, var(--smlf-text, #e5f7ff));
+	backdrop-filter: blur(16px);
+}
+
+.smlf-theme-hvac-3d .smlf-card-content {
+	min-height: 96px;
+	transform: translateZ(0);
+}
+
+.smlf-theme-hvac-3d .smlf-card:hover .smlf-card-content {
+	transform: translateY(-7px) rotateX(8deg) rotateY(-4deg) translateZ(22px);
+	box-shadow: 0 30px 70px rgba(8, 145, 178, 0.22), 0 16px 42px rgba(249, 115, 22, 0.14);
+}
+
+.smlf-theme-hvac-3d .smlf-card input:checked + .smlf-card-content {
+	background: linear-gradient(135deg, color-mix(in srgb, var(--smlf-primary, #0891b2) 30%, rgba(8,17,31,.82)), color-mix(in srgb, var(--smlf-accent, #f97316) 22%, rgba(8,17,31,.88)));
+}
+
+.smlf-theme-hvac-3d .smlf-btn-next,
+.smlf-theme-hvac-3d .smlf-btn-submit,
+.smlf-theme-hvac-3d .smlf-btn-verify {
+	box-shadow: 0 16px 34px color-mix(in srgb, var(--smlf-primary, #0891b2) 30%, transparent), inset 0 1px 0 rgba(255, 255, 255, 0.3);
+}
+
+@keyframes smlf-hvac-scan {
+	from {
+		transform: translate3d(-8%, -4%, 0) rotate(0deg);
+	}
+	to {
+		transform: translate3d(8%, 4%, 0) rotate(360deg);
+	}
+}
+
+@keyframes smlf-hvac-rotate {
+	to {
+		transform: rotate(360deg);
+	}
+}
+
+@keyframes smlf-hvac-step {
+	from {
+		opacity: 0;
+		transform: rotateX(-10deg) translateY(20px) scale(0.98);
+	}
+	to {
+		opacity: 1;
+		transform: rotateX(0) translateY(0) scale(1);
+	}
 }
 
 .smlf-success-message h3 {
@@ -360,6 +621,11 @@
 		flex-direction: column-reverse;
 	}
 
+	.smlf-field-width-half,
+	.smlf-field-width-third {
+		flex-basis: 100%;
+	}
+
 	.smlf-btn-next,
 	.smlf-btn-prev,
 	.smlf-btn-submit,
@@ -384,5 +650,10 @@
 	.smlf-btn-verify,
 	.smlf-btn-reset {
 		transition: none;
+	}
+
+	.smlf-theme-hvac-3d::before,
+	.smlf-theme-hvac-3d::after {
+		animation: none;
 	}
 }

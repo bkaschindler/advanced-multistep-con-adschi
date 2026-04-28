@@ -8,6 +8,12 @@ jQuery(document).ready(function($) {
 		const captchaMethod = $wrapper.data('captcha-method') || smlf_public_obj.captcha_method || 'custom';
 		const captchaGate = $wrapper.data('captcha-gate') || 'before_form';
 		const captchaStep = parseInt($wrapper.data('captcha-step') || '1', 10);
+		const allowedFileExtensions = String($wrapper.data('allowed-file-extensions') || '').split(',').map(function(extension) {
+			return extension.trim().toLowerCase().replace(/^\./, '');
+		}).filter(Boolean);
+		const maxFileCount = parseInt($wrapper.data('max-file-count') || '5', 10);
+		const maxFileSizeMb = parseInt($wrapper.data('max-file-size-mb') || '10', 10);
+		const maxFileSizeBytes = maxFileSizeMb * 1024 * 1024;
 		let currentStep = 0;
 		let leadId = null;
 		let stepHistory = [];
@@ -129,7 +135,7 @@ jQuery(document).ready(function($) {
 
 		function showStep(index) {
 			$steps.removeClass('smlf-step-active').hide();
-			$steps.eq(index).addClass('smlf-step-active').fadeIn(220);
+			$steps.eq(index).addClass('smlf-step-active').css('display', 'flex').hide().fadeIn(220);
 			currentStep = index;
 			updateProgress();
 		}
@@ -153,6 +159,11 @@ jQuery(document).ready(function($) {
 			if (logicTarget && logicValue) {
 				let matched = false;
 				$currentStepEl.find('input[type="radio"]:checked').each(function() {
+					if ($(this).val() === logicValue) {
+						matched = true;
+					}
+				});
+				$currentStepEl.find('select').each(function() {
 					if ($(this).val() === logicValue) {
 						matched = true;
 					}
@@ -253,6 +264,10 @@ jQuery(document).ready(function($) {
 			if ($(this).is(':checked')) {
 				if (currentStep < totalSteps - 1) {
 					setTimeout(function() {
+						if (!validateStep($steps.eq(currentStep))) {
+							return;
+						}
+
 						const nextIdx = getNextStepIndex();
 						if (nextIdx < totalSteps) {
 							if (!isTerminalStep(nextIdx) && hasValidContactForPartial()) {
@@ -327,6 +342,13 @@ jQuery(document).ready(function($) {
 			const $list = $(this).closest('.smlf-field-row').find('.smlf-file-list');
 			$list.empty();
 
+			const validationError = validateFiles(files);
+			if (validationError) {
+				alert(validationError);
+				$(this).val('');
+				return;
+			}
+
 			files.forEach(function(file) {
 				$list.append($('<span/>', {
 					'class': 'smlf-file-pill',
@@ -349,6 +371,19 @@ jQuery(document).ready(function($) {
 				input.files = files;
 				$(input).trigger('change');
 			}
+		});
+
+		$wrapper.find('.smlf-consent-popup-link').on('click', function(e) {
+			e.preventDefault();
+			const modalId = $(this).data('smlf-modal');
+			if (modalId) {
+				$wrapper.find('#' + modalId).addClass('smlf-consent-modal-open').attr('aria-hidden', 'false');
+			}
+		});
+
+		$wrapper.find('[data-smlf-close-modal]').on('click', function(e) {
+			e.preventDefault();
+			$(this).closest('.smlf-consent-modal').removeClass('smlf-consent-modal-open').attr('aria-hidden', 'true');
 		});
 
 		$wrapper.find('.smlf-btn-reset').on('click', function(e) {
@@ -434,6 +469,42 @@ jQuery(document).ready(function($) {
 					requestData.append('smlf_files[]', file);
 				});
 			});
+		}
+
+		function validateFiles(files) {
+			if (!files.length) {
+				return '';
+			}
+
+			if (files.length > maxFileCount) {
+				return formatMessage(smlf_public_obj.i18n.too_many_files, [maxFileCount]);
+			}
+
+			for (let i = 0; i < files.length; i++) {
+				const file = files[i];
+				const extension = file.name.indexOf('.') !== -1 ? file.name.split('.').pop().toLowerCase() : '';
+
+				if (allowedFileExtensions.length && allowedFileExtensions.indexOf(extension) === -1) {
+					return formatMessage(smlf_public_obj.i18n.file_type, [file.name]);
+				}
+
+				if (file.size > maxFileSizeBytes) {
+					return formatMessage(smlf_public_obj.i18n.file_size, [maxFileSizeMb, file.name]);
+				}
+			}
+
+			return '';
+		}
+
+		function formatMessage(message, values) {
+			let formatted = message || '';
+			values.forEach(function(value, index) {
+				formatted = formatted.replace('%' + (index + 1) + '$d', value);
+				formatted = formatted.replace('%' + (index + 1) + '$s', value);
+				formatted = formatted.replace('%d', value);
+				formatted = formatted.replace('%s', value);
+			});
+			return formatted;
 		}
 	});
 });

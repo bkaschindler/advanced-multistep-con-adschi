@@ -54,6 +54,22 @@
 					<input type="password" name="smlf_captcha_secret_key" value="<?php echo esc_attr( get_option('smlf_captcha_secret_key', '') ); ?>" class="regular-text" />
 				</td>
 			</tr>
+			<tr valign="top">
+				<th scope="row"><?php esc_html_e( 'Data on Uninstall', 'smart-multistep-lead-forms' ); ?></th>
+				<td>
+					<?php $uninstall_action = get_option( 'smlf_uninstall_data_action', 'keep' ); ?>
+					<label>
+						<input type="radio" name="smlf_uninstall_data_action" value="keep" <?php checked( $uninstall_action, 'keep' ); ?>>
+						<?php esc_html_e( 'Keep forms, leads, email logs, and settings in the database.', 'smart-multistep-lead-forms' ); ?>
+					</label>
+					<br>
+					<label>
+						<input type="radio" name="smlf_uninstall_data_action" value="delete" <?php checked( $uninstall_action, 'delete' ); ?>>
+						<?php esc_html_e( 'Delete all plugin data from the database when the plugin is uninstalled.', 'smart-multistep-lead-forms' ); ?>
+					</label>
+					<p class="description"><?php esc_html_e( 'This only runs when the plugin is deleted from WordPress, not when it is deactivated.', 'smart-multistep-lead-forms' ); ?></p>
+				</td>
+			</tr>
 		</table>
 		<?php submit_button(); ?>
 	</form>

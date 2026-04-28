@@ -2,7 +2,7 @@
 # This file is distributed under the GPLv2 or later.
 msgid ""
 msgstr ""
-"Project-Id-Version: Smart MultiStep Lead Forms 1.1.0\n"
+"Project-Id-Version: Smart MultiStep Lead Forms 1.2.5\n"
 "Report-Msgid-Bugs-To: https://adschi.com\n"
 "POT-Creation-Date: 2024-05-30 00:00:00+00:00\n"
 "MIME-Version: 1.0\n"
@@ -95,6 +95,18 @@ msgstr ""
 msgid "Captcha Secret Key"
 msgstr ""
 
+msgid "Data on Uninstall"
+msgstr ""
+
+msgid "Keep forms, leads, email logs, and settings in the database."
+msgstr ""
+
+msgid "Delete all plugin data from the database when the plugin is uninstalled."
+msgstr ""
+
+msgid "This only runs when the plugin is deleted from WordPress, not when it is deactivated."
+msgstr ""
+
 msgid "Security Check"
 msgstr ""
 
@@ -114,6 +126,222 @@ msgid "Next"
 msgstr ""
 
 msgid "Submit"
+msgstr ""
+
+msgid "Load HVAC template"
+msgstr ""
+
+msgid "Appearance"
+msgstr ""
+
+msgid "Theme"
+msgstr ""
+
+msgid "Consult Pro"
+msgstr ""
+
+msgid "HVAC 3D"
+msgstr ""
+
+msgid "Font family"
+msgstr ""
+
+msgid "Primary color"
+msgstr ""
+
+msgid "Accent color"
+msgstr ""
+
+msgid "Background color"
+msgstr ""
+
+msgid "Text color"
+msgstr ""
+
+msgid "Allowed file extensions"
+msgstr ""
+
+msgid "Maximum file count"
+msgstr ""
+
+msgid "Maximum file size (MB)"
+msgstr ""
+
+msgid "Upload limits"
+msgstr ""
+
+msgid "Field width"
+msgstr ""
+
+msgid "Full width"
+msgstr ""
+
+msgid "Half width"
+msgstr ""
+
+msgid "One third"
+msgstr ""
+
+msgid "Display mode"
+msgstr ""
+
+msgid "Default"
+msgstr ""
+
+msgid "Tap cards"
+msgstr ""
+
+msgid "Dropdown"
+msgstr ""
+
+msgid "List"
+msgstr ""
+
+msgid "Label color"
+msgstr ""
+
+msgid "Input background"
+msgstr ""
+
+msgid "Input text color"
+msgstr ""
+
+msgid "Consent Checkbox"
+msgstr ""
+
+msgid "Consent text"
+msgstr ""
+
+msgid "Linked text"
+msgstr ""
+
+msgid "Link URL"
+msgstr ""
+
+msgid "Link behavior"
+msgstr ""
+
+msgid "Open in new tab"
+msgstr ""
+
+msgid "Popup WordPress page"
+msgstr ""
+
+msgid "Popup custom text"
+msgstr ""
+
+msgid "WordPress page"
+msgstr ""
+
+msgid "Popup text"
+msgstr ""
+
+msgid "Checked by default"
+msgstr ""
+
+msgid "I agree to the privacy policy and data processing."
+msgstr ""
+
+msgid "Forms overview"
+msgstr ""
+
+msgid "Total Forms"
+msgstr ""
+
+msgid "%s published"
+msgstr ""
+
+msgid "Total Leads"
+msgstr ""
+
+msgid "All captured records"
+msgstr ""
+
+msgid "Completed Leads"
+msgstr ""
+
+msgid "%s%% completion rate"
+msgstr ""
+
+msgid "Partial Leads"
+msgstr ""
+
+msgid "Saved before final submit"
+msgstr ""
+
+msgid "Allowed: %1$s. Up to %2$d files, %3$dMB each."
+msgstr ""
+
+msgid "You can upload up to %d files."
+msgstr ""
+
+msgid "This file type is not allowed: %s"
+msgstr ""
+
+msgid "This file is larger than %1$dMB: %2$s"
+msgstr ""
+
+msgid "%1$s is larger than %2$dMB."
+msgstr ""
+
+msgid "Please select"
+msgstr ""
+
+msgid "Close"
+msgstr ""
+
+msgid "Template: Heating and Cooling Consultation"
+msgstr ""
+
+msgid "System Type"
+msgstr ""
+
+msgid "Tell us what kind of heating or cooling support you need."
+msgstr ""
+
+msgid "Service request"
+msgstr ""
+
+msgid "New installation, Repair, Maintenance, Energy upgrade"
+msgstr ""
+
+msgid "Property Details"
+msgstr ""
+
+msgid "Property type"
+msgstr ""
+
+msgid "Apartment, House, Office, Retail, Industrial"
+msgstr ""
+
+msgid "Approximate area"
+msgstr ""
+
+msgid "Current system age"
+msgstr ""
+
+msgid "No system, Under 5 years, 5-10 years, Over 10 years"
+msgstr ""
+
+msgid "Contact and Notes"
+msgstr ""
+
+msgid "Full name"
+msgstr ""
+
+msgid "Email address"
+msgstr ""
+
+msgid "Phone number"
+msgstr ""
+
+msgid "Preferred visit time"
+msgstr ""
+
+msgid "Describe the issue or goal"
+msgstr ""
+
+msgid "Photos or documents"
 msgstr ""
 
 msgid "Thank you!"

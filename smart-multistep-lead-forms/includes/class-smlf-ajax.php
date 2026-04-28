@@ -2,7 +2,7 @@
 
 class SMLF_Ajax {
 
-	private $allowed_field_types = array( 'text', 'email', 'phone', 'cards', 'radio', 'textarea', 'file', 'message' );
+	private $allowed_field_types = array( 'text', 'email', 'phone', 'cards', 'radio', 'textarea', 'file', 'message', 'consent' );
 	private $allowed_captcha_methods = array( 'none', 'custom', 'recaptcha_v2', 'recaptcha_v3', 'turnstile' );
 
 	public function save_form_admin() {
@@ -106,7 +106,10 @@ class SMLF_Ajax {
 			wp_send_json_success();
 		}
 
-		$uploaded_files = $this->handle_uploaded_files();
+		$uploaded_files = $this->handle_uploaded_files( $form );
+		if ( is_wp_error( $uploaded_files ) ) {
+			wp_send_json_error( array( 'message' => $uploaded_files->get_error_message() ), 400 );
+		}
 		if ( ! empty( $uploaded_files ) ) {
 			$structured_data['uploaded_files'] = $uploaded_files;
 		}
@@ -173,7 +176,10 @@ class SMLF_Ajax {
 		}
 
 		$structured_data = $this->sanitize_submission_data( isset( $_POST['data'] ) ? wp_unslash( $_POST['data'] ) : array() );
-		$uploaded_files  = $this->handle_uploaded_files();
+		$uploaded_files  = $this->handle_uploaded_files( $form );
+		if ( is_wp_error( $uploaded_files ) ) {
+			wp_send_json_error( array( 'message' => $uploaded_files->get_error_message() ), 400 );
+		}
 		if ( ! empty( $uploaded_files ) ) {
 			$structured_data['uploaded_files'] = $uploaded_files;
 		}
@@ -319,11 +325,23 @@ class SMLF_Ajax {
 				}
 
 				$sanitized_step['fields'][] = array(
-					'field_id' => $field_id,
-					'type'     => $type,
-					'label'    => $label,
-					'options'  => isset( $field['options'] ) ? sanitize_textarea_field( $field['options'] ) : '',
-					'required' => ! empty( $field['required'] ) ? 1 : 0,
+					'field_id'         => $field_id,
+					'type'             => $type,
+					'label'            => $label,
+					'options'          => isset( $field['options'] ) ? sanitize_textarea_field( $field['options'] ) : '',
+					'required'         => ! empty( $field['required'] ) ? 1 : 0,
+					'field_width'      => $this->sanitize_choice( isset( $field['field_width'] ) ? $field['field_width'] : 'full', array( 'full', 'half', 'third' ), 'full' ),
+					'display_mode'     => $this->sanitize_choice( isset( $field['display_mode'] ) ? $field['display_mode'] : 'default', array( 'default', 'cards', 'dropdown', 'list' ), 'default' ),
+					'label_color'      => isset( $field['label_color'] ) ? sanitize_hex_color( $field['label_color'] ) : '',
+					'input_background' => isset( $field['input_background'] ) ? sanitize_hex_color( $field['input_background'] ) : '',
+					'input_text_color' => isset( $field['input_text_color'] ) ? sanitize_hex_color( $field['input_text_color'] ) : '',
+					'consent_text'     => isset( $field['consent_text'] ) ? sanitize_textarea_field( $field['consent_text'] ) : '',
+					'link_text'        => isset( $field['link_text'] ) ? sanitize_text_field( $field['link_text'] ) : '',
+					'link_url'         => isset( $field['link_url'] ) ? esc_url_raw( $field['link_url'] ) : '',
+					'link_behavior'    => $this->sanitize_choice( isset( $field['link_behavior'] ) ? $field['link_behavior'] : 'new_tab', array( 'new_tab', 'popup_page', 'popup_text' ), 'new_tab' ),
+					'link_page_id'     => isset( $field['link_page_id'] ) ? absint( $field['link_page_id'] ) : 0,
+					'popup_text'       => isset( $field['popup_text'] ) ? wp_kses_post( $field['popup_text'] ) : '',
+					'checked_default'  => ! empty( $field['checked_default'] ) ? 1 : 0,
 				);
 			}
 
@@ -340,12 +358,31 @@ class SMLF_Ajax {
 		$captcha_method = isset( $settings['captcha_method'] ) ? sanitize_key( $settings['captcha_method'] ) : 'inherit';
 		$captcha_gate   = isset( $settings['captcha_gate'] ) ? sanitize_key( $settings['captcha_gate'] ) : 'before_form';
 		$captcha_step   = isset( $settings['captcha_step'] ) ? absint( $settings['captcha_step'] ) : 1;
+		$extensions     = isset( $settings['allowed_file_extensions'] ) ? $this->sanitize_file_extensions( $settings['allowed_file_extensions'] ) : 'jpg,jpeg,png,gif,webp,pdf,doc,docx,xls,xlsx,zip';
+		$max_count      = isset( $settings['max_file_count'] ) ? absint( $settings['max_file_count'] ) : 5;
+		$max_size       = isset( $settings['max_file_size_mb'] ) ? absint( $settings['max_file_size_mb'] ) : 10;
+		$theme          = $this->sanitize_choice( isset( $settings['theme'] ) ? $settings['theme'] : 'consult_pro', array( 'consult_pro', 'hvac_3d' ), 'consult_pro' );
+		$font_family    = isset( $settings['font_family'] ) ? sanitize_text_field( $settings['font_family'] ) : 'inherit';
 
 		return array(
-			'captcha_method' => in_array( $captcha_method, $allowed_methods, true ) ? $captcha_method : 'inherit',
-			'captcha_gate'   => in_array( $captcha_gate, $allowed_gates, true ) ? $captcha_gate : 'before_form',
-			'captcha_step'   => max( 1, $captcha_step ),
+			'captcha_method'          => in_array( $captcha_method, $allowed_methods, true ) ? $captcha_method : 'inherit',
+			'captcha_gate'            => in_array( $captcha_gate, $allowed_gates, true ) ? $captcha_gate : 'before_form',
+			'captcha_step'            => max( 1, $captcha_step ),
+			'allowed_file_extensions' => '' !== $extensions ? $extensions : 'jpg,jpeg,png,gif,webp,pdf,doc,docx,xls,xlsx,zip',
+			'max_file_count'          => max( 1, $max_count ),
+			'max_file_size_mb'        => max( 1, $max_size ),
+			'theme'                   => $theme,
+			'font_family'             => '' !== $font_family ? $font_family : 'inherit',
+			'primary_color'           => isset( $settings['primary_color'] ) ? sanitize_hex_color( $settings['primary_color'] ) : '#0ea5e9',
+			'accent_color'            => isset( $settings['accent_color'] ) ? sanitize_hex_color( $settings['accent_color'] ) : '#14b8a6',
+			'background_color'        => isset( $settings['background_color'] ) ? sanitize_hex_color( $settings['background_color'] ) : '#ffffff',
+			'text_color'              => isset( $settings['text_color'] ) ? sanitize_hex_color( $settings['text_color'] ) : '#111827',
 		);
+	}
+
+	private function sanitize_choice( $value, $allowed, $fallback ) {
+		$value = sanitize_key( $value );
+		return in_array( $value, $allowed, true ) ? $value : $fallback;
 	}
 
 	private function sanitize_submission_data( $data_raw ) {
@@ -372,7 +409,7 @@ class SMLF_Ajax {
 		return $structured_data;
 	}
 
-	private function handle_uploaded_files() {
+	private function handle_uploaded_files( $form = null ) {
 		if ( empty( $_FILES['smlf_files'] ) || empty( $_FILES['smlf_files']['name'] ) || ! is_array( $_FILES['smlf_files']['name'] ) ) {
 			return array();
 		}
@@ -381,8 +418,19 @@ class SMLF_Ajax {
 			require_once ABSPATH . 'wp-admin/includes/file.php';
 		}
 
-		$uploaded = array();
-		$allowed_mimes = array(
+		$upload_settings = $this->get_upload_settings( $form );
+		$file_names      = array_filter( array_map( 'trim', $_FILES['smlf_files']['name'] ) );
+
+		if ( count( $file_names ) > $upload_settings['max_file_count'] ) {
+			return new WP_Error( 'smlf_too_many_files', sprintf(
+				/* translators: %d: max file count */
+				__( 'You can upload up to %d files.', 'smart-multistep-lead-forms' ),
+				$upload_settings['max_file_count']
+			) );
+		}
+
+		$uploaded            = array();
+		$allowed_mimes       = array(
 			'jpg|jpeg|jpe' => 'image/jpeg',
 			'png'          => 'image/png',
 			'gif'          => 'image/gif',
@@ -394,6 +442,8 @@ class SMLF_Ajax {
 			'xlsx'         => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
 			'zip'          => 'application/zip',
 		);
+		$allowed_mimes       = $this->filter_mimes_by_extensions( $allowed_mimes, $upload_settings['allowed_file_extensions'] );
+		$max_file_size_bytes = $upload_settings['max_file_size_mb'] * MB_IN_BYTES;
 
 		foreach ( $_FILES['smlf_files']['name'] as $index => $name ) {
 			if ( empty( $name ) || ! empty( $_FILES['smlf_files']['error'][ $index ] ) ) {
@@ -408,8 +458,22 @@ class SMLF_Ajax {
 				'size'     => isset( $_FILES['smlf_files']['size'][ $index ] ) ? absint( $_FILES['smlf_files']['size'][ $index ] ) : 0,
 			);
 
-			if ( $file['size'] > 10 * MB_IN_BYTES ) {
-				continue;
+			$extension = strtolower( pathinfo( $file['name'], PATHINFO_EXTENSION ) );
+			if ( ! in_array( $extension, $upload_settings['allowed_file_extensions'], true ) ) {
+				return new WP_Error( 'smlf_file_type_not_allowed', sprintf(
+					/* translators: %s: file name */
+					__( 'This file type is not allowed: %s', 'smart-multistep-lead-forms' ),
+					$file['name']
+				) );
+			}
+
+			if ( $file['size'] > $max_file_size_bytes ) {
+				return new WP_Error( 'smlf_file_too_large', sprintf(
+					/* translators: 1: file name, 2: max size in MB */
+					__( '%1$s is larger than %2$dMB.', 'smart-multistep-lead-forms' ),
+					$file['name'],
+					$upload_settings['max_file_size_mb']
+				) );
 			}
 
 			$result = wp_handle_upload(
@@ -430,6 +494,52 @@ class SMLF_Ajax {
 		}
 
 		return $uploaded;
+	}
+
+	private function get_upload_settings( $form = null ) {
+		$settings = array(
+			'allowed_file_extensions' => array( 'jpg', 'jpeg', 'png', 'gif', 'webp', 'pdf', 'doc', 'docx', 'xls', 'xlsx', 'zip' ),
+			'max_file_count'          => 5,
+			'max_file_size_mb'        => 10,
+		);
+
+		if ( $form && ! empty( $form->form_data ) ) {
+			$form_data = json_decode( $form->form_data, true );
+			if ( is_array( $form_data ) && ! empty( $form_data['settings'] ) && is_array( $form_data['settings'] ) ) {
+				$form_settings = $this->sanitize_form_settings( $form_data['settings'] );
+				$settings      = array(
+					'allowed_file_extensions' => array_filter( array_map( 'sanitize_key', array_map( 'trim', explode( ',', $form_settings['allowed_file_extensions'] ) ) ) ),
+					'max_file_count'          => max( 1, absint( $form_settings['max_file_count'] ) ),
+					'max_file_size_mb'        => max( 1, absint( $form_settings['max_file_size_mb'] ) ),
+				);
+			}
+		}
+
+		if ( empty( $settings['allowed_file_extensions'] ) ) {
+			$settings['allowed_file_extensions'] = array( 'jpg', 'jpeg', 'png', 'gif', 'webp', 'pdf', 'doc', 'docx', 'xls', 'xlsx', 'zip' );
+		}
+
+		return $settings;
+	}
+
+	private function sanitize_file_extensions( $extensions ) {
+		$extensions = is_array( $extensions ) ? $extensions : explode( ',', (string) $extensions );
+		$extensions = array_unique( array_filter( array_map( 'sanitize_key', array_map( 'trim', $extensions ) ) ) );
+
+		return implode( ',', $extensions );
+	}
+
+	private function filter_mimes_by_extensions( $allowed_mimes, $allowed_extensions ) {
+		$filtered = array();
+
+		foreach ( $allowed_mimes as $extension_group => $mime ) {
+			$group_extensions = explode( '|', $extension_group );
+			if ( array_intersect( $group_extensions, $allowed_extensions ) ) {
+				$filtered[ $extension_group ] = $mime;
+			}
+		}
+
+		return $filtered;
 	}
 
 	private function verify_captcha_token( $token, $custom_verified = '', $is_verify_step = false, $form = null ) {

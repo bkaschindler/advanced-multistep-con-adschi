@@ -32,7 +32,12 @@ class SMLF_Admin {
 			'ajax_url' => admin_url( 'admin-ajax.php' ),
 			'nonce'    => wp_create_nonce( 'smlf_admin_nonce' ),
 			'i18n'     => $this->get_builder_i18n(),
+			'pages'    => $this->get_page_choices(),
 			'template' => $this->get_consultation_template(),
+			'templates' => array(
+				'consultation' => $this->get_consultation_template(),
+				'hvac'         => $this->get_hvac_template(),
+			),
 		) );
 	}
 
@@ -114,6 +119,7 @@ class SMLF_Admin {
 		register_setting( 'smlf_options_group', 'smlf_captcha_method', array( 'sanitize_callback' => array( $this, 'sanitize_captcha_method' ) ) );
 		register_setting( 'smlf_options_group', 'smlf_captcha_site_key', array( 'sanitize_callback' => 'sanitize_text_field' ) );
 		register_setting( 'smlf_options_group', 'smlf_captcha_secret_key', array( 'sanitize_callback' => 'sanitize_text_field' ) );
+		register_setting( 'smlf_options_group', 'smlf_uninstall_data_action', array( 'sanitize_callback' => array( $this, 'sanitize_uninstall_data_action' ) ) );
 	}
 
 	public function sanitize_email_option( $value ) {
@@ -131,6 +137,12 @@ class SMLF_Admin {
 		return in_array( $value, $allowed, true ) ? $value : 'custom';
 	}
 
+	public function sanitize_uninstall_data_action( $value ) {
+		$value   = sanitize_key( $value );
+		$allowed = array( 'keep', 'delete' );
+		return in_array( $value, $allowed, true ) ? $value : 'keep';
+	}
+
 	public function get_builder_i18n() {
 		$locale = function_exists( 'determine_locale' ) ? determine_locale() : get_locale();
 
@@ -143,10 +155,12 @@ class SMLF_Admin {
 			'long_text'               => 'Long Text',
 			'file_upload'             => 'File Upload',
 			'message_text'            => 'Message Text',
+			'consent_checkbox'        => __( 'Consent Checkbox', 'smart-multistep-lead-forms' ),
 			'clickable_cards'         => 'Clickable Cards',
 			'radio_buttons'           => 'Radio Buttons',
 			'add_step'                => '+ Add Step',
 			'load_template'           => 'Load consultation template',
+			'load_hvac_template'      => __( 'Load HVAC template', 'smart-multistep-lead-forms' ),
 			'save_form'               => 'Save Form',
 			'form_title'              => 'Form Title',
 			'captcha_method'          => 'Captcha',
@@ -161,6 +175,19 @@ class SMLF_Admin {
 			'captcha_before_submit'   => 'Before final submit',
 			'captcha_on_step'         => 'Before a specific step',
 			'captcha_step'            => 'Captcha step number',
+			'appearance'              => __( 'Appearance', 'smart-multistep-lead-forms' ),
+			'theme'                   => __( 'Theme', 'smart-multistep-lead-forms' ),
+			'theme_consult'           => __( 'Consult Pro', 'smart-multistep-lead-forms' ),
+			'theme_hvac'              => __( 'HVAC 3D', 'smart-multistep-lead-forms' ),
+			'font_family'             => __( 'Font family', 'smart-multistep-lead-forms' ),
+			'primary_color'           => __( 'Primary color', 'smart-multistep-lead-forms' ),
+			'accent_color'            => __( 'Accent color', 'smart-multistep-lead-forms' ),
+			'background_color'        => __( 'Background color', 'smart-multistep-lead-forms' ),
+			'text_color'              => __( 'Text color', 'smart-multistep-lead-forms' ),
+			'allowed_file_extensions' => __( 'Allowed file extensions', 'smart-multistep-lead-forms' ),
+			'max_file_count'          => __( 'Maximum file count', 'smart-multistep-lead-forms' ),
+			'max_file_size_mb'        => __( 'Maximum file size (MB)', 'smart-multistep-lead-forms' ),
+			'upload_limits'           => __( 'Upload limits', 'smart-multistep-lead-forms' ),
 			'preview_title'           => 'Live preview',
 			'preview_note'            => 'This preview updates while you edit. Save the form to publish changes.',
 			'step'                    => 'Step',
@@ -172,6 +199,29 @@ class SMLF_Admin {
 			'label'                   => 'Label',
 			'required'                => 'Required',
 			'options'                 => 'Options (comma separated)',
+			'field_width'             => __( 'Field width', 'smart-multistep-lead-forms' ),
+			'width_full'              => __( 'Full width', 'smart-multistep-lead-forms' ),
+			'width_half'              => __( 'Half width', 'smart-multistep-lead-forms' ),
+			'width_third'             => __( 'One third', 'smart-multistep-lead-forms' ),
+			'display_mode'            => __( 'Display mode', 'smart-multistep-lead-forms' ),
+			'display_default'         => __( 'Default', 'smart-multistep-lead-forms' ),
+			'display_cards'           => __( 'Tap cards', 'smart-multistep-lead-forms' ),
+			'display_dropdown'        => __( 'Dropdown', 'smart-multistep-lead-forms' ),
+			'display_list'            => __( 'List', 'smart-multistep-lead-forms' ),
+			'label_color'             => __( 'Label color', 'smart-multistep-lead-forms' ),
+			'input_background'        => __( 'Input background', 'smart-multistep-lead-forms' ),
+			'input_text_color'        => __( 'Input text color', 'smart-multistep-lead-forms' ),
+			'consent_text'            => __( 'Consent text', 'smart-multistep-lead-forms' ),
+			'linked_text'             => __( 'Linked text', 'smart-multistep-lead-forms' ),
+			'link_url'                => __( 'Link URL', 'smart-multistep-lead-forms' ),
+			'link_behavior'           => __( 'Link behavior', 'smart-multistep-lead-forms' ),
+			'open_new_tab'            => __( 'Open in new tab', 'smart-multistep-lead-forms' ),
+			'popup_wordpress_page'    => __( 'Popup WordPress page', 'smart-multistep-lead-forms' ),
+			'popup_custom_text'       => __( 'Popup custom text', 'smart-multistep-lead-forms' ),
+			'wordpress_page'          => __( 'WordPress page', 'smart-multistep-lead-forms' ),
+			'popup_text'              => __( 'Popup text', 'smart-multistep-lead-forms' ),
+			'checked_by_default'      => __( 'Checked by default', 'smart-multistep-lead-forms' ),
+			'consent_default_text'    => __( 'I agree to the privacy policy and data processing.', 'smart-multistep-lead-forms' ),
 			'option_1'                => 'Option 1',
 			'option_2'                => 'Option 2',
 			'drag_files'              => 'Drag files here or click to upload',
@@ -395,6 +445,144 @@ class SMLF_Admin {
 					),
 				),
 			),
+		);
+	}
+
+	public function get_hvac_template() {
+		return array(
+			'title'    => __( 'Template: Heating and Cooling Consultation', 'smart-multistep-lead-forms' ),
+			'settings' => array(
+				'theme'                   => 'hvac_3d',
+				'font_family'             => 'Inter, Arial, sans-serif',
+				'primary_color'           => '#0891b2',
+				'accent_color'            => '#f97316',
+				'background_color'        => '#08111f',
+				'text_color'              => '#e5f7ff',
+				'allowed_file_extensions'  => 'jpg,jpeg,png,pdf,doc,docx',
+				'max_file_count'           => 4,
+				'max_file_size_mb'         => 12,
+			),
+			'steps'    => array(
+				array(
+					'step_id' => 1,
+					'title'   => __( 'System Type', 'smart-multistep-lead-forms' ),
+					'fields'  => array(
+						array(
+							'field_id'     => 'hvac_intro',
+							'type'         => 'message',
+							'label'        => __( 'Tell us what kind of heating or cooling support you need.', 'smart-multistep-lead-forms' ),
+							'required'     => 0,
+							'field_width'  => 'full',
+						),
+						array(
+							'field_id'     => 'hvac_service',
+							'type'         => 'cards',
+							'label'        => __( 'Service request', 'smart-multistep-lead-forms' ),
+							'options'      => __( 'New installation, Repair, Maintenance, Energy upgrade', 'smart-multistep-lead-forms' ),
+							'required'     => 1,
+							'field_width'  => 'full',
+							'display_mode' => 'cards',
+						),
+					),
+				),
+				array(
+					'step_id' => 2,
+					'title'   => __( 'Property Details', 'smart-multistep-lead-forms' ),
+					'fields'  => array(
+						array(
+							'field_id'     => 'property_type',
+							'type'         => 'radio',
+							'label'        => __( 'Property type', 'smart-multistep-lead-forms' ),
+							'options'      => __( 'Apartment, House, Office, Retail, Industrial', 'smart-multistep-lead-forms' ),
+							'required'     => 1,
+							'field_width'  => 'half',
+							'display_mode' => 'dropdown',
+						),
+						array(
+							'field_id'    => 'property_size',
+							'type'        => 'text',
+							'label'       => __( 'Approximate area', 'smart-multistep-lead-forms' ),
+							'required'    => 0,
+							'field_width' => 'half',
+						),
+						array(
+							'field_id'     => 'system_age',
+							'type'         => 'radio',
+							'label'        => __( 'Current system age', 'smart-multistep-lead-forms' ),
+							'options'      => __( 'No system, Under 5 years, 5-10 years, Over 10 years', 'smart-multistep-lead-forms' ),
+							'required'     => 0,
+							'field_width'  => 'full',
+							'display_mode' => 'cards',
+						),
+					),
+				),
+				array(
+					'step_id' => 3,
+					'title'   => __( 'Contact and Notes', 'smart-multistep-lead-forms' ),
+					'fields'  => array(
+						array(
+							'field_id'    => 'full_name',
+							'type'        => 'text',
+							'label'       => __( 'Full name', 'smart-multistep-lead-forms' ),
+							'required'    => 0,
+							'field_width' => 'half',
+						),
+						array(
+							'field_id'    => 'email',
+							'type'        => 'email',
+							'label'       => __( 'Email address', 'smart-multistep-lead-forms' ),
+							'required'    => 1,
+							'field_width' => 'half',
+						),
+						array(
+							'field_id'    => 'phone',
+							'type'        => 'phone',
+							'label'       => __( 'Phone number', 'smart-multistep-lead-forms' ),
+							'required'    => 0,
+							'field_width' => 'half',
+						),
+						array(
+							'field_id'    => 'preferred_time',
+							'type'        => 'text',
+							'label'       => __( 'Preferred visit time', 'smart-multistep-lead-forms' ),
+							'required'    => 0,
+							'field_width' => 'half',
+						),
+						array(
+							'field_id'    => 'project_details',
+							'type'        => 'textarea',
+							'label'       => __( 'Describe the issue or goal', 'smart-multistep-lead-forms' ),
+							'required'    => 0,
+							'field_width' => 'full',
+						),
+						array(
+							'field_id'    => 'attachments',
+							'type'        => 'file',
+							'label'       => __( 'Photos or documents', 'smart-multistep-lead-forms' ),
+							'required'    => 0,
+							'field_width' => 'full',
+						),
+					),
+				),
+			),
+		);
+	}
+
+	private function get_page_choices() {
+		$pages = get_pages( array(
+			'post_status' => 'publish',
+			'sort_column' => 'post_title',
+			'sort_order'  => 'ASC',
+		) );
+
+		return array_map(
+			static function( $page ) {
+				return array(
+					'id'    => absint( $page->ID ),
+					'title' => html_entity_decode( get_the_title( $page ), ENT_QUOTES, get_bloginfo( 'charset' ) ),
+				);
+			},
+			$pages
 		);
 	}
 

@@ -17,8 +17,7 @@ jQuery(document).ready(function($) {
 		$header.append($('<input/>', {
 			type: 'text',
 			'class': 'smlf-step-title-input',
-			value: stepTitle,
-			css: { marginLeft: '10px', width: '200px' }
+			value: stepTitle
 		}));
 		$header.append($('<button/>', {
 			'class': 'button smlf-remove-step',
@@ -26,13 +25,7 @@ jQuery(document).ready(function($) {
 		}));
 
 		const $logic = $('<div/>', {
-			'class': 'smlf-step-logic',
-			css: {
-				marginBottom: '10px',
-				padding: '5px',
-				background: '#e9f0f5',
-				border: '1px solid #ccd0d4'
-			}
+			'class': 'smlf-step-logic'
 		});
 		const $logicLabel = $('<label/>', { css: { fontSize: '12px' }, text: i18n.condition_prefix + ' ' });
 		$logicLabel.append($('<input/>', {
@@ -80,17 +73,13 @@ jQuery(document).ready(function($) {
 		const type = data.type || 'text';
 		const label = data.label || getDefaultLabel(type);
 		const fieldId = data.field_id || '';
+		const fieldWidth = data.field_width || 'full';
+		const displayMode = data.display_mode || (type === 'cards' ? 'cards' : 'default');
 
 		const $item = $('<div/>', {
 			'class': 'smlf-field-item',
 			'data-type': type,
-			'data-field-id': fieldId,
-			css: {
-				background: '#fff',
-				border: '1px solid #ddd',
-				padding: '10px',
-				marginBottom: '5px'
-			}
+			'data-field-id': fieldId
 		});
 
 		$item.append($('<strong/>', { text: label }));
@@ -123,7 +112,34 @@ jQuery(document).ready(function($) {
 		}));
 		$settings.append($requiredLabel);
 
+		const $widthLabel = $('<label/>', { text: i18n.field_width + ': ' });
+		const $widthSelect = $('<select/>', { 'class': 'field-width' });
+		[
+			['full', i18n.width_full],
+			['half', i18n.width_half],
+			['third', i18n.width_third]
+		].forEach(function(option) {
+			$widthSelect.append($('<option/>', { value: option[0], text: option[1] }));
+		});
+		$widthSelect.val(fieldWidth);
+		$widthLabel.append($widthSelect);
+		$settings.append($widthLabel);
+
 		if (type === 'cards' || type === 'radio') {
+			const $displayLabel = $('<label/>', { text: i18n.display_mode + ': ' });
+			const $displaySelect = $('<select/>', { 'class': 'field-display-mode' });
+			[
+				['default', i18n.display_default],
+				['cards', i18n.display_cards],
+				['dropdown', i18n.display_dropdown],
+				['list', i18n.display_list]
+			].forEach(function(option) {
+				$displaySelect.append($('<option/>', { value: option[0], text: option[1] }));
+			});
+			$displaySelect.val(displayMode);
+			$displayLabel.append($displaySelect);
+			$settings.append($displayLabel);
+
 			const $optionsLabel = $('<label/>', {
 				text: i18n.options + ': ',
 				css: { display: 'block', marginTop: '5px' }
@@ -136,6 +152,86 @@ jQuery(document).ready(function($) {
 			}));
 			$settings.append($optionsLabel);
 		}
+
+		if (type === 'consent') {
+			const $consentTextLabel = $('<label/>', { text: i18n.consent_text + ': ' });
+			$consentTextLabel.append($('<textarea/>', {
+				'class': 'field-consent-text',
+				rows: 3,
+				text: data.consent_text || i18n.consent_default_text
+			}));
+			$settings.append($consentTextLabel);
+
+			[
+				['field-link-text', i18n.linked_text, data.link_text || ''],
+				['field-link-url', i18n.link_url, data.link_url || '']
+			].forEach(function(item) {
+				const $itemLabel = $('<label/>', { text: item[1] + ': ' });
+				$itemLabel.append($('<input/>', { type: 'text', 'class': item[0], value: item[2] }));
+				$settings.append($itemLabel);
+			});
+
+			const $behaviorLabel = $('<label/>', { text: i18n.link_behavior + ': ' });
+			const $behaviorSelect = $('<select/>', { 'class': 'field-link-behavior' });
+			[
+				['new_tab', i18n.open_new_tab],
+				['popup_page', i18n.popup_wordpress_page],
+				['popup_text', i18n.popup_custom_text]
+			].forEach(function(option) {
+				$behaviorSelect.append($('<option/>', { value: option[0], text: option[1] }));
+			});
+			$behaviorSelect.val(data.link_behavior || 'new_tab');
+			$behaviorLabel.append($behaviorSelect);
+			$settings.append($behaviorLabel);
+
+			const $pageLabel = $('<label/>', { text: i18n.wordpress_page + ': ' });
+			const $pageSelect = $('<select/>', { 'class': 'field-link-page-id' });
+			$pageSelect.append($('<option/>', { value: '0', text: '-' }));
+			(smlf_admin_obj.pages || []).forEach(function(page) {
+				$pageSelect.append($('<option/>', { value: page.id, text: page.title }));
+			});
+			$pageSelect.val(String(data.link_page_id || 0));
+			$pageLabel.append($pageSelect);
+			$settings.append($pageLabel);
+
+			const $popupTextLabel = $('<label/>', { text: i18n.popup_text + ': ' });
+			$popupTextLabel.append($('<textarea/>', {
+				'class': 'field-popup-text',
+				rows: 4,
+				text: data.popup_text || ''
+			}));
+			$settings.append($popupTextLabel);
+
+			const $defaultLabel = $('<label/>', { text: ' ' + i18n.checked_by_default });
+			$defaultLabel.prepend($('<input/>', {
+				type: 'checkbox',
+				'class': 'field-checked-default',
+				checked: !!parseInt(data.checked_default || 0, 10)
+			}));
+			$settings.append($defaultLabel);
+		}
+
+		const $colors = $('<div/>', { 'class': 'smlf-field-color-grid' });
+		[
+			['label-color', i18n.label_color, data.label_color || ''],
+			['input-background', i18n.input_background, data.input_background || ''],
+			['input-text-color', i18n.input_text_color, data.input_text_color || '']
+		].forEach(function(colorField) {
+			const $colorLabel = $('<label/>', { text: colorField[1] + ': ' });
+			$colorLabel.append($('<input/>', {
+				type: 'color',
+				'class': 'field-' + colorField[0],
+				value: colorField[2] || '#ffffff'
+			}));
+			$colorLabel.append($('<input/>', {
+				type: 'checkbox',
+				'class': 'field-' + colorField[0] + '-enabled',
+				checked: !!colorField[2],
+				title: colorField[1]
+			}));
+			$colors.append($colorLabel);
+		});
+		$settings.append($colors);
 
 		if (type === 'message') {
 			$item.find('.field-required').closest('label').hide();
@@ -221,11 +317,16 @@ jQuery(document).ready(function($) {
 		addStep();
 	}
 
-	$(document).on('input change', '#smlf-form-title, #smlf-captcha-method, #smlf-captcha-gate, #smlf-captcha-step, .smlf-step input, .smlf-field-item input', renderPreview);
+	$(document).on('input change', '#smlf-form-title, #smlf-theme, #smlf-font-family, #smlf-primary-color, #smlf-accent-color, #smlf-background-color, #smlf-text-color, #smlf-captcha-method, #smlf-captcha-gate, #smlf-captcha-step, #smlf-allowed-file-extensions, #smlf-max-file-count, #smlf-max-file-size-mb, .smlf-step input, .smlf-step select, .smlf-field-item input, .smlf-field-item select', renderPreview);
 
 	$('#smlf-load-template').on('click', function(e) {
 		e.preventDefault();
-		loadTemplate(smlf_admin_obj.template);
+		loadTemplate((smlf_admin_obj.templates && smlf_admin_obj.templates.consultation) || smlf_admin_obj.template);
+	});
+
+	$('#smlf-load-hvac-template').on('click', function(e) {
+		e.preventDefault();
+		loadTemplate(smlf_admin_obj.templates ? smlf_admin_obj.templates.hvac : null);
 	});
 
 	$('#smlf-save-form').on('click', function(e) {
@@ -283,7 +384,19 @@ jQuery(document).ready(function($) {
 					type: type,
 					label: $field.find('.field-label').val(),
 					options: (type === 'cards' || type === 'radio') ? $field.find('.field-options').val() : '',
-					required: $field.find('.field-required').is(':checked') ? 1 : 0
+					required: $field.find('.field-required').is(':checked') ? 1 : 0,
+					field_width: $field.find('.field-width').val() || 'full',
+					display_mode: $field.find('.field-display-mode').val() || 'default',
+					label_color: getOptionalColor($field, 'label-color'),
+					input_background: getOptionalColor($field, 'input-background'),
+					input_text_color: getOptionalColor($field, 'input-text-color'),
+					consent_text: $field.find('.field-consent-text').val() || '',
+					link_text: $field.find('.field-link-text').val() || '',
+					link_url: $field.find('.field-link-url').val() || '',
+					link_behavior: $field.find('.field-link-behavior').val() || 'new_tab',
+					link_page_id: parseInt($field.find('.field-link-page-id').val() || '0', 10),
+					popup_text: $field.find('.field-popup-text').val() || '',
+					checked_default: $field.find('.field-checked-default').is(':checked') ? 1 : 0
 				});
 			});
 
@@ -327,6 +440,14 @@ jQuery(document).ready(function($) {
 		$preview.empty();
 
 		const $shell = $('<div/>', { 'class': 'smlf-preview-shell' });
+		$shell.css({
+			'--smlf-primary': settings.primary_color,
+			'--smlf-accent': settings.accent_color,
+			'--smlf-bg': settings.background_color,
+			'--smlf-text': settings.text_color,
+			fontFamily: settings.font_family || 'inherit',
+			color: settings.text_color
+		}).addClass('smlf-preview-theme-' + settings.theme);
 		$shell.append($('<h3/>', { text: title }));
 		if (settings.captcha_method !== 'none') {
 			$shell.append($('<div/>', {
@@ -334,6 +455,10 @@ jQuery(document).ready(function($) {
 				text: i18n.captcha_method + ': ' + $('#smlf-captcha-method option:selected').text() + ' / ' + $('#smlf-captcha-gate option:selected').text()
 			}));
 		}
+		$shell.append($('<div/>', {
+			'class': 'smlf-preview-upload-note',
+			text: i18n.upload_limits + ': ' + settings.allowed_file_extensions + ' / ' + settings.max_file_count + ' / ' + settings.max_file_size_mb + 'MB'
+		}));
 
 		if (!steps.length) {
 			$shell.append($('<div/>', {
@@ -349,11 +474,23 @@ jQuery(document).ready(function($) {
 			$step.append($('<div/>', { 'class': 'smlf-preview-step-title', text: step.title || i18n.step + ' ' + (stepIndex + 1) }));
 
 			step.fields.forEach(function(field) {
-				const $field = $('<div/>', { 'class': 'smlf-preview-field smlf-preview-field-' + field.type });
+				const $field = $('<div/>', { 'class': 'smlf-preview-field smlf-preview-field-' + field.type + ' smlf-preview-width-' + (field.field_width || 'full') });
+				if (field.input_background) {
+					$field.css('--smlf-field-bg', field.input_background);
+				}
+				if (field.input_text_color) {
+					$field.css('--smlf-field-text', field.input_text_color);
+				}
 				if (field.type === 'message') {
 					$field.append($('<div/>', { 'class': 'smlf-preview-message', text: field.label }));
+				} else if (field.type === 'consent') {
+					$field.append($('<div/>', { 'class': 'smlf-preview-consent', text: field.consent_text || field.label }));
 				} else {
-					$field.append($('<label/>', { text: field.label + (field.required ? ' *' : '') }));
+					const $fieldLabel = $('<label/>', { text: field.label + (field.required ? ' *' : '') });
+					if (field.label_color) {
+						$fieldLabel.css('color', field.label_color);
+					}
+					$field.append($fieldLabel);
 				}
 
 				if (field.type === 'text' || field.type === 'email' || field.type === 'phone') {
@@ -363,7 +500,13 @@ jQuery(document).ready(function($) {
 				} else if (field.type === 'file') {
 					$field.append($('<div/>', { 'class': 'smlf-preview-file', text: i18n.drag_files }));
 				} else if (field.type === 'cards' || field.type === 'radio') {
-					const $cards = $('<div/>', { 'class': 'smlf-preview-cards' });
+					const mode = field.display_mode || (field.type === 'cards' ? 'cards' : 'list');
+					if (mode === 'dropdown') {
+						$field.append($('<div/>', { 'class': 'smlf-preview-select', text: i18n.display_dropdown }));
+						$step.append($field);
+						return;
+					}
+					const $cards = $('<div/>', { 'class': mode === 'cards' ? 'smlf-preview-cards' : 'smlf-preview-list' });
 					String(field.options || '').split(',').map(function(option) {
 						return option.trim();
 					}).filter(Boolean).forEach(function(option) {
@@ -395,6 +538,7 @@ jQuery(document).ready(function($) {
 			textarea: i18n.long_text,
 			file: i18n.file_upload,
 			message: i18n.message_text,
+			consent: i18n.consent_checkbox,
 			cards: i18n.clickable_cards,
 			radio: i18n.radio_buttons
 		};
@@ -405,14 +549,36 @@ jQuery(document).ready(function($) {
 		return {
 			captcha_method: $('#smlf-captcha-method').val() || 'inherit',
 			captcha_gate: $('#smlf-captcha-gate').val() || 'before_form',
-			captcha_step: parseInt($('#smlf-captcha-step').val() || '1', 10)
+			captcha_step: parseInt($('#smlf-captcha-step').val() || '1', 10),
+			allowed_file_extensions: $('#smlf-allowed-file-extensions').val() || 'jpg,jpeg,png,gif,webp,pdf,doc,docx,xls,xlsx,zip',
+			max_file_count: parseInt($('#smlf-max-file-count').val() || '5', 10),
+			max_file_size_mb: parseInt($('#smlf-max-file-size-mb').val() || '10', 10),
+			theme: $('#smlf-theme').val() || 'consult_pro',
+			font_family: $('#smlf-font-family').val() || 'inherit',
+			primary_color: $('#smlf-primary-color').val() || '#0ea5e9',
+			accent_color: $('#smlf-accent-color').val() || '#14b8a6',
+			background_color: $('#smlf-background-color').val() || '#ffffff',
+			text_color: $('#smlf-text-color').val() || '#111827'
 		};
 	}
 
 	function loadSettings(settings) {
+		$('#smlf-theme').val(settings.theme || 'consult_pro');
+		$('#smlf-font-family').val(settings.font_family || 'inherit');
+		$('#smlf-primary-color').val(settings.primary_color || '#0ea5e9');
+		$('#smlf-accent-color').val(settings.accent_color || '#14b8a6');
+		$('#smlf-background-color').val(settings.background_color || '#ffffff');
+		$('#smlf-text-color').val(settings.text_color || '#111827');
 		$('#smlf-captcha-method').val(settings.captcha_method || 'inherit');
 		$('#smlf-captcha-gate').val(settings.captcha_gate || 'before_form');
 		$('#smlf-captcha-step').val(settings.captcha_step || 1);
+		$('#smlf-allowed-file-extensions').val(settings.allowed_file_extensions || 'jpg,jpeg,png,gif,webp,pdf,doc,docx,xls,xlsx,zip');
+		$('#smlf-max-file-count').val(settings.max_file_count || 5);
+		$('#smlf-max-file-size-mb').val(settings.max_file_size_mb || 10);
+	}
+
+	function getOptionalColor($field, key) {
+		return $field.find('.field-' + key + '-enabled').is(':checked') ? $field.find('.field-' + key).val() : '';
 	}
 
 	setTimeout(renderPreview, 0);

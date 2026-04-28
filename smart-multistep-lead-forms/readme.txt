@@ -4,7 +4,7 @@ Tags: forms, multistep, ajax, leads, drag and drop
 Requires at least: 5.9
 Requires PHP: 7.4
 Tested up to: 6.9.1
-Stable tag: 1.2.4
+Stable tag: 1.2.5
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -17,8 +17,13 @@ Smart MultiStep Lead Forms lets site owners create shortcode-based, multi-step l
 Features:
 * Unlimited shortcode forms and steps.
 * Drag-and-drop form builder with edit support.
+* Field-level layout controls for full, half, and one-third width fields.
+* Choice fields can be displayed as tap cards, dropdowns, or list-style options.
+* Consent checkbox block with configurable privacy links and popup content.
+* Per-form appearance controls for theme, font family, and key colors.
 * Text, email, phone, long text, message, card, radio, and drag-and-drop file upload fields.
-* Ready-made localized free consultation form template created on activation.
+* Ready-made localized templates that can be loaded manually from the form builder.
+* HVAC 3D sample template for heating and cooling companies.
 * Modern animated frontend theme with lightweight 3D card interactions.
 * Required/email validation in the browser and sanitized server-side processing.
 * Partial lead auto-save when enabled.
@@ -44,6 +49,7 @@ Features:
 * Webhook URL: receives JSON payloads for `smlf_lead_partial` and `smlf_lead_completed`.
 * Anti-bot / Captcha Method: choose none, custom checkbox, reCAPTCHA v2/v3, or Turnstile.
 * Captcha Site Key and Secret Key: required for third-party captcha providers.
+* Data on Uninstall: choose whether plugin tables and options should remain or be fully deleted when the plugin is uninstalled.
 
 Webhook payload example:
 
@@ -61,6 +67,18 @@ Yes, the plugin loads RTL styles when WordPress is running in RTL mode.
 Yes. CSV export requires `manage_options` and a valid export nonce.
 
 == Changelog ==
+
+= 1.2.5 =
+* Fixed required-field validation when category cards auto-advance to the next step.
+* Improved frontend input styling and equalized clickable card heights.
+* Added configurable upload limits for allowed extensions, file count, and file size.
+* Added server-side upload validation based on each form's settings.
+* Improved the form builder interface and added admin overview statistic cards.
+* Added field width, display mode, font, color, and theme controls.
+* Added a modern animated HVAC 3D sample template.
+* Added consent checkbox block with linked text, default state, new-tab links, WordPress page popups, and custom popup text.
+* Added an uninstall data policy setting to keep or delete all plugin data when uninstalling.
+* Changed templates so they are no longer installed automatically; users load the templates they want from the builder.
 
 = 1.2.4 =
 * Fixed frontend template safety for older/cached form schemas.

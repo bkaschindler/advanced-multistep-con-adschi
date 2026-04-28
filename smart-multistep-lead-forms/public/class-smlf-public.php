@@ -45,6 +45,9 @@ class SMLF_Public {
 				'please_verify' => __( 'Please verify you are human.', 'smart-multistep-lead-forms' ),
 				'required'      => __( 'Please complete the required fields.', 'smart-multistep-lead-forms' ),
 				'invalid_email' => __( 'Please enter a valid email address.', 'smart-multistep-lead-forms' ),
+				'too_many_files' => __( 'You can upload up to %d files.', 'smart-multistep-lead-forms' ),
+				'file_type'     => __( 'This file type is not allowed: %s', 'smart-multistep-lead-forms' ),
+				'file_size'     => __( 'This file is larger than %1$dMB: %2$s', 'smart-multistep-lead-forms' ),
 				'submitting'    => __( 'Submitting...', 'smart-multistep-lead-forms' ),
 				'submit'        => __( 'Submit', 'smart-multistep-lead-forms' ),
 				'error'         => __( 'Something went wrong. Please try again.', 'smart-multistep-lead-forms' ),
@@ -92,6 +95,11 @@ class SMLF_Public {
 		$method        = isset( $settings['captcha_method'] ) ? sanitize_key( $settings['captcha_method'] ) : 'inherit';
 		$gate          = isset( $settings['captcha_gate'] ) ? sanitize_key( $settings['captcha_gate'] ) : 'before_form';
 		$step          = isset( $settings['captcha_step'] ) ? absint( $settings['captcha_step'] ) : 1;
+		$extensions    = isset( $settings['allowed_file_extensions'] ) ? $this->sanitize_file_extensions( $settings['allowed_file_extensions'] ) : 'jpg,jpeg,png,gif,webp,pdf,doc,docx,xls,xlsx,zip';
+		$max_count     = isset( $settings['max_file_count'] ) ? absint( $settings['max_file_count'] ) : 5;
+		$max_size      = isset( $settings['max_file_size_mb'] ) ? absint( $settings['max_file_size_mb'] ) : 10;
+		$theme         = $this->sanitize_choice( isset( $settings['theme'] ) ? $settings['theme'] : 'consult_pro', array( 'consult_pro', 'hvac_3d' ), 'consult_pro' );
+		$font_family   = isset( $settings['font_family'] ) ? sanitize_text_field( $settings['font_family'] ) : 'inherit';
 
 		if ( 'inherit' === $method ) {
 			$method = in_array( $global_method, $allowed, true ) ? $global_method : 'custom';
@@ -106,10 +114,31 @@ class SMLF_Public {
 		}
 
 		return array(
-			'captcha_method' => $method,
-			'captcha_gate'   => $gate,
-			'captcha_step'   => max( 1, $step ),
+			'captcha_method'          => $method,
+			'captcha_gate'            => $gate,
+			'captcha_step'            => max( 1, $step ),
+			'allowed_file_extensions' => '' !== $extensions ? $extensions : 'jpg,jpeg,png,gif,webp,pdf,doc,docx,xls,xlsx,zip',
+			'max_file_count'          => max( 1, $max_count ),
+			'max_file_size_mb'        => max( 1, $max_size ),
+			'theme'                   => $theme,
+			'font_family'             => '' !== $font_family ? $font_family : 'inherit',
+			'primary_color'           => isset( $settings['primary_color'] ) ? sanitize_hex_color( $settings['primary_color'] ) : '#0ea5e9',
+			'accent_color'            => isset( $settings['accent_color'] ) ? sanitize_hex_color( $settings['accent_color'] ) : '#14b8a6',
+			'background_color'        => isset( $settings['background_color'] ) ? sanitize_hex_color( $settings['background_color'] ) : '#ffffff',
+			'text_color'              => isset( $settings['text_color'] ) ? sanitize_hex_color( $settings['text_color'] ) : '#111827',
 		);
+	}
+
+	private function sanitize_choice( $value, $allowed, $fallback ) {
+		$value = sanitize_key( $value );
+		return in_array( $value, $allowed, true ) ? $value : $fallback;
+	}
+
+	private function sanitize_file_extensions( $extensions ) {
+		$extensions = is_array( $extensions ) ? $extensions : explode( ',', (string) $extensions );
+		$extensions = array_unique( array_filter( array_map( 'sanitize_key', array_map( 'trim', $extensions ) ) ) );
+
+		return implode( ',', $extensions );
 	}
 
 	private function enqueue_form_captcha_script( $settings ) {

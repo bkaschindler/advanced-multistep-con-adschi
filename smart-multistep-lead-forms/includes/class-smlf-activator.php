@@ -17,7 +17,6 @@ class SMLF_Activator {
 	 */
 	public static function activate() {
 		self::create_tables();
-		self::create_default_consultation_form();
 		update_option( 'smlf_version', defined( 'SMLF_VERSION' ) ? SMLF_VERSION : '1.0.0' );
 	}
 
