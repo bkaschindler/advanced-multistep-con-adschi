@@ -210,70 +210,31 @@ class SMLF_Activator {
 	}
 
 	public static function get_default_consultation_template() {
-		$locale = function_exists( 'determine_locale' ) ? determine_locale() : get_locale();
-
-		if ( 0 === strpos( $locale, 'de_' ) ) {
-			return array(
-				'title'        => 'Vorlage: Kostenlose Beratung',
-				'step_start'   => 'Beratung starten',
-				'step_basics'  => 'Erste Angaben',
-				'step_details' => 'Weitere Details',
-				'step_decline' => 'Jederzeit bereit',
-				'question'     => 'Moechten Sie eine kostenlose Beratung?',
-				'choice'       => 'Ihre Auswahl',
-				'yes'          => 'Ja',
-				'no'           => 'Nein',
-				'category'     => 'In welchem Bereich arbeiten Sie?',
-				'categories'   => array( 'Online-Shop', 'Lokale Dienstleistungen', 'Bildung', 'Medizin und Beauty', 'Unternehmen oder Startup', 'Sonstiges' ),
-				'email'        => 'Ihre E-Mail-Adresse',
-				'name'         => 'Vollstaendiger Name',
-				'phone'        => 'Telefonnummer',
-				'details'      => 'Weitere Informationen',
-				'files'        => 'Relevante Dateien',
-				'decline'      => 'Kein Problem. Wenn Sie spaeter Beratung brauchen, koennen Sie hier jederzeit neu starten.',
-			);
-		}
-
-		if ( 0 === strpos( $locale, 'fa_' ) ) {
-			return array(
-				'title'        => 'قالب آماده مشاوره رایگان',
-				'step_start'   => 'شروع مشاوره',
-				'step_basics'  => 'اطلاعات اولیه',
-				'step_details' => 'جزئیات بیشتر',
-				'step_decline' => 'هر زمان آماده بودید',
-				'question'     => 'آیا نیاز به مشاوره رایگان دارید؟',
-				'choice'       => 'انتخاب شما',
-				'yes'          => 'بله',
-				'no'           => 'خیر',
-				'category'     => 'دسته کاری شما چیست؟',
-				'categories'   => array( 'فروشگاه آنلاین', 'خدمات محلی', 'آموزشی', 'پزشکی و زیبایی', 'شرکت یا استارتاپ', 'سایر' ),
-				'email'        => 'ایمیل شما',
-				'name'         => 'نام و نام خانوادگی',
-				'phone'        => 'شماره تماس',
-				'details'      => 'توضیحات کامل‌تر',
-				'files'        => 'فایل‌های مرتبط',
-				'decline'      => 'هر زمان خواستید، همین‌جا برگردید. یک تصمیم خوب همیشه از زمان درست شروع می‌شود.',
-			);
-		}
-
 		return array(
-			'title'        => 'Template: Free Consultation',
-			'step_start'   => 'Start consultation',
-			'step_basics'  => 'Basic details',
-			'step_details' => 'More details',
-			'step_decline' => 'Whenever you are ready',
-			'question'     => 'Do you need a free consultation?',
-			'choice'       => 'Your choice',
-			'yes'          => 'Yes',
-			'no'           => 'No',
-			'category'     => 'What type of work do you do?',
-			'categories'   => array( 'Online store', 'Local services', 'Education', 'Medical and beauty', 'Company or startup', 'Other' ),
-			'email'        => 'Your email address',
-			'name'         => 'Full name',
-			'phone'        => 'Phone number',
-			'details'      => 'More information',
-			'files'        => 'Relevant files',
-			'decline'      => 'No problem. If you need help later, you can start again here anytime.',
+			'title'        => __( 'Template: Free Consultation', 'smart-multistep-lead-forms' ),
+			'step_start'   => __( 'Start consultation', 'smart-multistep-lead-forms' ),
+			'step_basics'  => __( 'Basic details', 'smart-multistep-lead-forms' ),
+			'step_details' => __( 'More details', 'smart-multistep-lead-forms' ),
+			'step_decline' => __( 'Whenever you are ready', 'smart-multistep-lead-forms' ),
+			'question'     => __( 'Do you need a free consultation?', 'smart-multistep-lead-forms' ),
+			'choice'       => __( 'Your choice', 'smart-multistep-lead-forms' ),
+			'yes'          => __( 'Yes', 'smart-multistep-lead-forms' ),
+			'no'           => __( 'No', 'smart-multistep-lead-forms' ),
+			'category'     => __( 'What type of work do you do?', 'smart-multistep-lead-forms' ),
+			'categories'   => array(
+				__( 'Online store', 'smart-multistep-lead-forms' ),
+				__( 'Local services', 'smart-multistep-lead-forms' ),
+				__( 'Education', 'smart-multistep-lead-forms' ),
+				__( 'Medical and beauty', 'smart-multistep-lead-forms' ),
+				__( 'Company or startup', 'smart-multistep-lead-forms' ),
+				__( 'Other', 'smart-multistep-lead-forms' ),
+			),
+			'email'        => __( 'Your email address', 'smart-multistep-lead-forms' ),
+			'name'         => __( 'Full name', 'smart-multistep-lead-forms' ),
+			'phone'        => __( 'Phone number', 'smart-multistep-lead-forms' ),
+			'details'      => __( 'More information', 'smart-multistep-lead-forms' ),
+			'files'        => __( 'Relevant files', 'smart-multistep-lead-forms' ),
+			'decline'      => __( 'No problem. If you need help later, you can start again here anytime.', 'smart-multistep-lead-forms' ),
 		);
 	}
 

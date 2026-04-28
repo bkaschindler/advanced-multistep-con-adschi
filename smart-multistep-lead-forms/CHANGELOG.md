@@ -1,6 +1,11 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [1.3.2] - 2026-04-28
+### Changed
+- Unified admin, builder, and template text so translations are resolved through the WordPress translation system.
+- Removed hard-coded manual locale branches for builder labels and the default consultation template.
+
 ## [1.3.1] - 2026-04-28
 ### Changed
 - Expanded default admin email content to include lead metadata and submitted form details.

@@ -89,7 +89,7 @@ if ( ! function_exists( 'smlf_render_lead_value' ) ) {
 }
 ?>
 <div class="wrap">
-	<h1 class="wp-heading-inline"><?php esc_html_e( 'Interessenten', 'smart-multistep-lead-forms' ); ?></h1>
+	<h1 class="wp-heading-inline"><?php esc_html_e( 'Prospects', 'smart-multistep-lead-forms' ); ?></h1>
 	<a href="<?php echo esc_url( wp_nonce_url( admin_url( 'admin-ajax.php?action=smlf_export_leads_csv' ), 'smlf_export_leads_csv' ) ); ?>" class="page-title-action"><?php esc_html_e( 'Export to CSV', 'smart-multistep-lead-forms' ); ?></a>
 	<hr class="wp-header-end">
 

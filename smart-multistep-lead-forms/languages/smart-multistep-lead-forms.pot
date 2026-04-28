@@ -2,7 +2,7 @@
 # This file is distributed under the GPLv2 or later.
 msgid ""
 msgstr ""
-"Project-Id-Version: Smart MultiStep Lead Forms 1.3.1\n"
+"Project-Id-Version: Smart MultiStep Lead Forms 1.3.2\n"
 "Report-Msgid-Bugs-To: https://adschi.com\n"
 "POT-Creation-Date: 2024-05-30 00:00:00+00:00\n"
 "MIME-Version: 1.0\n"
@@ -63,6 +63,180 @@ msgid "Delete this form? Existing leads will be kept."
 msgstr ""
 
 msgid "Could not delete form."
+msgstr ""
+
+msgid "Prospects"
+msgstr ""
+
+msgid "Blocks"
+msgstr ""
+
+msgid "Form Builder"
+msgstr ""
+
+msgid "Text Input"
+msgstr ""
+
+msgid "Email Input"
+msgstr ""
+
+msgid "Phone Input"
+msgstr ""
+
+msgid "Long Text"
+msgstr ""
+
+msgid "File Upload"
+msgstr ""
+
+msgid "Message Text"
+msgstr ""
+
+msgid "Clickable Cards"
+msgstr ""
+
+msgid "Radio Buttons"
+msgstr ""
+
+msgid "+ Add Step"
+msgstr ""
+
+msgid "Load consultation template"
+msgstr ""
+
+msgid "Save Form"
+msgstr ""
+
+msgid "Form Title"
+msgstr ""
+
+msgid "Use global setting"
+msgstr ""
+
+msgid "Disabled for this form"
+msgstr ""
+
+msgid "Show captcha"
+msgstr ""
+
+msgid "Before the form starts"
+msgstr ""
+
+msgid "Before final submit"
+msgstr ""
+
+msgid "Before a specific step"
+msgstr ""
+
+msgid "Captcha step number"
+msgstr ""
+
+msgid "Live preview"
+msgstr ""
+
+msgid "This preview updates while you edit. Save the form to publish changes."
+msgstr ""
+
+msgid "Step"
+msgstr ""
+
+msgid "Remove"
+msgstr ""
+
+msgid "Condition: Go to Step"
+msgstr ""
+
+msgid "if answer equals"
+msgstr ""
+
+msgid "Option name"
+msgstr ""
+
+msgid "End step with reset button"
+msgstr ""
+
+msgid "Label"
+msgstr ""
+
+msgid "Required"
+msgstr ""
+
+msgid "Options (comma separated)"
+msgstr ""
+
+msgid "Option 1"
+msgstr ""
+
+msgid "Option 2"
+msgstr ""
+
+msgid "PDF, images, documents and ZIP files up to 10MB each."
+msgstr ""
+
+msgid "Saved successfully!"
+msgstr ""
+
+msgid "Error saving."
+msgstr ""
+
+msgid "Template: Free Consultation"
+msgstr ""
+
+msgid "Start consultation"
+msgstr ""
+
+msgid "Basic details"
+msgstr ""
+
+msgid "More details"
+msgstr ""
+
+msgid "Whenever you are ready"
+msgstr ""
+
+msgid "Do you need a free consultation?"
+msgstr ""
+
+msgid "Your choice"
+msgstr ""
+
+msgid "Yes"
+msgstr ""
+
+msgid "No"
+msgstr ""
+
+msgid "What type of work do you do?"
+msgstr ""
+
+msgid "Online store"
+msgstr ""
+
+msgid "Local services"
+msgstr ""
+
+msgid "Education"
+msgstr ""
+
+msgid "Medical and beauty"
+msgstr ""
+
+msgid "Company or startup"
+msgstr ""
+
+msgid "Other"
+msgstr ""
+
+msgid "Your email address"
+msgstr ""
+
+msgid "More information"
+msgstr ""
+
+msgid "Relevant files"
+msgstr ""
+
+msgid "No problem. If you need help later, you can start again here anytime."
 msgstr ""
 
 msgid "Admin Notification Email"

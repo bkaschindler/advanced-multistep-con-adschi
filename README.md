@@ -4,7 +4,7 @@ Tags: forms, multistep, ajax, leads, drag and drop
 Requires at least: 5.9
 Requires PHP: 7.4
 Tested up to: 6.9.1
-Stable tag: 1.3.1
+Stable tag: 1.3.2
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -74,6 +74,10 @@ Yes, the plugin loads RTL styles when WordPress is running in RTL mode.
 Yes. CSV export requires `manage_options` and a valid export nonce.
 
 == Changelog ==
+
+= 1.3.2 =
+* Unified admin, builder, and template text so translations are resolved through WordPress translation files.
+* Removed hard-coded manual locale branches for builder labels and the default consultation template.
 
 = 1.3.1 =
 * Expanded default admin email content to include lead metadata and submitted form details.
