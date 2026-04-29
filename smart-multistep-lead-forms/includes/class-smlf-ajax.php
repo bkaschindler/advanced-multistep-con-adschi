@@ -342,6 +342,48 @@ class SMLF_Ajax {
 		wp_send_json_success();
 	}
 
+	public function delete_leads_admin() {
+		check_ajax_referer( 'smlf_admin_nonce', 'nonce' );
+
+		if ( ! current_user_can( 'manage_options' ) ) {
+			wp_send_json_error( array( 'message' => __( 'Permission denied.', 'smart-multistep-lead-forms' ) ), 403 );
+		}
+
+		$delete_all = isset( $_POST['delete_all'] ) && '1' === (string) wp_unslash( $_POST['delete_all'] );
+		$lead_ids   = array();
+
+		if ( ! $delete_all && isset( $_POST['lead_ids'] ) && is_array( $_POST['lead_ids'] ) ) {
+			$lead_ids = array_values( array_unique( array_filter( array_map( 'absint', wp_unslash( $_POST['lead_ids'] ) ) ) ) );
+		}
+
+		if ( ! $delete_all && empty( $lead_ids ) ) {
+			wp_send_json_error( array( 'message' => __( 'Select at least one request to delete.', 'smart-multistep-lead-forms' ) ), 400 );
+		}
+
+		global $wpdb;
+		$leads_table      = $wpdb->prefix . 'smlf_leads';
+		$email_logs_table = $wpdb->prefix . 'smlf_email_logs';
+
+		if ( $delete_all ) {
+			$deleted = $wpdb->query( "DELETE FROM {$leads_table}" );
+			if ( false === $deleted ) {
+				wp_send_json_error( array( 'message' => __( 'Could not delete requests.', 'smart-multistep-lead-forms' ) ), 500 );
+			}
+
+			$wpdb->query( "DELETE FROM {$email_logs_table}" );
+			wp_send_json_success( array( 'deleted' => absint( $deleted ), 'delete_all' => true ) );
+		}
+
+		$id_list = implode( ',', $lead_ids );
+		$deleted = $wpdb->query( "DELETE FROM {$leads_table} WHERE id IN ({$id_list})" );
+		if ( false === $deleted ) {
+			wp_send_json_error( array( 'message' => __( 'Could not delete requests.', 'smart-multistep-lead-forms' ) ), 500 );
+		}
+
+		$wpdb->query( "DELETE FROM {$email_logs_table} WHERE lead_id IN ({$id_list})" );
+		wp_send_json_success( array( 'deleted' => absint( $deleted ), 'lead_ids' => $lead_ids ) );
+	}
+
 	public function export_leads_csv() {
 		if ( ! current_user_can( 'manage_options' ) ) {
 			wp_die( esc_html__( 'Permission denied.', 'smart-multistep-lead-forms' ) );

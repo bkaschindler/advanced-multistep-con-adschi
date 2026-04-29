@@ -2,7 +2,7 @@
 # This file is distributed under the GPLv2 or later.
 msgid ""
 msgstr ""
-"Project-Id-Version: Smart MultiStep Lead Forms 1.0.0\n"
+"Project-Id-Version: Smart MultiStep Lead Forms 1.3.4\n"
 "Report-Msgid-Bugs-To: https://adschi.com\n"
 "POT-Creation-Date: 2024-05-30 00:00:00+00:00\n"
 "MIME-Version: 1.0\n"
@@ -37,6 +37,27 @@ msgstr "افزودن فرم جدید"
 
 msgid "Prospects"
 msgstr "متقاضیان"
+
+msgid "Prospects overview"
+msgstr "نمای کلی متقاضیان"
+
+msgid "Total Requests"
+msgstr "کل درخواست‌ها"
+
+msgid "Completed Requests"
+msgstr "درخواست‌های تکمیل‌شده"
+
+msgid "Auto-saved Requests"
+msgstr "درخواست‌های ذخیره خودکار"
+
+msgid "New Today"
+msgstr "جدید امروز"
+
+msgid "%s%% still in progress"
+msgstr "%s%% هنوز در حال انجام"
+
+msgid "Requests created today"
+msgstr "درخواست‌های ایجادشده امروز"
 
 msgid "Settings"
 msgstr "تنظیمات"
@@ -148,6 +169,33 @@ msgstr "عملیات"
 
 msgid "Delete"
 msgstr "حذف"
+
+msgid "Delete selected"
+msgstr "حذف انتخاب‌شده‌ها"
+
+msgid "Delete all requests"
+msgstr "حذف همه درخواست‌ها"
+
+msgid "Delete the selected requests?"
+msgstr "درخواست‌های انتخاب‌شده حذف شوند؟"
+
+msgid "Delete all requests? This cannot be undone."
+msgstr "همه درخواست‌ها حذف شوند؟ این کار قابل بازگشت نیست."
+
+msgid "Select at least one request to delete."
+msgstr "برای حذف، حداقل یک درخواست را انتخاب کنید."
+
+msgid "Select all requests"
+msgstr "انتخاب همه درخواست‌ها"
+
+msgid "Select request #%d"
+msgstr "انتخاب درخواست #%d"
+
+msgid "%d selected"
+msgstr "%d انتخاب‌شده"
+
+msgid "Could not delete requests."
+msgstr "امکان حذف درخواست‌ها وجود نداشت."
 
 msgid "Delete this form? Existing leads will be kept."
 msgstr "این فرم حذف شود؟ لیدهای قبلی نگه داشته می‌شوند."

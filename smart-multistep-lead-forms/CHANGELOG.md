@@ -1,6 +1,15 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [1.3.4] - 2026-04-29
+### Added
+- Colored Prospects overview cards for total requests, completed requests, auto-saved requests, and new requests today.
+
+## [1.3.3] - 2026-04-29
+### Added
+- Bulk request deletion on the Prospects page, including selected-request deletion and delete-all controls.
+- Confirmation prompts, selection counts, and cleanup of related email logs when requests are deleted.
+
 ## [1.3.2] - 2026-04-28
 ### Changed
 - Unified admin, builder, and template text so translations are resolved through the WordPress translation system.

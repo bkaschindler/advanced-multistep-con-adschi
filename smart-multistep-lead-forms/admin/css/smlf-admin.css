@@ -376,6 +376,19 @@
 	font-weight: 600;
 }
 
+.smlf-leads-bulk-actions {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: 8px;
+	margin: 0 0 12px;
+}
+
+.smlf-selected-leads-count {
+	color: #646970;
+	font-weight: 600;
+}
+
 .smlf-lead-source,
 .smlf-lead-details {
 	font-size: 12px;
@@ -560,6 +573,10 @@
 
 .smlf-admin-stat-card-partial {
 	--smlf-stat-accent: #f59e0b;
+}
+
+.smlf-admin-stat-card-today {
+	--smlf-stat-accent: #e11d48;
 }
 
 .smlf-admin-stat-card span,

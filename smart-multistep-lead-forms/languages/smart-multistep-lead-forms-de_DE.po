@@ -1,6 +1,6 @@
 msgid ""
 msgstr ""
-"Project-Id-Version: Smart MultiStep Lead Forms 1.1.0\n"
+"Project-Id-Version: Smart MultiStep Lead Forms 1.3.4\n"
 "Report-Msgid-Bugs-To: https://adschi.com\n"
 "POT-Creation-Date: 2024-05-30 00:00:00+00:00\n"
 "MIME-Version: 1.0\n"
@@ -126,6 +126,27 @@ msgstr "Ihre Einreichung ist eingegangen."
 msgid "Prospects"
 msgstr "Interessenten"
 
+msgid "Prospects overview"
+msgstr "Interessenten-Übersicht"
+
+msgid "Total Requests"
+msgstr "Anfragen insgesamt"
+
+msgid "Completed Requests"
+msgstr "Abgeschlossene Anfragen"
+
+msgid "Auto-saved Requests"
+msgstr "Automatisch gespeicherte Anfragen"
+
+msgid "New Today"
+msgstr "Heute neu"
+
+msgid "%s%% still in progress"
+msgstr "%s%% noch in Bearbeitung"
+
+msgid "Requests created today"
+msgstr "Heute erstellte Anfragen"
+
 msgid "Search leads"
 msgstr "Interessenten suchen"
 
@@ -203,6 +224,33 @@ msgstr "Aktionen"
 
 msgid "Delete"
 msgstr "Löschen"
+
+msgid "Delete selected"
+msgstr "Ausgewählte löschen"
+
+msgid "Delete all requests"
+msgstr "Alle Anfragen löschen"
+
+msgid "Delete the selected requests?"
+msgstr "Ausgewählte Anfragen löschen?"
+
+msgid "Delete all requests? This cannot be undone."
+msgstr "Alle Anfragen löschen? Dies kann nicht rückgängig gemacht werden."
+
+msgid "Select at least one request to delete."
+msgstr "Wählen Sie mindestens eine Anfrage zum Löschen aus."
+
+msgid "Select all requests"
+msgstr "Alle Anfragen auswählen"
+
+msgid "Select request #%d"
+msgstr "Anfrage #%d auswählen"
+
+msgid "%d selected"
+msgstr "%d ausgewählt"
+
+msgid "Could not delete requests."
+msgstr "Anfragen konnten nicht gelöscht werden."
 
 msgid "Delete this form? Existing leads will be kept."
 msgstr "Dieses Formular löschen? Bestehende Interessenten bleiben erhalten."

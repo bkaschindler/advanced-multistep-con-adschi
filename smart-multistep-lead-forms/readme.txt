@@ -4,7 +4,7 @@ Tags: forms, multistep, ajax, leads, drag and drop
 Requires at least: 5.9
 Requires PHP: 7.4
 Tested up to: 6.9.1
-Stable tag: 1.3.2
+Stable tag: 1.3.4
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -27,6 +27,7 @@ Features:
 * HVAC 3D sample template for heating and cooling companies.
 * Multi-rule conditional step logic.
 * Lead pipeline status tracking in the admin area.
+* Colored Prospects overview cards for request totals and daily activity.
 * File upload preview with per-file removal before submit.
 * Modern animated frontend theme with lightweight 3D card interactions.
 * Required/email validation in the browser and sanitized server-side processing.
@@ -74,6 +75,13 @@ Yes, the plugin loads RTL styles when WordPress is running in RTL mode.
 Yes. CSV export requires `manage_options` and a valid export nonce.
 
 == Changelog ==
+
+= 1.3.4 =
+* Added colored Prospects overview cards for total requests, completed requests, auto-saved requests, and new requests today.
+
+= 1.3.3 =
+* Added bulk request deletion on the Prospects page, including selected-request deletion and delete-all controls.
+* Added confirmation prompts, selection counts, and cleanup of related email logs when requests are deleted.
 
 = 1.3.2 =
 * Unified admin, builder, and template text so translations are resolved through WordPress translation files.

@@ -290,6 +290,10 @@ class SMLF_Admin {
 			'save_notes'              => __( 'Save Notes', 'smart-multistep-lead-forms' ),
 			'save_error'              => __( 'Error saving.', 'smart-multistep-lead-forms' ),
 			'confirm_delete_form'     => __( 'Delete this form? Existing leads will be kept.', 'smart-multistep-lead-forms' ),
+			'confirm_delete_leads'    => __( 'Delete the selected requests?', 'smart-multistep-lead-forms' ),
+			'confirm_delete_all_leads' => __( 'Delete all requests? This cannot be undone.', 'smart-multistep-lead-forms' ),
+			'select_leads_to_delete'  => __( 'Select at least one request to delete.', 'smart-multistep-lead-forms' ),
+			'selected_requests_count' => __( '%d selected', 'smart-multistep-lead-forms' ),
 		);
 	}
 

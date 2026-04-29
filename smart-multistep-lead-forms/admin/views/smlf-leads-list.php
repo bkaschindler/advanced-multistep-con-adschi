@@ -4,6 +4,14 @@ global $wpdb;
 $forms_table = $wpdb->prefix . 'smlf_forms';
 $leads_table = $wpdb->prefix . 'smlf_leads';
 $forms       = $wpdb->get_results( "SELECT id, title FROM {$forms_table} ORDER BY id DESC" );
+$today_start = gmdate( 'Y-m-d 00:00:00', current_time( 'timestamp' ) );
+
+$total_leads          = (int) $wpdb->get_var( "SELECT COUNT(id) FROM {$leads_table}" );
+$completed_leads      = (int) $wpdb->get_var( $wpdb->prepare( "SELECT COUNT(id) FROM {$leads_table} WHERE status = %s", 'completed' ) );
+$auto_saved_leads     = (int) $wpdb->get_var( $wpdb->prepare( "SELECT COUNT(id) FROM {$leads_table} WHERE status IN (%s, %s)", 'partial', 'started' ) );
+$today_leads          = (int) $wpdb->get_var( $wpdb->prepare( "SELECT COUNT(id) FROM {$leads_table} WHERE created_at >= %s", $today_start ) );
+$completion_rate      = $total_leads > 0 ? round( ( $completed_leads / $total_leads ) * 100 ) : 0;
+$auto_saved_rate      = $total_leads > 0 ? round( ( $auto_saved_leads / $total_leads ) * 100 ) : 0;
 
 $selected_form        = isset( $_GET['form_id'] ) ? absint( wp_unslash( $_GET['form_id'] ) ) : 0;
 $selected_status      = isset( $_GET['status'] ) ? sanitize_key( wp_unslash( $_GET['status'] ) ) : '';
@@ -142,6 +150,29 @@ if ( $selected_lead_id ) {
 <div class="wrap">
 	<h1 class="wp-heading-inline"><?php esc_html_e( 'Prospects', 'smart-multistep-lead-forms' ); ?></h1>
 	<hr class="wp-header-end">
+
+	<div class="smlf-admin-stats-grid" aria-label="<?php esc_attr_e( 'Prospects overview', 'smart-multistep-lead-forms' ); ?>">
+		<div class="smlf-admin-stat-card smlf-admin-stat-card-leads">
+			<span><?php esc_html_e( 'Total Requests', 'smart-multistep-lead-forms' ); ?></span>
+			<strong><?php echo esc_html( number_format_i18n( $total_leads ) ); ?></strong>
+			<small><?php esc_html_e( 'All captured records', 'smart-multistep-lead-forms' ); ?></small>
+		</div>
+		<div class="smlf-admin-stat-card smlf-admin-stat-card-completed">
+			<span><?php esc_html_e( 'Completed Requests', 'smart-multistep-lead-forms' ); ?></span>
+			<strong><?php echo esc_html( number_format_i18n( $completed_leads ) ); ?></strong>
+			<small><?php echo esc_html( sprintf( __( '%s%% completion rate', 'smart-multistep-lead-forms' ), number_format_i18n( $completion_rate ) ) ); ?></small>
+		</div>
+		<div class="smlf-admin-stat-card smlf-admin-stat-card-partial">
+			<span><?php esc_html_e( 'Auto-saved Requests', 'smart-multistep-lead-forms' ); ?></span>
+			<strong><?php echo esc_html( number_format_i18n( $auto_saved_leads ) ); ?></strong>
+			<small><?php echo esc_html( sprintf( __( '%s%% still in progress', 'smart-multistep-lead-forms' ), number_format_i18n( $auto_saved_rate ) ) ); ?></small>
+		</div>
+		<div class="smlf-admin-stat-card smlf-admin-stat-card-today">
+			<span><?php esc_html_e( 'New Today', 'smart-multistep-lead-forms' ); ?></span>
+			<strong><?php echo esc_html( number_format_i18n( $today_leads ) ); ?></strong>
+			<small><?php esc_html_e( 'Requests created today', 'smart-multistep-lead-forms' ); ?></small>
+		</div>
+	</div>
 
 	<?php if ( $selected_lead_id ) : ?>
 		<?php if ( $detail_lead ) : ?>
@@ -309,9 +340,18 @@ if ( $selected_lead_id ) {
 		<button type="submit" class="button"><?php esc_html_e( 'Export filtered CSV', 'smart-multistep-lead-forms' ); ?></button>
 	</form>
 
+	<div class="smlf-leads-bulk-actions">
+		<button type="button" class="button smlf-delete-selected-leads"><?php esc_html_e( 'Delete selected', 'smart-multistep-lead-forms' ); ?></button>
+		<button type="button" class="button button-link-delete smlf-delete-all-leads"><?php esc_html_e( 'Delete all requests', 'smart-multistep-lead-forms' ); ?></button>
+		<span class="smlf-selected-leads-count" aria-live="polite"></span>
+	</div>
+
 	<table class="wp-list-table widefat fixed striped">
 		<thead>
 			<tr>
+				<td class="manage-column column-cb check-column">
+					<input type="checkbox" class="smlf-select-all-leads" aria-label="<?php esc_attr_e( 'Select all requests', 'smart-multistep-lead-forms' ); ?>">
+				</td>
 				<th><?php esc_html_e( 'ID', 'smart-multistep-lead-forms' ); ?></th>
 				<th><?php esc_html_e( 'Form / Source', 'smart-multistep-lead-forms' ); ?></th>
 				<th><?php esc_html_e( 'Submission', 'smart-multistep-lead-forms' ); ?></th>
@@ -333,7 +373,10 @@ if ( $selected_lead_id ) {
 					$status_class        = $is_completed ? 'updated' : 'neutral';
 					$status_label        = $is_completed ? __( 'Completed', 'smart-multistep-lead-forms' ) : __( 'Auto-saved', 'smart-multistep-lead-forms' );
 					?>
-					<tr>
+					<tr data-lead-id="<?php echo esc_attr( $lead->id ); ?>">
+						<th scope="row" class="check-column">
+							<input type="checkbox" class="smlf-lead-checkbox" value="<?php echo esc_attr( $lead->id ); ?>" aria-label="<?php echo esc_attr( sprintf( __( 'Select request #%d', 'smart-multistep-lead-forms' ), $lead->id ) ); ?>">
+						</th>
 						<td><?php echo esc_html( $lead->id ); ?></td>
 						<td class="smlf-lead-source">
 							<strong><?php echo esc_html( $lead->form_title ? $lead->form_title : sprintf( __( 'Form #%d', 'smart-multistep-lead-forms' ), $lead->form_id ) ); ?></strong><br>
@@ -375,7 +418,7 @@ if ( $selected_lead_id ) {
 				<?php endforeach; ?>
 			<?php else : ?>
 				<tr>
-					<td colspan="8"><?php esc_html_e( 'No leads found.', 'smart-multistep-lead-forms' ); ?></td>
+					<td colspan="9"><?php esc_html_e( 'No leads found.', 'smart-multistep-lead-forms' ); ?></td>
 				</tr>
 			<?php endif; ?>
 		</tbody>

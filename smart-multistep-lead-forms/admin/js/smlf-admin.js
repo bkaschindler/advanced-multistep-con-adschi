@@ -431,6 +431,88 @@ jQuery(document).ready(function($) {
 		});
 	});
 
+	function getSelectedLeadIds() {
+		return $('.smlf-lead-checkbox:checked').map(function() {
+			return $(this).val();
+		}).get();
+	}
+
+	function updateLeadBulkState() {
+		const total = $('.smlf-lead-checkbox').length;
+		const selected = getSelectedLeadIds().length;
+		const $selectAll = $('.smlf-select-all-leads');
+
+		$selectAll.prop('checked', total > 0 && selected === total);
+		$selectAll.prop('indeterminate', selected > 0 && selected < total);
+		$('.smlf-delete-selected-leads').prop('disabled', selected === 0);
+		$('.smlf-selected-leads-count').text(selected > 0 ? (i18n.selected_requests_count || '%d selected').replace('%d', selected) : '');
+	}
+
+	$(document).on('change', '.smlf-select-all-leads', function() {
+		$('.smlf-lead-checkbox').prop('checked', $(this).prop('checked'));
+		updateLeadBulkState();
+	});
+
+	$(document).on('change', '.smlf-lead-checkbox', updateLeadBulkState);
+
+	function deleteLeads(leadIds, deleteAll, $button) {
+		const confirmMessage = deleteAll
+			? (i18n.confirm_delete_all_leads || 'Delete all requests? This cannot be undone.')
+			: (i18n.confirm_delete_leads || 'Delete the selected requests?');
+
+		if (!window.confirm(confirmMessage)) {
+			return;
+		}
+
+		$button.prop('disabled', true);
+		$.post(smlf_admin_obj.ajax_url, {
+			action: 'smlf_delete_leads_admin',
+			nonce: smlf_admin_obj.nonce,
+			delete_all: deleteAll ? '1' : '0',
+			lead_ids: leadIds
+		}).done(function(response) {
+			if (!response.success) {
+				alert((response.data && response.data.message) || i18n.save_error);
+				return;
+			}
+
+			if (deleteAll) {
+				window.location.reload();
+				return;
+			}
+
+			leadIds.forEach(function(leadId) {
+				$('tr[data-lead-id="' + leadId + '"]').fadeOut(160, function() {
+					$(this).remove();
+					updateLeadBulkState();
+				});
+			});
+		}).fail(function() {
+			alert(i18n.save_error);
+		}).always(function() {
+			$button.prop('disabled', false);
+		});
+	}
+
+	$(document).on('click', '.smlf-delete-selected-leads', function(e) {
+		e.preventDefault();
+		const leadIds = getSelectedLeadIds();
+
+		if (leadIds.length === 0) {
+			alert(i18n.select_leads_to_delete || 'Select at least one request to delete.');
+			return;
+		}
+
+		deleteLeads(leadIds, false, $(this));
+	});
+
+	$(document).on('click', '.smlf-delete-all-leads', function(e) {
+		e.preventDefault();
+		deleteLeads([], true, $(this));
+	});
+
+	updateLeadBulkState();
+
 	$(document).on('click', '.smlf-delete-form', function(e) {
 		e.preventDefault();
 		if (!window.confirm(i18n.confirm_delete_form || 'Delete this form?')) {
